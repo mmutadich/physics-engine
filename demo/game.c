@@ -136,7 +136,6 @@ void add_walls(scene_t *scene) {
 
 list_t *make_ledge_shape(vector_t centroid) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
-  // 0: top left, counter-clockwise
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
@@ -162,7 +161,6 @@ void add_ledges(scene_t *scene) {
 
 list_t *make_door_shape(vector_t centroid) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
-  // 0: top left, counter-clockwise
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
@@ -186,9 +184,8 @@ void add_doors(scene_t *scene) {
   scene_add_body(scene, dirt_girl_door);
 }
 
-list_t *make_character_shape(vector_t centroid) { // squares as of now
+list_t *make_character_shape(vector_t centroid) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
-  // 0: top left, counter-clockwise
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
@@ -205,6 +202,7 @@ list_t *make_character_shape(vector_t centroid) { // squares as of now
   return points;
 }
 
+// TODO: ADD FORCES HERE
 void add_characters(scene_t *scene) {
   list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
   body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
@@ -219,7 +217,9 @@ scene_t *make_initial_scene() {
   add_walls(result);
   add_ledges(result);
   add_doors(result);
+  // TODO: ADD OBSTACLES (WRITE FUNCTION)
   //add_obstacles(result);
+  // TODO: ADD FERTILIZER (WRITE FUNCTION)
   //add_fertilizer(result);
   add_characters(result); // add plant boy and dirt girl last since all the forces will be added with those two
   return result;
