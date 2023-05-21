@@ -19,28 +19,32 @@
 const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
 const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
+const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will use drawings on top
 
 // GENERAL BODY CONSTANTS
 const NUM_RECT_POINTS = 4;
 const double INFINITY_MASS = INFINITY; 
 
 // CHARACTER CONSTANTS
-const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 100};
-const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 100};
+const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 40};
+const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 40};
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
-const rgb_color_t CHARACTER_COLOR = {1, 0.75, 0.75};
 
 // WALL CONSTANTS
-const rgb_color_t WALL_COLOR = {0, 0, 0}; // doesn't matter b/c wall not displayed
 const double WALL_WIDTH = 10;
 
 // LEDGE CONSTANTS
-const vector_t LEDGE_1_CENTROID = {.x = 800, 350};
-const vector_t LEDGE_2_CENTROID = {.x = 1200, 700};
-const rgb_color_t LEDGE_COLOR = {0.98, 0.76, 0.01};
+const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
+const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
 const double LEDGE_LENGTH = 1600;
 const double LEDGE_WIDTH = 40;
+
+// DOOR CONSTANTS
+const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
+const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
+const double DOOR_HEIGHT = 120;
+const double DOOR_WIDTH = 80;
 
 typedef enum {
   PLANT_BOY = 1,
@@ -117,13 +121,13 @@ list_t *make_wall_shape(char wall) {
 
 void add_walls(scene_t *scene) {
   body_t *left_wall = body_init_with_info(make_wall_shape(0), INFINITY_MASS,
-                                          WALL_COLOR, WALL, NULL);
+                                          COLOR, WALL, NULL);
   body_t *top_wall = body_init_with_info(make_wall_shape(1), INFINITY_MASS,
-                                         WALL_COLOR, WALL, NULL);
+                                         COLOR, WALL, NULL);
   body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
-                                           WALL_COLOR, WALL, NULL);
+                                           COLOR, WALL, NULL);
   body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS,
-                                           WALL_COLOR, WALL, NULL);                                       
+                                           COLOR, WALL, NULL);                                       
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
@@ -150,10 +154,36 @@ list_t *make_ledge_shape(vector_t centroid) {
 }
 
 void add_ledges(scene_t *scene) {
-  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, LEDGE_COLOR, LEDGE, NULL);
-  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, LEDGE_COLOR, LEDGE, NULL);                                     
+  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);                                     
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
+}
+
+list_t *make_door_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  // 0: top left, counter-clockwise
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - DOOR_WIDTH / 2;
+    else
+      point->x = centroid.x + DOOR_WIDTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + DOOR_HEIGHT / 2;
+    else
+      point->y = centroid.y - DOOR_HEIGHT / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+void add_doors(scene_t *scene) {
+  body_t *plant_boy_door = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR, NULL);
+  body_t *dirt_girl_door = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR, NULL);                                     
+  scene_add_body(scene, plant_boy_door);
+  scene_add_body(scene, dirt_girl_door);
 }
 
 list_t *make_character_shape(vector_t centroid) { // squares as of now
@@ -177,10 +207,10 @@ list_t *make_character_shape(vector_t centroid) { // squares as of now
 
 void add_characters(scene_t *scene) {
   list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
-  body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, CHARACTER_COLOR, PLANT_BOY, NULL);
+  body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
   scene_add_body(scene, plant_boy);
   list_t *dirt_girl_shape = make_character_shape(INITIAL_DIRT_GIRL_POSITION);
-  body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, CHARACTER_COLOR, DIRT_GIRL, NULL);
+  body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, COLOR, DIRT_GIRL, NULL);
   scene_add_body(scene, dirt_girl);
 }
 
@@ -188,7 +218,7 @@ scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   add_walls(result);
   add_ledges(result);
-  //add_doors(result);
+  add_doors(result);
   //add_obstacles(result);
   //add_fertilizer(result);
   add_characters(result); // add plant boy and dirt girl last since all the forces will be added with those two
