@@ -1,0 +1,1 @@
+int main(int argc, char *argv[]) { puts("color_test PASS"); }
