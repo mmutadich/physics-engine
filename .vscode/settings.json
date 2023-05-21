@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "polygon.h": "c",
+        "state.h": "c"
+    }
+}
