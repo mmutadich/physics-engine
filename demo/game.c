@@ -35,6 +35,13 @@ const rgb_color_t CHARACTER_COLOR = {1, 0.75, 0.75};
 const rgb_color_t WALL_COLOR = {0, 0, 0}; // doesn't matter b/c wall not displayed
 const double WALL_WIDTH = 10;
 
+// LEDGE CONSTANTS
+const vector_t LEDGE_1_CENTROID = {.x = 800, 350};
+const vector_t LEDGE_2_CENTROID = {.x = 1200, 700};
+const rgb_color_t LEDGE_COLOR = {0.98, 0.76, 0.01};
+const double LEDGE_LENGTH = 1600;
+const double LEDGE_WIDTH = 40;
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -52,7 +59,7 @@ typedef struct state {
   double time_elapsed;
 } state_t;
 
-list_t *make_wall_points(char wall) {
+list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
   for (size_t i = 0; i < NUM_RECT_POINTS;i++) {        
@@ -109,18 +116,44 @@ list_t *make_wall_points(char wall) {
 }
 
 void add_walls(scene_t *scene) {
-  body_t *left_wall = body_init_with_info(make_wall_points(0), INFINITY_MASS,
+  body_t *left_wall = body_init_with_info(make_wall_shape(0), INFINITY_MASS,
                                           WALL_COLOR, WALL, NULL);
-  body_t *top_wall = body_init_with_info(make_wall_points(1), INFINITY_MASS,
+  body_t *top_wall = body_init_with_info(make_wall_shape(1), INFINITY_MASS,
                                          WALL_COLOR, WALL, NULL);
-  body_t *right_wall = body_init_with_info(make_wall_points(2), INFINITY_MASS,
+  body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
                                            WALL_COLOR, WALL, NULL);
-  body_t *bottom_wall = body_init_with_info(make_wall_points(3), INFINITY_MASS,
+  body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS,
                                            WALL_COLOR, WALL, NULL);                                       
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
   scene_add_body(scene, bottom_wall);
+}
+
+list_t *make_ledge_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  // 0: top left, counter-clockwise
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - LEDGE_LENGTH / 2;
+    else
+      point->x = centroid.x + LEDGE_LENGTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + LEDGE_WIDTH / 2;
+    else
+      point->y = centroid.y - LEDGE_WIDTH / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+void add_ledges(scene_t *scene) {
+  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, LEDGE_COLOR, LEDGE, NULL);
+  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, LEDGE_COLOR, LEDGE, NULL);                                     
+  scene_add_body(scene, ledge_1);
+  scene_add_body(scene, ledge_2);
 }
 
 list_t *make_character_shape(vector_t centroid) { // squares as of now
@@ -154,7 +187,7 @@ void add_characters(scene_t *scene) {
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   add_walls(result);
-  //add_ledges(result);
+  add_ledges(result);
   //add_doors(result);
   //add_obstacles(result);
   //add_fertilizer(result);
@@ -176,7 +209,7 @@ state_t *emscripten_init() {
 void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
-  // TODO: Uncomment folllwing lines and implement isgameover and resetgame
+  // TODO: Uncomment folllowing lines and implement isgameover and resetgame
   //if (is_game_over(scene)) {
     //reset_game(scene);
   //}
