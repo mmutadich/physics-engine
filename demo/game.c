@@ -218,8 +218,8 @@ void emscripten_main(state_t *state) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
-    sdl_draw_polygon(shape, body_get_color(body));
-    // TODO: don't draw walls
+    if (body_get_info(body) != WALL)
+      sdl_draw_polygon(shape, body_get_color(body));
   }
   scene_tick(scene, dt);
   sdl_show();
