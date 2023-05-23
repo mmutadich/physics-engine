@@ -23,11 +23,13 @@ const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything 
 
 // GENERAL BODY CONSTANTS
 const NUM_RECT_POINTS = 4;
-const double INFINITY_MASS = INFINITY; 
+const double INFINITY_MASS = INFINITY;
+const double ELASTICITY = 0.5;
 
 // CHARACTER CONSTANTS
 const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 40};
 const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 40};
+const double CHARACTER_VELOCITY = 1000;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
 
@@ -202,6 +204,34 @@ list_t *make_character_shape(vector_t centroid) {
   return points;
 }
 
+size_t find_dirt_girl(scene_t *scene){
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
+      return i;
+    }
+  }
+  return NULL;
+}
+
+size_t find_plant_boy(scene_t *scene){
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
+      return i;
+    }
+  }
+  return NULL;
+}
+
+list_t *find_ledges(scene_t *scene){
+  list_t *ledges;
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == LEDGE){
+      list_add(ledges, scene_get_body(scene,i));
+    }
+  }
+  return ledges;
+}
+
 // TODO: ADD FORCES HERE
 void add_characters(scene_t *scene) {
   list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
@@ -210,6 +240,53 @@ void add_characters(scene_t *scene) {
   list_t *dirt_girl_shape = make_character_shape(INITIAL_DIRT_GIRL_POSITION);
   body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, COLOR, DIRT_GIRL, NULL);
   scene_add_body(scene, dirt_girl);
+}
+
+void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
+  body_t *dirt_girl = scene_get_body(state->scene, find_dirt_girl(state->scene));
+  body_t *plant_boy = scene_get_body(state->scene, find_plant_boy(state->scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  assert(body_get_info(plant_boy) == PLANT_BOY);
+  vector_t centroid_girl = body_get_centroid(dirt_girl);
+  vector_t centroid_boy = body_get_centroid(plant_boy);
+  vector_t new_centroid_girl = {.x = centroid_girl.x, .y = centroid_girl.y};
+  vector_t new_centroid_boy = {.x = centroid_boy.x, .y = centroid_boy.y};
+  //TODO: Add wall boundaries!!
+  if (type == KEY_PRESSED) {
+    if (key == D_KEY) {
+      vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
+      body_set_velocity(dirt_girl, velocity);
+    }
+    if (key == A_KEY) {
+      vector_t velocity = {.x = -CHARACTER_VELOCITY, .y = 0};
+      body_set_velocity(dirt_girl, velocity);
+    }
+    if (key == W_KEY) {
+      list_t *ledges = find_ledges(state->scene);
+      for (size_t i = 0; i < list_size(ledges); i++) {
+        body_t *ledge = list_get(ledges, i);
+        create_jump_force(state->scene, dirt_girl, ledge, ELASTICITY);
+      }
+    }
+    if (key == RIGHT_ARROW) {
+      vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
+      body_set_velocity(plant_boy, velocity);
+    }
+    if (key == LEFT_ARROW) {
+      vector_t velocity = {.x = -CHARACTER_VELOCITY, .y = 0};
+      body_set_velocity(plant_boy, velocity);
+    }
+    if (key == UP_ARROW) {
+      list_t *ledges = find_ledges(state->scene);
+      for (size_t i = 0; i < list_size(ledges); i++) {
+        body_t *ledge = list_get(ledges, i);
+        create_jump_force(state->scene, plant_boy, ledge, ELASTICITY);
+      }
+    }
+  } else {
+    body_set_velocity(dirt_girl, ZERO_VECTOR);
+    body_set_velocity(plant_boy, ZERO_VECTOR);
+  }
 }
 
 scene_t *make_initial_scene() {
@@ -228,7 +305,7 @@ scene_t *make_initial_scene() {
 state_t *emscripten_init() {
   sdl_init(SDL_MIN, SDL_MAX);
   // TODO: Uncomment line below and implement keyer
-  //sdl_on_key((key_handler_t)keyer);
+  sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
   assert(state);
   state->scene = make_initial_scene();

@@ -108,6 +108,9 @@ void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
 void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
                               body_t *body2);
 
+void create_jump_force(scene_t *scene, body_t *body1,
+                              body_t *body2, double elasticity);
+
 void create_one_sided_destructive_collision(scene_t *scene, body_t *body1,
                                             body_t *body_to_destruct);
 

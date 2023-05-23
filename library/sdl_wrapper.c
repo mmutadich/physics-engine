@@ -96,6 +96,12 @@ char get_keycode(SDL_Keycode key) {
     return RIGHT_ARROW;
   case SDLK_DOWN:
     return DOWN_ARROW;
+  case SDLK_w:
+    return W_KEY;
+  case SDLK_a:
+    return A_KEY;
+  case SDLK_d:
+    return D_KEY;
   default:
     // Only process 7-bit ASCII characters
     return key == (SDL_Keycode)(char)key ? key : '\0';
