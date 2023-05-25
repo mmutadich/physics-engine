@@ -39,6 +39,7 @@ const double WALL_WIDTH = 10;
 // LEDGE CONSTANTS
 const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
 const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
+const vector_t LEDGE_3_CENTROID = {.x = 1200, .y = 10};
 const double LEDGE_LENGTH = 1600;
 const double LEDGE_WIDTH = 40;
 
@@ -156,9 +157,12 @@ list_t *make_ledge_shape(vector_t centroid) {
 
 void add_ledges(scene_t *scene) {
   body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);                                     
+  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);  
+  body_t *ledge_3 = body_init_with_info(make_ledge_shape(LEDGE_3_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);  
+                                   
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
+  scene_add_body(scene, ledge_3);
 }
 
 list_t *make_door_shape(vector_t centroid) {
@@ -223,7 +227,7 @@ size_t find_plant_boy(scene_t *scene){
 }
 
 list_t *find_ledges(scene_t *scene){
-  list_t *ledges;
+  list_t *ledges = list_init(3, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == LEDGE){
       list_add(ledges, scene_get_body(scene,i));
@@ -262,12 +266,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(dirt_girl, velocity);
     }
     if (key == W_KEY) {
-      /**
       list_t *ledges = find_ledges(state->scene);
+      printf("size of ledges: %zu\n", list_size(ledges));
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
-        create_jump_force(state->scene, dirt_girl, ledge, ELASTICITY);
-      */
+        assert(dirt_girl);
+        assert(ledge);
+        jump_up(state->scene, dirt_girl, ledge, ELASTICITY);
+      }
     }
     if (key == RIGHT_ARROW) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
@@ -278,12 +284,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(plant_boy, velocity);
     }
     if (key == UP_ARROW) {
-      /**
       list_t *ledges = find_ledges(state->scene);
+      printf("size of ledges: %zu\n", list_size(ledges));
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
-        create_jump_force(state->scene, plant_boy, ledge, ELASTICITY);
-      */
+        assert(plant_boy);
+        assert(ledge);
+        jump_up(state->scene, plant_boy, ledge, ELASTICITY);
+      }
     }
   } else {
     body_set_velocity(dirt_girl, ZERO_VECTOR);
