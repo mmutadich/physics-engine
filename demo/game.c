@@ -27,8 +27,8 @@ const double INFINITY_MASS = INFINITY;
 const double ELASTICITY = 0.5;
 
 // CHARACTER CONSTANTS
-const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 40};
-const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 40};
+const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 20};
+const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 20};
 const double CHARACTER_VELOCITY = 1000;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
@@ -39,7 +39,6 @@ const double WALL_WIDTH = 10;
 // LEDGE CONSTANTS
 const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
 const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
-const vector_t LEDGE_3_CENTROID = {.x = 1200, .y = 10};
 const double LEDGE_LENGTH = 1600;
 const double LEDGE_WIDTH = 40;
 
@@ -130,7 +129,7 @@ void add_walls(scene_t *scene) {
   body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
                                            COLOR, WALL, NULL);
   body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS,
-                                           COLOR, WALL, NULL);                                       
+                                           COLOR, LEDGE, NULL);  //bottom wall should be a ledge                                     
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
@@ -157,12 +156,9 @@ list_t *make_ledge_shape(vector_t centroid) {
 
 void add_ledges(scene_t *scene) {
   body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);  
-  body_t *ledge_3 = body_init_with_info(make_ledge_shape(LEDGE_3_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);  
-                                   
+  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);          
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
-  scene_add_body(scene, ledge_3);
 }
 
 list_t *make_door_shape(vector_t centroid) {
