@@ -262,24 +262,6 @@ void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
                    two_body_aux_freer);
 }
 
-void jump_force_handler(body_t *sprite, body_t *wall, vector_t axis, void *aux){
-  two_body_aux_t *tba = (two_body_aux_t *)aux;
-  if (collision_get_collided(find_collision(sprite, wall))){
-    vector_t impulse_vector = calculate_impulse(sprite, wall, tba->constant, collision_get_axis(find_collision(sprite, wall)));
-    body_add_impulse(sprite, impulse_vector);
-    vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
-    body_add_impulse(wall, opposite_impulse_vector);
-  }
-}
-
-void create_jump_force(scene_t *scene, body_t *body1,
-                              body_t *body2, double elasticity){
-  two_body_aux_t *aux = two_body_aux_init(body1, body2, elasticity);
-  create_collision(scene, body1, body2, jump_force_handler, aux,
-                   two_body_aux_freer);
-}
-
-
 void one_sided_destructive_collision_handler(body_t *body1,
                                              body_t *body_to_destruct,
                                              vector_t axis, void *aux) {

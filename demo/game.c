@@ -262,11 +262,12 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(dirt_girl, velocity);
     }
     if (key == W_KEY) {
+      /**
       list_t *ledges = find_ledges(state->scene);
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
         create_jump_force(state->scene, dirt_girl, ledge, ELASTICITY);
-      }
+      */
     }
     if (key == RIGHT_ARROW) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
@@ -277,11 +278,12 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(plant_boy, velocity);
     }
     if (key == UP_ARROW) {
+      /**
       list_t *ledges = find_ledges(state->scene);
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
         create_jump_force(state->scene, plant_boy, ledge, ELASTICITY);
-      }
+      */
     }
   } else {
     body_set_velocity(dirt_girl, ZERO_VECTOR);
