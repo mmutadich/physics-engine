@@ -302,9 +302,49 @@ scene_t *make_initial_scene() {
   return result;
 }
 
+// Game ends when both players overlap w finish line or either player lands in an obstacle
+bool is_game_over(scene_t *scene) {
+  bool plant_boy_finished = false; // how do we determine this?
+  bool dirt_girl_finished = false;
+  bool plant_boy_dead = false;
+  bool dirt_girl_dead = false;
+  if (plant_boy_dead || dirt_girl_dead)
+    return true;
+  return (plant_boy_finished && dirt_girl_finished);
+}
+
+
+void reset_game(scene_t *scene) {
+  // remove 2 characters - do we not need to change any of the other bodies?
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *curr_body = scene_get_body(scene, i);
+    if (body_get_info(curr_body) == PLANT_BOY) {
+      body_set_centroid(curr_body, INITIAL_PLANT_BOY_POSITION);
+      body_reset(curr_body);
+    }
+    if (body_get_info(curr_body) == DIRT_GIRL) {
+      body_set_centroid(curr_body, INITIAL_DIRT_GIRL_POSITION);
+      body_reset(curr_body);
+    }
+  }
+  // redraw all characters
+  add_characters(scene);
+  // re-add force creators to the 2 players
+  // TODO: INCLUDE THE FORCE ADDING CODE HERE
+  /*
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene, i)) == BRICK) {
+      create_one_sided_destructive_collision(scene, ball,
+                                             scene_get_body(scene, i));
+      create_physics_collision(scene, ELASTICITY, ball,
+                               scene_get_body(scene, i));
+    }
+  }*/
+}
+
+
 state_t *emscripten_init() {
   sdl_init(SDL_MIN, SDL_MAX);
-  // TODO: Uncomment line below and implement keyer
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
   assert(state);
@@ -316,10 +356,9 @@ state_t *emscripten_init() {
 void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
-  // TODO: Uncomment folllowing lines and implement isgameover and resetgame
-  //if (is_game_over(scene)) {
-    //reset_game(scene);
-  //}
+  if (is_game_over(scene)) {
+    reset_game(scene);
+  }
   double dt = time_since_last_tick();
   state->time_elapsed += dt;
   for (size_t i = 0; i < scene_bodies(scene); i++) {
