@@ -16,6 +16,7 @@ const double MAX_DISTANCE = 2000;
 const double DISTANCE_0 = 5;
 const double ELASTIC = 1;
 const double INELASTIC = 0;
+const double JUMP_IMPULSE = 10000;
 
 typedef struct two_body_aux {
   body_t *body1;
@@ -192,6 +193,14 @@ vector_t calculate_impulse(body_t *body1, body_t *body2, double elasticity,
   return vec_multiply(impulse, vec);
 }
 
+
+vector_t get_jump_impulse(body_t *body1, body_t *body2, double elasticity,
+                           vector_t collision_axis) {
+  //for jumping, we want there to always be a velocity up
+  vector_t result = {.x = 0, .y = JUMP_IMPULSE};
+  return result;
+}
+
 void apply_destructive_collision(void *two_body_aux) {
   two_body_aux_t *aux = (two_body_aux_t *)two_body_aux;
   list_t *shape1 = body_get_shape(aux->body1);
@@ -220,6 +229,7 @@ void apply_collision(void *c_aux) {
   list_t *shape2 = body_get_shape(collision_aux->body2);
   if (collision_get_collided(find_collision(shape1, shape2)) &&
       !collision_aux->is_colliding) {
+    printf("detected collision\n");
     vector_t collision_axis =
         collision_get_axis(find_collision(shape1, shape2));
     collision_aux->handler(collision_aux->body1, collision_aux->body2,
@@ -245,14 +255,42 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
                                  collision_aux_freer);
 }
 
-void physics_collision_handler(body_t *ball, body_t *target, vector_t axis,
+void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
+  printf("started physics collision\n");
   two_body_aux_t *tba = (two_body_aux_t *)aux;
-  vector_t impulse_vector =
-      calculate_impulse(ball, target, tba->constant, axis);
+  assert(ball);
+  assert(target);
+  printf("going to calculate impulse\n");
+  //something is wrong with tba->constant?
+  //need to change tba constant back
+  vector_t impulse_vector = get_jump_impulse(ball, target, .5, axis);
+  printf("y: %f\n", impulse_vector.y);
+  printf("calculated impulse\n");
   body_add_impulse(ball, impulse_vector);
   vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
   body_add_impulse(target, opposite_impulse_vector);
+  printf("added both impulses\n");
+}
+
+//TODO: NEED TO CHANGE THIS BACK TO THE OLD VERSION
+void physics_collision_handler(body_t *ball, body_t *target, vector_t axis,
+                               void *aux) {
+  printf("started physics collision\n");
+  two_body_aux_t *tba = (two_body_aux_t *)aux;
+  assert(ball);
+  assert(target);
+  printf("going to calculate impulse\n");
+  //something is wrong with tba->constant?
+  //need to change tba constant back
+  vector_t impulse_vector =
+      calculate_impulse(ball, target, .5, axis);
+  printf("y: %f\n", impulse_vector.x);
+  printf("calculated impulse\n");
+  body_add_impulse(ball, impulse_vector);
+  vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
+  body_add_impulse(target, opposite_impulse_vector);
+  printf("added both impulses\n");
 }
 
 void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
@@ -274,4 +312,11 @@ void create_one_sided_destructive_collision(scene_t *scene, body_t *body1,
   create_collision(scene, body1, body_to_destruct,
                    one_sided_destructive_collision_handler, aux,
                    two_body_aux_freer);
+}
+
+void jump_up(scene_t *scene, body_t *body1, body_t *body2, double elasticity) {
+  two_body_aux_t *aux = two_body_aux_init(body1, body2, elasticity);
+  collision_aux_t *collision_aux = collision_aux_init(body1, body2, 
+                          jump_collision_handler, aux, two_body_aux_freer);
+  apply_collision(collision_aux);
 }
