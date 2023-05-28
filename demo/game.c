@@ -49,10 +49,16 @@ const vector_t BLOCK_2_CENTROID = {.x = 95, .y = 465};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
-const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
+/*const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
 const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
 const double DOOR_HEIGHT = 120;
-const double DOOR_LENGTH = 80;
+const double DOOR_LENGTH = 80;*/
+const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1565, .y = 780};
+const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1635, .y = 780};
+const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1765, .y = 780};
+const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1835, .y = 780};
+const double DOOR_HEIGHT = 120;
+const double DOOR_LENGTH = 10;
 
 // OBSTACLE CONSTANTS
 const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 600, .y = 30};
@@ -61,18 +67,19 @@ const double OBSTACLE_LENGTH = 120;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
 
-
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
   PLANT_BOY_OBSTACLE = 3, // obstacle for plantboy
   DIRT_GIRL_OBSTACLE = 4, // obstacle for dirtgirl
   SLUDGE = 5, // obstacle for both players
-  PLANT_BOY_DOOR = 6, // finish line for plantboy
-  DIRT_GIRL_DOOR = 7, // finish line for dirtgirl
-  LEDGE = 8, // for characters to walk on
-  BLOCK = 9, // to assist the characters in jumping
-  WALL = 10, // edges of screen
+  PLANT_BOY_DOOR_RIGHT = 6, // finish line for plantboy
+  PLANT_BOY_DOOR_LEFT = 7, // finish line for plantboy
+  DIRT_GIRL_DOOR_RIGHT = 8, // finish line for dirtgirl
+  DIRT_GIRL_DOOR_LEFT = 9, // finish line for dirtgirl
+  LEDGE = 10, // for characters to walk on
+  BLOCK = 11, // to assist the characters in jumping
+  WALL = 12, // edges of screen
 } info_t;
 
 typedef struct state {
@@ -207,10 +214,14 @@ list_t *make_door_shape(vector_t centroid) {
 }
 
 void add_doors(scene_t *scene) {
-  body_t *plant_boy_door = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR, NULL);
-  body_t *dirt_girl_door = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR, NULL);                                     
-  scene_add_body(scene, plant_boy_door);
-  scene_add_body(scene, dirt_girl_door);
+  body_t *plant_boy_door_right = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_RIGHT, NULL);
+  body_t *plant_boy_door_left = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_LEFT, NULL);
+  body_t *dirt_girl_door_right = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_RIGHT, NULL);        
+  body_t *dirt_girl_door_left = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_LEFT, NULL);                                                               
+  scene_add_body(scene, plant_boy_door_right);
+  scene_add_body(scene, plant_boy_door_left);
+  scene_add_body(scene, dirt_girl_door_right);
+  scene_add_body(scene, dirt_girl_door_left);
 }
 
 list_t *make_obstacle_shape(vector_t centroid) {
