@@ -37,6 +37,7 @@ const double CHARACTER_MASS = 10;
 const double WALL_WIDTH = 10;
 
 // LEDGE CONSTANTS
+const vector_t LEDGE_FLOOR_CENTROID = {.x = 1000, .y = 20};
 const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
 const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
 const double LEDGE_LENGTH = 1600;
@@ -119,6 +120,7 @@ list_t *make_wall_shape(char wall) {
         point->y = SDL_MIN.y;
       list_add(wall_points, point);
     }
+    /*
     if (wall == 3) { // bottom
       vector_t *point = malloc(sizeof(vector_t));
       if (i == 0 || i == 1)
@@ -130,7 +132,7 @@ list_t *make_wall_shape(char wall) {
       else
         point->y = SDL_MIN.y;
       list_add(wall_points, point);
-    }
+    }*/
   }
   return wall_points;
 }
@@ -142,23 +144,22 @@ void add_walls(scene_t *scene) {
                                          COLOR, WALL, NULL);
   body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
                                            COLOR, WALL, NULL);
-  body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS,
-                                           COLOR, LEDGE, NULL);  //bottom wall should be a ledge                                     
+  //body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS, COLOR, LEDGE, NULL);  //bottom wall should be a ledge                                     
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
-  scene_add_body(scene, bottom_wall);
+  //scene_add_body(scene, bottom_wall);
 }
 
-list_t *make_ledge_shape(vector_t centroid) {
+list_t *make_ledge_shape(vector_t centroid, double ledge_length) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
     if (i == 0 || i == 1)
-      point->x = centroid.x - LEDGE_LENGTH / 2;
+      point->x = centroid.x - ledge_length / 2;
     else
-      point->x = centroid.x + LEDGE_LENGTH / 2;
+      point->x = centroid.x + ledge_length / 2;
     if (i == 0 || i == 3)
       point->y = centroid.y + LEDGE_WIDTH / 2;
     else
@@ -169,8 +170,10 @@ list_t *make_ledge_shape(vector_t centroid) {
 }
 
 void add_ledges(scene_t *scene) {
-  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);          
+  body_t *ledge_floor = body_init_with_info(make_ledge_shape(LEDGE_FLOOR_CENTROID, SDL_MAX.x), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);   
+  scene_add_body(scene, ledge_floor);     
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
 }
