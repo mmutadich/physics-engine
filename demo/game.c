@@ -34,14 +34,14 @@ const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
 
 // WALL CONSTANTS
-const double WALL_WIDTH = 10;
+const double WALL_LENGTH = 10;
 
 // LEDGE CONSTANTS
 const vector_t LEDGE_FLOOR_CENTROID = {.x = 1000, .y = 20};
 const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
 const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
 const double LEDGE_LENGTH = 1600;
-const double LEDGE_WIDTH = 40;
+const double LEDGE_HEIGHT = 40;
 
 // BLOCK CONSTANTS
 const vector_t BLOCK_1_CENTROID = {.x = 1905, .y = 95};
@@ -52,13 +52,13 @@ const double BLOCK_LENGTH = 190;
 const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
 const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
 const double DOOR_HEIGHT = 120;
-const double DOOR_WIDTH = 80;
+const double DOOR_LENGTH = 80;
 
 // OBSTACLE CONSTANTS
 const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 600, .y = 30};
 const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
 const double OBSTACLE_LENGTH = 120;
-const double OBSTACLE_WIDTH = 20;
+const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
 
 
@@ -89,7 +89,7 @@ list_t *make_wall_shape(char wall) {
       if (i == 0 || i == 1)
         point->x = SDL_MIN.x;
       else
-        point->x = SDL_MIN.x + WALL_WIDTH;
+        point->x = SDL_MIN.x + WALL_LENGTH;
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
@@ -105,13 +105,13 @@ list_t *make_wall_shape(char wall) {
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
-        point->y = SDL_MAX.y - WALL_WIDTH;
+        point->y = SDL_MAX.y - WALL_LENGTH;
       list_add(wall_points, point);
     }
     if (wall == 2) { // right
       vector_t *point = malloc(sizeof(vector_t));
       if (i == 0 || i == 1)
-        point->x = SDL_MAX.x - WALL_WIDTH;
+        point->x = SDL_MAX.x - WALL_LENGTH;
       else
         point->x = SDL_MAX.x;
       if (i == 0 || i == 3)
@@ -120,19 +120,6 @@ list_t *make_wall_shape(char wall) {
         point->y = SDL_MIN.y;
       list_add(wall_points, point);
     }
-    /*
-    if (wall == 3) { // bottom
-      vector_t *point = malloc(sizeof(vector_t));
-      if (i == 0 || i == 1)
-        point->x = SDL_MIN.x;
-      else
-        point->x = SDL_MAX.x;
-      if (i == 0 || i == 3)
-        point->y = SDL_MIN.y + WALL_WIDTH;
-      else
-        point->y = SDL_MIN.y;
-      list_add(wall_points, point);
-    }*/
   }
   return wall_points;
 }
@@ -144,11 +131,9 @@ void add_walls(scene_t *scene) {
                                          COLOR, WALL, NULL);
   body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
                                            COLOR, WALL, NULL);
-  //body_t *bottom_wall = body_init_with_info(make_wall_shape(3), INFINITY_MASS, COLOR, LEDGE, NULL);  //bottom wall should be a ledge                                     
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
-  //scene_add_body(scene, bottom_wall);
 }
 
 list_t *make_ledge_shape(vector_t centroid, double ledge_length) {
@@ -161,9 +146,9 @@ list_t *make_ledge_shape(vector_t centroid, double ledge_length) {
     else
       point->x = centroid.x + ledge_length / 2;
     if (i == 0 || i == 3)
-      point->y = centroid.y + LEDGE_WIDTH / 2;
+      point->y = centroid.y + LEDGE_HEIGHT / 2;
     else
-      point->y = centroid.y - LEDGE_WIDTH / 2;
+      point->y = centroid.y - LEDGE_HEIGHT / 2;
     list_add(points, point);
   }
   return points;
@@ -209,9 +194,9 @@ list_t *make_door_shape(vector_t centroid) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
     if (i == 0 || i == 1)
-      point->x = centroid.x - DOOR_WIDTH / 2;
+      point->x = centroid.x - DOOR_LENGTH / 2;
     else
-      point->x = centroid.x + DOOR_WIDTH / 2;
+      point->x = centroid.x + DOOR_LENGTH / 2;
     if (i == 0 || i == 3)
       point->y = centroid.y + DOOR_HEIGHT / 2;
     else
@@ -238,9 +223,9 @@ list_t *make_obstacle_shape(vector_t centroid) {
     else
       point->x = centroid.x + OBSTACLE_LENGTH / 2;
     if (i == 0 || i == 3)
-      point->y = centroid.y + OBSTACLE_WIDTH / 2;
+      point->y = centroid.y + OBSTACLE_HEIGHT / 2;
     else
-      point->y = centroid.y - OBSTACLE_WIDTH / 2;
+      point->y = centroid.y - OBSTACLE_HEIGHT / 2;
     list_add(points, point);
   }
   return points;
