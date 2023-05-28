@@ -42,6 +42,11 @@ const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
 const double LEDGE_LENGTH = 1600;
 const double LEDGE_WIDTH = 40;
 
+// BLOCK CONSTANTS
+const vector_t BLOCK_1_CENTROID = {.x = 1905, .y = 95};
+const vector_t BLOCK_2_CENTROID = {.x = 95, .y = 465};
+const double BLOCK_LENGTH = 190;
+
 // DOOR CONSTANTS
 const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
 const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
@@ -57,7 +62,8 @@ typedef enum {
   PLANT_BOY_DOOR = 6, // finish line for plantboy
   DIRT_GIRL_DOOR = 7, // finish line for dirtgirl
   LEDGE = 8, // for characters to walk on
-  WALL = 9, // edges of screen
+  BLOCK = 9, // to assist the characters in jumping
+  WALL = 10, // edges of screen
 } info_t;
 
 typedef struct state {
@@ -159,6 +165,31 @@ void add_ledges(scene_t *scene) {
   body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);          
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
+}
+
+list_t *make_block_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - BLOCK_LENGTH / 2;
+    else
+      point->x = centroid.x + BLOCK_LENGTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + BLOCK_LENGTH / 2;
+    else
+      point->y = centroid.y - BLOCK_LENGTH / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+void add_blocks(scene_t *scene) {
+  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);
+  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);          
+  scene_add_body(scene, block_1);
+  scene_add_body(scene, block_2);
 }
 
 list_t *make_door_shape(vector_t centroid) {
@@ -299,6 +330,7 @@ scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   add_walls(result);
   add_ledges(result);
+  add_blocks(result);
   add_doors(result);
   // TODO: ADD OBSTACLES (WRITE FUNCTION)
   //add_obstacles(result);
