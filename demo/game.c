@@ -53,11 +53,19 @@ const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
 const double DOOR_HEIGHT = 120;
 const double DOOR_WIDTH = 80;
 
+// OBSTACLE CONSTANTS
+const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 600, .y = 30};
+const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
+const double OBSTACLE_LENGTH = 120;
+const double OBSTACLE_WIDTH = 20;
+const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
+
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
-  PLANT = 3, // obstacle for dirtgirl
-  DIRT = 4, // obstacle for plantboy
+  PLANT_BOY_OBSTACLE = 3, // obstacle for plantboy
+  DIRT_GIRL_OBSTACLE = 4, // obstacle for dirtgirl
   SLUDGE = 5, // obstacle for both players
   PLANT_BOY_DOOR = 6, // finish line for plantboy
   DIRT_GIRL_DOOR = 7, // finish line for dirtgirl
@@ -217,6 +225,31 @@ void add_doors(scene_t *scene) {
   scene_add_body(scene, dirt_girl_door);
 }
 
+list_t *make_obstacle_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - OBSTACLE_LENGTH / 2;
+    else
+      point->x = centroid.x + OBSTACLE_LENGTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + OBSTACLE_WIDTH / 2;
+    else
+      point->y = centroid.y - OBSTACLE_WIDTH / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+void add_obstacles(scene_t *scene) {
+  body_t *plant_boy_obstacle = body_init_with_info(make_obstacle_shape(PLANT_BOY_OBSTACLE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, PLANT_BOY_OBSTACLE, NULL);
+  body_t *dirt_girl_obstacle = body_init_with_info(make_obstacle_shape(DIRT_GIRL_OBSTACLE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
+  scene_add_body(scene, plant_boy_obstacle);
+  scene_add_body(scene, dirt_girl_obstacle);
+}
+
 list_t *make_character_shape(vector_t centroid) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
@@ -233,6 +266,16 @@ list_t *make_character_shape(vector_t centroid) {
     list_add(points, point);
   }
   return points;
+}
+
+// TODO: ADD FORCES HERE
+void add_characters(scene_t *scene) {
+  list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
+  body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
+  scene_add_body(scene, plant_boy);
+  list_t *dirt_girl_shape = make_character_shape(INITIAL_DIRT_GIRL_POSITION);
+  body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, COLOR, DIRT_GIRL, NULL);
+  scene_add_body(scene, dirt_girl);
 }
 
 size_t find_dirt_girl(scene_t *scene){
@@ -261,16 +304,6 @@ list_t *find_ledges(scene_t *scene){
     }
   }
   return ledges;
-}
-
-// TODO: ADD FORCES HERE
-void add_characters(scene_t *scene) {
-  list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
-  body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
-  scene_add_body(scene, plant_boy);
-  list_t *dirt_girl_shape = make_character_shape(INITIAL_DIRT_GIRL_POSITION);
-  body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, COLOR, DIRT_GIRL, NULL);
-  scene_add_body(scene, dirt_girl);
 }
 
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
@@ -332,8 +365,7 @@ scene_t *make_initial_scene() {
   add_ledges(result);
   add_blocks(result);
   add_doors(result);
-  // TODO: ADD OBSTACLES (WRITE FUNCTION)
-  //add_obstacles(result);
+  add_obstacles(result);
   // TODO: ADD FERTILIZER (WRITE FUNCTION)
   //add_fertilizer(result);
   add_characters(result); // add plant boy and dirt girl last since all the forces will be added with those two
