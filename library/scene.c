@@ -12,6 +12,7 @@ const size_t NUM_FORCES = 30;
 
 typedef struct scene {
   list_t *bodies;
+  // add list of players here?
   list_t *forces;
 } scene_t;
 

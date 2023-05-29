@@ -18,4 +18,8 @@ body_t *player_get_body(player_t *player);
 
 void *player_get_info(player_t *player);
 
+bool player_hit_finish_line(player_t *player);
+
+bool player_is_dead(player_t *player);
+
 #endif // #ifndef __PLAYER_H__
