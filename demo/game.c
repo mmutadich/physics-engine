@@ -67,6 +67,11 @@ const double OBSTACLE_LENGTH = 120;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
 
+// FERTILIZER CONSTANTS
+const vector_t PLANT_BOY_FERTILIZER_CENTROID = {.x = 900, .y = 470};
+const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1500, .y = 120};
+const double FERTILIZER_LENGTH = 40;
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -80,6 +85,8 @@ typedef enum {
   LEDGE = 10, // for characters to walk on
   BLOCK = 11, // to assist the characters in jumping
   WALL = 12, // edges of screen
+  PLANT_BOY_FERTILIZER = 13,
+  DIRT_GIRL_FERTILIZER = 14,
 } info_t;
 
 typedef struct state {
@@ -249,6 +256,31 @@ void add_obstacles(scene_t *scene) {
   scene_add_body(scene, dirt_girl_obstacle);
 }
 
+list_t *make_fertilizer_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - FERTILIZER_LENGTH / 2;
+    else
+      point->x = centroid.x + FERTILIZER_LENGTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + FERTILIZER_LENGTH / 2;
+    else
+      point->y = centroid.y - FERTILIZER_LENGTH / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+void add_fertilizer(scene_t *scene) {
+  body_t *plant_boy_fertilizer = body_init_with_info(make_fertilizer_shape(PLANT_BOY_FERTILIZER_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
+  body_t *dirt_girl_fertilizer = body_init_with_info(make_fertilizer_shape(DIRT_GIRL_FERTILIZER_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
+  scene_add_body(scene, plant_boy_fertilizer);
+  scene_add_body(scene, dirt_girl_fertilizer);
+}
+
 list_t *make_character_shape(vector_t centroid) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
@@ -365,8 +397,7 @@ scene_t *make_initial_scene() {
   add_blocks(result);
   add_doors(result);
   add_obstacles(result);
-  // TODO: ADD FERTILIZER (WRITE FUNCTION)
-  //add_fertilizer(result);
+  add_fertilizer(result);
   add_characters(result); // add plant boy and dirt girl last since all the forces will be added with those two
   return result;
 }
