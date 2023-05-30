@@ -131,7 +131,7 @@ void scene_remove_body(scene_t *scene, size_t index) {
  */
 void scene_tick(scene_t *scene, double dt) {
   for (size_t i = 0; i < list_size(scene->forces); i++) {
-    force_t *force = list_get(scene->forces, i);
+    force_t *force = l xist_get(scene->forces, i);
     force_creator_t apply_force = force->force_creator;
     if (force->aux != NULL) {
       apply_force(force->aux);
