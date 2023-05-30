@@ -113,4 +113,8 @@ void create_one_sided_destructive_collision(scene_t *scene, body_t *body1,
 
 void jump_up(scene_t *scene, body_t *body1, body_t *body2, double elasticity);
 
+void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gravity);
+
+void create_universal_gravity(scene_t *scene, body_t *body, double gravity);
+
 #endif // #ifndef __FORCES_H__

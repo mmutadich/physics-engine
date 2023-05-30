@@ -15,6 +15,9 @@
 #include <time.h>
 #include <unistd.h>
 
+// FORCE CONSTANTS
+const double GRAVITY = -1000;
+
 // WINDOW CONSTANTS
 const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
@@ -94,6 +97,17 @@ typedef struct state {
   double time_elapsed;
 } state_t;
 
+
+list_t *find_ledges(scene_t *scene){
+  list_t *ledges = list_init(3, body_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == LEDGE){
+      list_add(ledges, scene_get_body(scene,i));
+    }
+  }
+  return ledges;
+}
+
 list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
@@ -136,6 +150,30 @@ list_t *make_wall_shape(char wall) {
     }
   }
   return wall_points;
+}
+
+//make a universal gravity for "players"
+void add_universal_gravity(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) != LEDGE || body_get_info(body) != WALL) {
+      create_universal_gravity(scene, body, GRAVITY);
+    }
+  }
+}
+
+//make normal force between the ground and the players
+void add_normal_force(scene_t *scene) {
+  list_t *ledges = find_ledges(scene);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) != LEDGE || body_get_info(body) != WALL) {
+      for (size_t j = 0; j < list_size(ledges); j++) {
+        body_t *ledge = list_get(ledges, j);
+        create_normal_force(scene, body, ledge, GRAVITY);
+      }
+    }
+  }
 }
 
 void add_walls(scene_t *scene) {
@@ -327,16 +365,6 @@ size_t find_plant_boy(scene_t *scene){
   return NULL;
 }
 
-list_t *find_ledges(scene_t *scene){
-  list_t *ledges = list_init(3, body_free);
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == LEDGE){
-      list_add(ledges, scene_get_body(scene,i));
-    }
-  }
-  return ledges;
-}
-
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *dirt_girl = scene_get_body(state->scene, find_dirt_girl(state->scene));
   body_t *plant_boy = scene_get_body(state->scene, find_plant_boy(state->scene));
@@ -358,7 +386,6 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     }
     if (key == W_KEY) {
       list_t *ledges = find_ledges(state->scene);
-      printf("size of ledges: %zu\n", list_size(ledges));
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
         assert(dirt_girl);
@@ -376,7 +403,6 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     }
     if (key == UP_ARROW) {
       list_t *ledges = find_ledges(state->scene);
-      printf("size of ledges: %zu\n", list_size(ledges));
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
         assert(plant_boy);
@@ -398,7 +424,9 @@ scene_t *make_initial_scene() {
   add_doors(result);
   add_obstacles(result);
   add_fertilizer(result);
-  add_characters(result); // add plant boy and dirt girl last since all the forces will be added with those two
+  add_characters(result);
+  add_universal_gravity(result);
+  add_normal_force(result); // add plant boy and dirt girl last since all the forces will be added with those two
   return result;
 }
 
@@ -456,9 +484,9 @@ state_t *emscripten_init() {
 void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
-  if (is_game_over(scene)) {
+  /**if (is_game_over(scene)) {
     reset_game(scene);
-  }
+  }*/
   double dt = time_since_last_tick();
   state->time_elapsed += dt;
   for (size_t i = 0; i < scene_bodies(scene); i++) {

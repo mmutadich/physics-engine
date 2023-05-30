@@ -36,6 +36,7 @@ typedef struct collision_aux {
   free_func_t aux_freer;
   bool is_colliding;
   void *aux;
+  bool hold_colliding; //true when we want the force to be applied multiple times if is_collision is true
 } collision_aux_t;
 
 void collision_aux_freer(void *collision_aux) {
@@ -88,6 +89,7 @@ collision_aux_t *collision_aux_init(body_t *body1, body_t *body2,
   result->aux = aux;
   result->aux_freer = aux_freer;
   result->is_colliding = false;
+  result->hold_colliding = false;
   return result;
 }
 
@@ -228,7 +230,7 @@ void apply_collision(void *c_aux) {
   list_t *shape1 = body_get_shape(collision_aux->body1);
   list_t *shape2 = body_get_shape(collision_aux->body2);
   if (collision_get_collided(find_collision(shape1, shape2)) &&
-      !collision_aux->is_colliding) {
+      (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
     printf("detected collision\n");
     vector_t collision_axis =
         collision_get_axis(find_collision(shape1, shape2));
@@ -236,6 +238,7 @@ void apply_collision(void *c_aux) {
                            collision_axis, collision_aux->aux);
     collision_aux->is_colliding = true;
   }
+
   if (!collision_get_collided(find_collision(shape1, shape2))) {
     collision_aux->is_colliding = false;
   }
@@ -257,20 +260,14 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
 
 void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
-  printf("started physics collision\n");
   two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
-  printf("going to calculate impulse\n");
-  //something is wrong with tba->constant?
-  //need to change tba constant back
-  vector_t impulse_vector = get_jump_impulse(ball, target, .5, axis);
-  printf("y: %f\n", impulse_vector.y);
-  printf("calculated impulse\n");
+  //TODO GET RID OF MAGIC NUMBERS
+  vector_t impulse_vector = get_jump_impulse(ball, target, .5, axis); 
   body_add_impulse(ball, impulse_vector);
   vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
   body_add_impulse(target, opposite_impulse_vector);
-  printf("added both impulses\n");
 }
 
 //TODO: NEED TO CHANGE THIS BACK TO THE OLD VERSION
@@ -319,4 +316,50 @@ void jump_up(scene_t *scene, body_t *body1, body_t *body2, double elasticity) {
   collision_aux_t *collision_aux = collision_aux_init(body1, body2, 
                           jump_collision_handler, aux, two_body_aux_freer);
   apply_collision(collision_aux);
+}
+
+void apply_universal_gravity(void *aux) {
+  one_body_aux_t *oba = (one_body_aux_t*)aux;
+  vector_t gravity = {.x = 0, .y = oba->constant};
+  body_add_force(oba->body, gravity);
+  //printf("force y after g: %f, \n", body_get_force(oba->body).y);
+}
+
+void create_universal_gravity(scene_t *scene, body_t *body, double gravity) {
+  one_body_aux_t *aux = one_body_aux_init(body, gravity);
+  list_t *bodies = list_init(1, NULL);
+  list_add(bodies, body);
+  scene_add_bodies_force_creator(scene, apply_universal_gravity, aux,
+                                 bodies, one_body_aux_freer);
+}
+
+void normal_force_collision_handler(body_t *body, body_t *ledge, vector_t axis, void *aux) {
+  two_body_aux_t *tba = (two_body_aux_t *)aux;
+  assert(body);
+  assert(ledge);
+  //TODO GET RID OF MAGIC NUMBERS
+  vector_t gravity = {.x = 0, .y = tba->constant};
+  body_add_force(body, vec_multiply(-1, gravity));
+  body_add_force(ledge, gravity);
+  printf("force y after normal: %f, \n", body_get_force(body).y);
+}
+
+void create_collision_hold_on(scene_t *scene, body_t *body1, body_t *body2,
+                      collision_handler_t handler, void *aux,
+                      free_func_t freer) {
+  collision_aux_t *collision_aux =
+      collision_aux_init(body1, body2, handler, freer, aux);
+  collision_aux->hold_colliding = true;
+  list_t *bodies = list_init(2, NULL);
+  list_add(bodies, body1);
+  list_add(bodies, body2);
+  scene_add_bodies_force_creator(scene, apply_collision, collision_aux, bodies,
+                                 collision_aux_freer);
+}
+
+void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gravity) {
+  two_body_aux_t *aux = two_body_aux_init(body, ledge, gravity);
+  create_collision_hold_on(scene, body, ledge,
+                   normal_force_collision_handler, aux,
+                   two_body_aux_freer);
 }
