@@ -231,7 +231,6 @@ void apply_collision(void *c_aux) {
   list_t *shape2 = body_get_shape(collision_aux->body2);
   if (collision_get_collided(find_collision(shape1, shape2)) &&
       (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
-    printf("detected collision\n");
     vector_t collision_axis =
         collision_get_axis(find_collision(shape1, shape2));
     collision_aux->handler(collision_aux->body1, collision_aux->body2,
@@ -341,7 +340,6 @@ void normal_force_collision_handler(body_t *body, body_t *ledge, vector_t axis, 
   vector_t gravity = {.x = 0, .y = tba->constant};
   body_add_force(body, vec_multiply(-1, gravity));
   body_add_force(ledge, gravity);
-  printf("force y after normal: %f, \n", body_get_force(body).y);
 }
 
 void create_collision_hold_on(scene_t *scene, body_t *body1, body_t *body2,
