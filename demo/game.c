@@ -247,8 +247,8 @@ list_t *make_block_shape(vector_t centroid) {
 }
 
 void add_blocks(scene_t *scene) {
-  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);
-  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);          
+  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);          
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
 }
@@ -468,35 +468,6 @@ bool is_game_over(scene_t *scene) {
   if (plant_boy_dead || dirt_girl_dead)
     return true;
   return (plant_boy_finished && dirt_girl_finished);
-}
-
-
-void reset_game(scene_t *scene) {
-  // remove 2 characters - do we not need to change any of the other bodies?
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *curr_body = scene_get_body(scene, i);
-    if (body_get_info(curr_body) == PLANT_BOY) {
-      body_set_centroid(curr_body, INITIAL_PLANT_BOY_POSITION);
-      body_reset(curr_body);
-    }
-    if (body_get_info(curr_body) == DIRT_GIRL) {
-      body_set_centroid(curr_body, INITIAL_DIRT_GIRL_POSITION);
-      body_reset(curr_body);
-    }
-  }
-  // redraw all characters
-  add_characters(scene);
-  // re-add force creators to the 2 players
-  // TODO: INCLUDE THE FORCE ADDING CODE HERE
-  /*
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene, i)) == BRICK) {
-      create_one_sided_destructive_collision(scene, ball,
-                                             scene_get_body(scene, i));
-      create_physics_collision(scene, ELASTICITY, ball,
-                               scene_get_body(scene, i));
-    }
-  }*/
 }
 
 
