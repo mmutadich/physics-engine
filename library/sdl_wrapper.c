@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-#include <time.h>
+#include <time.h> 
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -16,6 +16,11 @@ const double MS_PER_S = 1e3;
 //TODO: Add all the images to a separate file called images
 //TODO: finish adding all the images variable names and size info
 
+const char *BG_TEST = "images/background.png.png";
+SDL_Surface *SURFACE_BACKGROUND;
+SDL_Texture *TEXTURE_PLAYER;
+
+/**
 //SPRITES:
 const char *DIRT_GIRL = "images/dirt_girl_front_facing.jpeg";
 //TODO: add size info
@@ -63,6 +68,7 @@ const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.jpeg";
 //TODO: add size info
 const char *PORTAL_LEFT_FACING = "images/portal_left_facing.jpeg";
 //TODO: add size info
+*/
 
 /**
  * The coordinate at the center of the screen.
@@ -283,7 +289,8 @@ double time_since_last_tick(void) {
 }
 
 void images_init() {
-
+  //SURFACE_BACKGROUND = IMG_Load(BG_TEST);
+  //TEXTURE_PLAYER = SDL_CreateTextureFromSurface(renderer, SURFACE_BACKGROUND);
   //background image
 
   //Dirt Girl: front facing, walking to left 1 and 2, walking to right 1 and 2 (ASK if necessary for so many sprites)
@@ -300,7 +307,10 @@ void images_init() {
   //SDL_CreateTextureFromSurface(renderer, variable)
 }
 
-void render_plant_boy_image(vector_t location) {
+void render_background_image(vector_t location) {
+  //vector_t bg_position = {.x = 1000, .y = 2000};
+  //SDL_Rect bg_pos_rect;
+  //SDL_RenderCopy(renderer, TEXTURE_PLAYER, NULL, &bg_pos_rect);
   //vector_t plant_boy_post 
   //SDL rect_plant_boy
   //set x and y positions
@@ -309,6 +319,8 @@ void render_plant_boy_image(vector_t location) {
 }
 
 void image_free() {
+  //SDL_FreeSurface(SURFACE_BACKGROUND);
+  //SDL_DestroyTexture(TEXTURE_PLAYER);
   // free all the images (free surface)
   // destroy all the textures (destroy texture)
 }
