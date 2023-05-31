@@ -366,7 +366,6 @@ void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, vo
 }
 
 void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
-  printf("called \n");
   create_collision(scene, player, body,
                    game_over_collision_handler, scene,
                    two_body_aux_freer);

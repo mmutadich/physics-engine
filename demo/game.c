@@ -510,13 +510,16 @@ state_t *emscripten_init() {
   return state;
 }
 
+void emscripten_free(state_t *state) {
+  scene_free(state->scene);
+  free(state);
+}
+
 void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
+  assert(scene);
   //want to add a print statement here to see if the game is over
-  if (scene_get_game_over(state->scene)) {
-    printf("game over\n");
-  }
   /**if (is_game_over(scene)) {
     reset_game(scene);
   }*/
@@ -530,9 +533,9 @@ void emscripten_main(state_t *state) {
   }
   scene_tick(scene, dt);
   sdl_show();
+  if (scene_get_game_over(state->scene)) {
+    scene_free(state->scene);
+    state->scene = make_initial_scene();
+  }
 }
 
-void emscripten_free(state_t *state) {
-  scene_free(state->scene);
-  free(state);
-}
