@@ -230,3 +230,20 @@ double time_since_last_tick(void) {
   last_clock = now;
   return difference;
 }
+
+void images_init() {
+  //use IMG_Load to load all the different images
+  //SDL_CreateTextureFromSurface(renderer, variable)
+}
+
+void render_plant_boy_image(vector_t location) {
+  //vector_t plant_boy_post 
+  //SDL rect_plant_boy
+  //set x and y positions
+  //set height and width
+  //SDL_Renderer_Copy
+}
+
+void image_free() {
+  // free all the images
+}
