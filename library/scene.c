@@ -14,6 +14,7 @@ typedef struct scene {
   list_t *bodies;
   // add list of players here?
   list_t *forces;
+  bool game_over; //true when the game is over
 } scene_t;
 
 typedef struct force {
@@ -64,6 +65,7 @@ scene_t *scene_init(void) {
   scene_t *result = malloc(sizeof(scene_t));
   result->bodies = list_init(NUM_BODIES, body_free);
   result->forces = list_init(NUM_FORCES, force_free);
+  result->game_over = false;
   assert(result);
   return result;
 }
@@ -131,7 +133,7 @@ void scene_remove_body(scene_t *scene, size_t index) {
  */
 void scene_tick(scene_t *scene, double dt) {
   for (size_t i = 0; i < list_size(scene->forces); i++) {
-    force_t *force = l xist_get(scene->forces, i);
+    force_t *force = list_get(scene->forces, i);
     force_creator_t apply_force = force->force_creator;
     if (force->aux != NULL) {
       apply_force(force->aux);
@@ -175,3 +177,11 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
 }
 
 size_t scene_forces(scene_t *scene) { return list_size(scene->forces); }
+
+void scene_set_game_over(scene_t *scene, bool value) {
+  scene->game_over = value;
+}
+
+bool scene_get_game_over(scene_t *scene) {
+  return scene->game_over;
+}

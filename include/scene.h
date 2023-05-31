@@ -110,6 +110,10 @@ void scene_add_bodies_force_creator( // DIFFERENT
  */
 void scene_tick(scene_t *scene, double dt);
 
+void scene_set_game_over(scene_t *scene, bool value);
+
+bool scene_get_game_over(scene_t *scene);
+
 size_t scene_forces(scene_t *scene);
 
 #endif // #ifndef __SCENE_H__

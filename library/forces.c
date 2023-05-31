@@ -227,17 +227,17 @@ void create_destructive_collision(scene_t *scene, body_t *body1,
 
 void apply_collision(void *c_aux) {
   collision_aux_t *collision_aux = (collision_aux_t *)c_aux;
+  assert(collision_aux);
   list_t *shape1 = body_get_shape(collision_aux->body1);
   list_t *shape2 = body_get_shape(collision_aux->body2);
-  if (collision_get_collided(find_collision(shape1, shape2)) &&
-      (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
-    vector_t collision_axis =
-        collision_get_axis(find_collision(shape1, shape2));
+  assert(shape1);
+  assert(shape2);
+  if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
+    vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
     collision_aux->handler(collision_aux->body1, collision_aux->body2,
                            collision_axis, collision_aux->aux);
     collision_aux->is_colliding = true;
   }
-
   if (!collision_get_collided(find_collision(shape1, shape2))) {
     collision_aux->is_colliding = false;
   }
@@ -272,21 +272,16 @@ void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
 //TODO: NEED TO CHANGE THIS BACK TO THE OLD VERSION
 void physics_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
-  printf("started physics collision\n");
   two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
-  printf("going to calculate impulse\n");
   //something is wrong with tba->constant?
   //need to change tba constant back
   vector_t impulse_vector =
       calculate_impulse(ball, target, .5, axis);
-  printf("y: %f\n", impulse_vector.x);
-  printf("calculated impulse\n");
   body_add_impulse(ball, impulse_vector);
   vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
   body_add_impulse(target, opposite_impulse_vector);
-  printf("added both impulses\n");
 }
 
 void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
@@ -360,4 +355,20 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
   create_collision_hold_on(scene, body, ledge,
                    normal_force_collision_handler, aux,
                    two_body_aux_freer);
+}
+
+void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
+  printf("game over handler called\n");
+  //we know the aux is a scene
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_game_over(scene, true);
+}
+
+void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
+  printf("called \n");
+  create_collision(scene, player, body,
+                   game_over_collision_handler, scene,
+                   two_body_aux_freer);
+  //the aux is the scene because we need to access this in the game_over_handler
 }

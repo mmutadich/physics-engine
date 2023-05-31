@@ -108,6 +108,19 @@ list_t *find_ledges(scene_t *scene){
   return ledges;
 }
 
+list_t *get_game_over_bodies(scene_t *scene) {
+  list_t *answer = list_init(8, body_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    void *info = body_get_info(scene_get_body(scene,i));
+    if (info == PLANT_BOY_DOOR_LEFT || info == PLANT_BOY_DOOR_RIGHT ||
+        info == DIRT_GIRL_DOOR_LEFT || info == DIRT_GIRL_DOOR_RIGHT ||
+        info == PLANT_BOY_OBSTACLE || info == DIRT_GIRL_OBSTACLE) {
+      list_add(answer, scene_get_body(scene,i));
+    }
+  }
+  return answer;
+}
+
 list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
@@ -347,7 +360,7 @@ void add_characters(scene_t *scene) {
   scene_add_body(scene, dirt_girl);
 }
 
-size_t find_dirt_girl(scene_t *scene){
+size_t get_dirt_girl_index(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
       return i;
@@ -356,7 +369,7 @@ size_t find_dirt_girl(scene_t *scene){
   return NULL;
 }
 
-size_t find_plant_boy(scene_t *scene){
+size_t get_plant_boy_index(scene_t *scene){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
       return i;
@@ -366,8 +379,8 @@ size_t find_plant_boy(scene_t *scene){
 }
 
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
-  body_t *dirt_girl = scene_get_body(state->scene, find_dirt_girl(state->scene));
-  body_t *plant_boy = scene_get_body(state->scene, find_plant_boy(state->scene));
+  body_t *dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
+  body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   assert(body_get_info(plant_boy) == PLANT_BOY);
   vector_t centroid_girl = body_get_centroid(dirt_girl);
@@ -416,6 +429,21 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   }
 }
 
+void add_game_over_force(scene_t *scene) {
+  //a game over force should be made with the obstacles and the players
+  //and the 
+  list_t *game_over_bodies = get_game_over_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(game_over_bodies); i++) {
+    body_t *body = list_get(game_over_bodies, i);
+    create_game_over_force(scene, dirt_girl, body);
+    create_game_over_force(scene, plant_boy, body);
+  }
+}
+
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   add_walls(result);
@@ -427,6 +455,7 @@ scene_t *make_initial_scene() {
   add_characters(result);
   add_universal_gravity(result);
   add_normal_force(result); // add plant boy and dirt girl last since all the forces will be added with those two
+  add_game_over_force(result);
   return result;
 }
 
@@ -484,6 +513,10 @@ state_t *emscripten_init() {
 void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
+  //want to add a print statement here to see if the game is over
+  if (scene_get_game_over(state->scene)) {
+    printf("game over\n");
+  }
   /**if (is_game_over(scene)) {
     reset_game(scene);
   }*/

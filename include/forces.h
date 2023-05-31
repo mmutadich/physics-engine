@@ -117,4 +117,6 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
 
 void create_universal_gravity(scene_t *scene, body_t *body, double gravity);
 
+void create_game_over_force(scene_t *scene, body_t *player, body_t *body);
+
 #endif // #ifndef __FORCES_H__
