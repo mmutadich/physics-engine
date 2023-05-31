@@ -13,6 +13,57 @@ const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
 
+//TODO: Add all the images to a separate file called images
+//TODO: finish adding all the images variable names and size info
+
+//SPRITES:
+const char *DIRT_GIRL = "images/dirt_girl_front_facing.jpeg";
+//TODO: add size info
+const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.jpeg";
+//TODO: add size info
+const char *DIRT_GIRL_WALK_LEFT_2 = "images/dirt_girl_walk_left_2.jpeg";
+//TODO: add size info
+const char *DIRT_GIRL_WALK_RIGHT_1 = "images/dirt_girl_walk_right_1.jpeg";
+//TODO: add size info
+const char *DIRT_GIRL_WALK_RIGHT_2 = "images/dirt_girl_walk_right_2.jpeg";
+//TODO: add size info
+
+const char *PLANT_BOY = "images/plant_boy_front_facing.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_WALK_LEFT_1 = "images/plant_boy_walk_left_1.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_WALK_LEFT_2 = "images/plant_boy_walk_left_2.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_WALK_RIGHT_1 = "images/plant_boy_walk_right_1.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_WALK_RIGHT_2 = "images/plant_boy_walk_right_2.jpeg";
+//TODO: add size info
+
+const char *TREE = "images/tree.jpeg";
+//TODO: add size info
+
+//OBSTACLES:
+const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_POISON = "images/plant_boy_poison.jpeg";
+//TODO: add size info
+const char *GENERAL_POISON = "images/general_poison.jpeg"; //ASK idek if we need this 
+//TODO: add size info
+const char *BLOCK_TO_PUSH = "images/block_to_push.jpeg";
+//TODO: add size info
+
+//POWERUPS/BOOSTS:
+const char *TRAMPOLINE = "images/trampoline.jpeg";
+//TODO: add size info
+const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.jpeg";
+//TODO: add size info
+const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.jpeg";
+//TODO: add size info
+const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.jpeg";
+//TODO: add size info
+const char *PORTAL_LEFT_FACING = "images/portal_left_facing.jpeg";
+//TODO: add size info
+
 /**
  * The coordinate at the center of the screen.
  */
@@ -232,6 +283,19 @@ double time_since_last_tick(void) {
 }
 
 void images_init() {
+
+  //background image
+
+  //Dirt Girl: front facing, walking to left 1 and 2, walking to right 1 and 2 (ASK if necessary for so many sprites)
+
+  //Plant Boy: front facing, walking to left 1 and 2, walking to right 1 and 2
+
+  //Tree: ASK not sure what we need this for yet tho tbh
+
+  //obstacles: 3 different puddles, block to push,
+
+  //powerups + boosts: 2 fertilizers, portals, trampoline, (ASK how do the portals work LMAO)
+
   //use IMG_Load to load all the different images
   //SDL_CreateTextureFromSurface(renderer, variable)
 }
@@ -245,5 +309,6 @@ void render_plant_boy_image(vector_t location) {
 }
 
 void image_free() {
-  // free all the images
+  // free all the images (free surface)
+  // destroy all the textures (destroy texture)
 }
