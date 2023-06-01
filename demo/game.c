@@ -90,6 +90,7 @@ typedef enum {
   WALL = 12, // edges of screen
   PLANT_BOY_FERTILIZER = 13,
   DIRT_GIRL_FERTILIZER = 14,
+
 } info_t;
 
 typedef struct state {
@@ -509,8 +510,17 @@ void emscripten_main(state_t *state) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
-    if (body_get_info(body) != WALL)
+    if (body_get_info(body) != WALL && body_get_info(body) != PLANT_BOY_FERTILIZER && body_get_info(body) != DIRT_GIRL_FERTILIZER) {
       sdl_draw_polygon(shape, body_get_color(body));
+    }
+    if (scene_get_plant_boy_fertilizer_collected(state->scene) == false) {
+      if (body_get_info(body) == PLANT_BOY_FERTILIZER)
+        sdl_draw_polygon(shape, body_get_color(body));
+    }
+    if (scene_get_dirt_girl_fertilizer_collected(state->scene) == false) {
+      if (body_get_info(body) == DIRT_GIRL_FERTILIZER)
+        sdl_draw_polygon(shape, body_get_color(body));
+    }
   }
   scene_tick(scene, dt);
   sdl_show();
