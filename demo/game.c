@@ -446,6 +446,7 @@ void add_game_over_force(scene_t *scene) {
 
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
+  // add bodies
   add_walls(result);
   add_ledges(result);
   add_blocks(result);
@@ -453,6 +454,7 @@ scene_t *make_initial_scene() {
   add_obstacles(result);
   add_fertilizer(result);
   add_characters(result);
+  // forces
   add_universal_gravity(result);
   add_normal_force(result); // add plant boy and dirt girl last since all the forces will be added with those two
   add_game_over_force(result);

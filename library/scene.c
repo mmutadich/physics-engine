@@ -15,6 +15,8 @@ typedef struct scene {
   // add list of players here?
   list_t *forces;
   bool game_over; //true when the game is over
+  bool plant_boy_fertilizer_collected;
+  bool dirt_girl_fertilizer_collected;
 } scene_t;
 
 typedef struct force {
@@ -66,6 +68,8 @@ scene_t *scene_init(void) {
   result->bodies = list_init(NUM_BODIES, body_free);
   result->forces = list_init(NUM_FORCES, force_free);
   result->game_over = false;
+  result->plant_boy_fertilizer_collected = false;
+  result->dirt_girl_fertilizer_collected = false;
   assert(result);
   return result;
 }
@@ -184,4 +188,20 @@ void scene_set_game_over(scene_t *scene, bool value) {
 
 bool scene_get_game_over(scene_t *scene) {
   return scene->game_over;
+}
+
+void scene_set_plant_boy_fertilizer_collected(scene_t *scene, bool value) {
+  scene->plant_boy_fertilizer_collected = value;
+}
+
+bool scene_get_plant_boy_fertilizer_collected(scene_t *scene) {
+  return scene->plant_boy_fertilizer_collected;
+}
+
+void scene_set_dirt_girl_fertilizer_collected(scene_t *scene, bool value) {
+  scene->dirt_girl_fertilizer_collected = value;
+}
+
+bool scene_get_dirt_girl_fertilizer_collected(scene_t *scene) {
+  return scene->dirt_girl_fertilizer_collected;
 }
