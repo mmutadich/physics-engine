@@ -75,6 +75,10 @@ const vector_t PLANT_BOY_FERTILIZER_CENTROID = {.x = 900, .y = 470};
 const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1500, .y = 120};
 const double FERTILIZER_LENGTH = 40;
 
+// STAR CONSTANTS
+const vector_t STAR_CENTROID = {.x = 1000, .y = 500};
+const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -90,7 +94,7 @@ typedef enum {
   WALL = 12, // edges of screen
   PLANT_BOY_FERTILIZER = 13,
   DIRT_GIRL_FERTILIZER = 14,
-
+  STAR = 15,
 } info_t;
 
 typedef struct state {
@@ -371,6 +375,11 @@ void add_characters(scene_t *scene) {
   scene_add_body(scene, dirt_girl);
 }
 
+void add_star(scene_t *scene) {
+  body_t *star = body_init_with_info(make_block_shape(STAR_CENTROID), INFINITY_MASS, STAR_COLOR, STAR, NULL);
+  scene_add_body(scene, star);
+}
+
 size_t get_dirt_girl_index(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
@@ -466,7 +475,6 @@ void add_fertilizer_force(scene_t *scene) {
   }
 }
 
-
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
@@ -530,6 +538,7 @@ void emscripten_main(state_t *state) {
   }
   if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
     printf("star of mastery\n");
+    add_star(scene);
   }
 }
 
