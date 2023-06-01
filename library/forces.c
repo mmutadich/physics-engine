@@ -371,3 +371,29 @@ void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
                    two_body_aux_freer);
   //the aux is the scene because we need to access this in the game_over_handler
 }
+
+void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
+  printf("plant boy fertilizer handler called\n");
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_plant_boy_fertilizer_collected(scene, true);
+}
+
+void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
+  create_collision(scene, player, body,
+                   plant_boy_fertilizer_collision_handler, scene,
+                   two_body_aux_freer);
+}
+
+void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
+  printf("dirt girl fertilizer handler called\n");
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_dirt_girl_fertilizer_collected(scene, true);
+}
+
+void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
+  create_collision(scene, player, body,
+                   dirt_girl_fertilizer_collision_handler, scene,
+                   two_body_aux_freer);
+}

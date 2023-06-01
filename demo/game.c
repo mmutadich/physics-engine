@@ -121,6 +121,17 @@ list_t *get_game_over_bodies(scene_t *scene) {
   return answer;
 }
 
+list_t *get_fertilizer_bodies(scene_t *scene) {
+  list_t *answer = list_init(8, body_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    void *info = body_get_info(scene_get_body(scene,i));
+    if (info == PLANT_BOY_FERTILIZER || info == DIRT_GIRL_FERTILIZER) {
+      list_add(answer, scene_get_body(scene,i));
+    }
+  }
+  return answer;
+}
+
 list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
@@ -350,7 +361,6 @@ list_t *make_character_shape(vector_t centroid) {
   return points;
 }
 
-// TODO: ADD FORCES HERE
 void add_characters(scene_t *scene) {
   list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
   body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
@@ -430,8 +440,6 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
 }
 
 void add_game_over_force(scene_t *scene) {
-  //a game over force should be made with the obstacles and the players
-  //and the 
   list_t *game_over_bodies = get_game_over_bodies(scene);
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
@@ -444,6 +452,20 @@ void add_game_over_force(scene_t *scene) {
   }
 }
 
+void add_fertilizer_force(scene_t *scene) {
+  list_t *fertilizer_bodies = get_fertilizer_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(fertilizer_bodies); i++) {
+    body_t *body = list_get(fertilizer_bodies, i);
+    create_dirt_girl_fertilizer_force(scene, dirt_girl, body);
+    create_plant_boy_fertilizer_force(scene, plant_boy, body);
+  }
+}
+
+
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
@@ -453,25 +475,15 @@ scene_t *make_initial_scene() {
   add_doors(result);
   add_obstacles(result);
   add_fertilizer(result);
+  // add players
   add_characters(result);
   // forces
   add_universal_gravity(result);
-  add_normal_force(result); // add plant boy and dirt girl last since all the forces will be added with those two
+  add_normal_force(result);
   add_game_over_force(result);
+  add_fertilizer_force(result);
   return result;
 }
-
-// Game ends when both players overlap w finish line or either player lands in an obstacle
-bool is_game_over(scene_t *scene) {
-  bool plant_boy_finished = false; // how do we determine this?
-  bool dirt_girl_finished = false;
-  bool plant_boy_dead = false;
-  bool dirt_girl_dead = false;
-  if (plant_boy_dead || dirt_girl_dead)
-    return true;
-  return (plant_boy_finished && dirt_girl_finished);
-}
-
 
 state_t *emscripten_init() {
   sdl_init(SDL_MIN, SDL_MAX);
@@ -492,10 +504,6 @@ void emscripten_main(state_t *state) {
   sdl_clear();
   scene_t *scene = state->scene;
   assert(scene);
-  //want to add a print statement here to see if the game is over
-  /**if (is_game_over(scene)) {
-    reset_game(scene);
-  }*/
   double dt = time_since_last_tick();
   state->time_elapsed += dt;
   for (size_t i = 0; i < scene_bodies(scene); i++) {
@@ -509,6 +517,9 @@ void emscripten_main(state_t *state) {
   if (scene_get_game_over(state->scene)) {
     scene_free(state->scene);
     state->scene = make_initial_scene();
+  }
+  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
+    printf("star of mastery\n");
   }
 }
 
