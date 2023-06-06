@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 // FORCE CONSTANTS
-const double GRAVITY = -10000;
+const double GRAVITY = -25000;
 
 // WINDOW CONSTANTS
 const vector_t SDL_MIN = {.x = 0, .y = 0};
@@ -106,7 +106,7 @@ typedef struct state {
 list_t *find_ledges(scene_t *scene){
   list_t *ledges = list_init(3, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == LEDGE){
+    if (body_get_info(scene_get_body(scene,i)) == LEDGE || body_get_info(scene_get_body(scene,i)) == LEDGE){
       list_add(ledges, scene_get_body(scene,i));
     }
   }
@@ -185,7 +185,7 @@ list_t *make_wall_shape(char wall) {
 void add_universal_gravity(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) != LEDGE || body_get_info(body) != WALL) {
+    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
       create_universal_gravity(scene, body, GRAVITY);
     }
   }
@@ -407,7 +407,20 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   vector_t centroid_boy = body_get_centroid(plant_boy);
   vector_t new_centroid_girl = {.x = centroid_girl.x, .y = centroid_girl.y};
   vector_t new_centroid_boy = {.x = centroid_boy.x, .y = centroid_boy.y};
-  //TODO: Add wall boundaries!!
+  if (centroid_girl.x <= SDL_MIN.x + CHARACTER_SIDE_LENGTH/2) {
+    new_centroid_girl.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2;
+  }
+  if (centroid_girl.x >= SDL_MAX.x - CHARACTER_SIDE_LENGTH/2) {
+    new_centroid_girl.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
+  }
+  if (centroid_boy.x <= SDL_MIN.x + CHARACTER_SIDE_LENGTH/2) {
+    printf("reached boundary\n");
+    new_centroid_boy.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2;
+  }
+  if (centroid_boy.x >= SDL_MAX.x - CHARACTER_SIDE_LENGTH/2) {
+    printf("reached boundary\n");
+    new_centroid_boy.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
+  }
   if (type == KEY_PRESSED) {
     if (key == D_KEY) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
@@ -418,13 +431,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(dirt_girl, velocity);
     }
     if (key == W_KEY) {
-
-      list_t *ledges = find_ledges(state->scene);
-      for (size_t i = 0; i < list_size(ledges); i++) {
-        body_t *ledge = list_get(ledges, i);
-        assert(dirt_girl);
-        assert(ledge);
-        jump_up(state->scene, dirt_girl, ledge, ELASTICITY);
+      if ( held_time < 0.01){
+        list_t *ledges = find_ledges(state->scene);
+        for (size_t i = 0; i < list_size(ledges); i++) {
+          body_t *ledge = list_get(ledges, i);
+          assert(dirt_girl);
+          assert(ledge);
+          jump_up(state->scene, dirt_girl, ledge, ELASTICITY);
+        }
       }
     }
     if (key == RIGHT_ARROW) {
@@ -436,12 +450,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(plant_boy, velocity);
     }
     if (key == UP_ARROW) {
-      list_t *ledges = find_ledges(state->scene);
-      for (size_t i = 0; i < list_size(ledges); i++) {
-        body_t *ledge = list_get(ledges, i);
-        assert(plant_boy);
-        assert(ledge);
-        jump_up(state->scene, plant_boy, ledge, ELASTICITY);
+      if (held_time < 0.01 ){
+        list_t *ledges = find_ledges(state->scene);
+        for (size_t i = 0; i < list_size(ledges); i++) {
+          body_t *ledge = list_get(ledges, i);
+          assert(plant_boy);
+          assert(ledge);
+          jump_up(state->scene, plant_boy, ledge, ELASTICITY);
+      }
       }
     }
   } else {

@@ -204,7 +204,7 @@ Module['FS_createPath']("/", "images", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/images/plant_boy_front_facing-removebg-preview.png", "start": 0, "end": 77990}], "remote_package_size": 77990, "package_uuid": "d06d574e-4a52-48f8-9851-2b5b9faf166c"});
+    loadPackage({"files": [{"filename": "/images/plant_boy_front_facing-removebg-preview.png", "start": 0, "end": 77990}], "remote_package_size": 77990, "package_uuid": "1e0353ec-86dd-4b05-8ba2-88dac60796be"});
 
   })();
 
