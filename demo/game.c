@@ -416,12 +416,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   }
   if (centroid_boy.x <= SDL_MIN.x + CHARACTER_SIDE_LENGTH/2) {
     printf("reached boundary\n");
-    new_centroid_boy.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2;
+    new_centroid_boy.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2 + 50;
   }
   if (centroid_boy.x >= SDL_MAX.x - CHARACTER_SIDE_LENGTH/2) {
     printf("reached boundary\n");
     new_centroid_boy.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
   }
+  body_set_centroid(plant_boy, new_centroid_boy);
+  body_set_centroid(dirt_girl, new_centroid_girl);
   if (type == KEY_PRESSED) {
     if (key == D_KEY) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
