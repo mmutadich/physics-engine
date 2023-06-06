@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 // FORCE CONSTANTS
-const double GRAVITY = -1000;
+const double GRAVITY = -10000;
 
 // WINDOW CONSTANTS
 const vector_t SDL_MIN = {.x = 0, .y = 0};
@@ -30,8 +30,8 @@ const double INFINITY_MASS = INFINITY;
 const double ELASTICITY = 0.5;
 
 // CHARACTER CONSTANTS
-const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 20};
-const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 20};
+const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 80};
+const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 80};
 const double CHARACTER_VELOCITY = 1000;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
@@ -418,6 +418,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(dirt_girl, velocity);
     }
     if (key == W_KEY) {
+
       list_t *ledges = find_ledges(state->scene);
       for (size_t i = 0; i < list_size(ledges); i++) {
         body_t *ledge = list_get(ledges, i);
