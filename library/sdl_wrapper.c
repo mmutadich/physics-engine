@@ -17,7 +17,7 @@ const double MS_PER_S = 1e3;
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
 const char *PLANT_BOY_SPRITE = "images/plant_boy_front_facing-removebg-preview.png";
-const char *TREE = "images/tree.png";
+const char *TREE_SPRITE = "images/tree.png";
 
 //TODO: IMPLEMENT THESE TEXTURES IF ANIMATING
 const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.png";
@@ -245,6 +245,10 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
   SDL_Rect dirt_girl_rect = {500,500,100,100};
 
+
+  SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
+  SDL_Rect tree_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -259,11 +263,16 @@ void sdl_render_scene(scene_t *scene) {
       dirt_girl_rect.x = window.x - 140*get_scene_scale(get_window_center());
       dirt_girl_rect.y = window.y - 140*get_scene_scale(get_window_center());
     } 
+    if (body_get_info(body) == 16) {
+      tree_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      tree_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    } 
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
+  SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
   sdl_show();
 }
 

@@ -95,6 +95,7 @@ typedef enum {
   PLANT_BOY_FERTILIZER = 13,
   DIRT_GIRL_FERTILIZER = 14,
   STAR = 15,
+  TREE = 16,
 } info_t;
 
 typedef struct state {
