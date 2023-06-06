@@ -528,13 +528,12 @@ void emscripten_free(state_t *state) {
 }
 
 void emscripten_main(state_t *state) {
+  //when referencing scene ALWAYS call state->scene
   sdl_clear();
-  scene_t *scene = state->scene;
-  assert(scene);
   double dt = time_since_last_tick();
   state->time_elapsed += dt;
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *body = scene_get_body(scene, i);
+  for (size_t i = 0; i < scene_bodies(state->scene); i++) {
+    body_t *body = scene_get_body(state->scene, i);
     list_t *shape = body_get_shape(body);
     if (body_get_info(body) != WALL && body_get_info(body) != PLANT_BOY_FERTILIZER && body_get_info(body) != DIRT_GIRL_FERTILIZER) {
       sdl_draw_polygon(shape, body_get_color(body));
@@ -548,16 +547,18 @@ void emscripten_main(state_t *state) {
         sdl_draw_polygon(shape, body_get_color(body));
     }
   }
-  scene_tick(scene, dt);
+  scene_tick(state->scene, dt);
   sdl_show();
   if (scene_get_game_over(state->scene)) {
+    printf("game over\n");
     scene_free(state->scene);
     state->scene = make_initial_scene();
+    printf("made the new scene\n");
   }
   if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
     printf("star of mastery\n");
-    add_star(scene);
+    add_star(state->scene);
   }
-  sdl_render_scene(scene);
+  sdl_render_scene(state->scene);
 }
 
