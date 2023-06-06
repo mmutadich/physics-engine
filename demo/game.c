@@ -540,5 +540,6 @@ void emscripten_main(state_t *state) {
     printf("star of mastery\n");
     add_star(scene);
   }
+  sdl_render_scene(scene);
 }
 

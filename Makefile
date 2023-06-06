@@ -6,6 +6,7 @@ STAFF_LIBS = test_util sdl_wrapper
 # This also defines the order in which the tests are run.
 STUDENT_LIBS = list vector polygon body scene forces collision color
 
+
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore
 # -type f only finds files
@@ -51,7 +52,7 @@ CFLAGS += -Iinclude $(shell sdl2-config --cflags) -Wall -g -fno-omit-frame-point
 # -g enables DWARF support, for debugging purposes
 # -gsource-map --source-map-base http://localhost:8000/bin/ creates a source map from the C file for debugging
 EMCC = emcc
-EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
+EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --use-preload-plugins --preload-file images --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
 
 # Compiler flag that links the program with the math library
 LIB_MATH = -lm
@@ -82,8 +83,7 @@ all: $(TEST_BINS) $(DEMO_BINS) server
 # Make the python server for your demos
 # To run this, type 'make server'
 server:
-	@echo "Go to \033[0;32mhttp://labradoodle.caltech.edu:$(shell cs3-port)/bin/\033[0m to access your demo!" && \
-	python3 -m http.server $(shell cs3-port) | grep -v "Serving HTTP"
+	@echo "Go to \033[0;32mhttp://labradoodle.caltech.edu:$(shell cs3-port)/bin/\033[0m to access your demo!" && \python3 -m http.server $(shell cs3-port) | grep -v "Serving HTTP"
 
 # Any .o file in "out" is built from the corresponding C file.
 # Although .c files can be directly compiled into an executable, first building
@@ -121,7 +121,7 @@ bin/%.html: out/emscripten.wasm.o out/%.wasm.o out/sdl_wrapper.wasm.o $(WASM_STU
 # Builds the test suite executables from the corresponding test .o file
 # and the library .o files. The only difference from the demo build command
 # is that it doesn't link the SDL libraries.
-bin/test_suite_%: out/test_suite_%.o out/test_util.o out/sdl_wrapper.o $(STUDENT_OBJS) $(STAFF_OBJS)
+bin/test_suite_%: out/test_suite_%.o out/test_util.o $(STUDENT_OBJS) $(STAFF_OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 # Builds the test suite executable for the student tests

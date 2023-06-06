@@ -1,5 +1,3 @@
-// add one body here
-// TODO: use this file to test adding sprites to bodies
 #include "body.h"
 #include "color.h"
 #include "forces.h"
@@ -68,7 +66,6 @@ scene_t *make_initial_scene() {
 
 state_t *emscripten_init() {
   sdl_init(SDL_MIN, SDL_MAX);
-  //sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
   assert(state);
   state->scene = make_initial_scene();
@@ -77,11 +74,8 @@ state_t *emscripten_init() {
 }
 
 void emscripten_main(state_t *state) {
-  sdl_clear();
+  //sdl_clear();
   scene_t *scene = state->scene;
-  //if (is_game_over(scene)) {
-    //reset_game(scene);
-  //}
   double dt = time_since_last_tick();
   state->time_elapsed += dt;
   for (size_t i = 0; i < scene_bodies(scene); i++) {
@@ -90,7 +84,7 @@ void emscripten_main(state_t *state) {
     sdl_draw_polygon(shape, body_get_color(body));
   }
   scene_tick(scene, dt);
-  sdl_show();
+  sdl_render_scene(scene);
 }
 
 void emscripten_free(state_t *state) {

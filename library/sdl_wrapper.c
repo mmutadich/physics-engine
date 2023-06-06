@@ -3,6 +3,7 @@
 #include "scene.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_image.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -16,57 +17,64 @@ const double MS_PER_S = 1e3;
 //TODO: Add all the images to a separate file called images
 //TODO: finish adding all the images variable names and size info
 
+/*SDL_Surface *SURFACE;
+SDL_Texture *TEXTURE;
+SDL_Rect RECT;
+
 const char *BG_TEST = "images/background.png.png";
 SDL_Surface *SURFACE_BACKGROUND;
-SDL_Texture *TEXTURE_PLAYER;
+SDL_Texture *TEXTURE_BACKGROUND;
+SDL_Rect RECT_BG;*/
+
+const char *PLANT_BOY_SPRITE = "images/plant_boy_front_facing-removebg-preview.png";
 
 /**
 //SPRITES:
-const char *DIRT_GIRL = "images/dirt_girl_front_facing.jpeg";
+const char *DIRT_GIRL = "images/dirt_girl_front_facing.png";
 //TODO: add size info
-const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.jpeg";
+const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.png";
 //TODO: add size info
-const char *DIRT_GIRL_WALK_LEFT_2 = "images/dirt_girl_walk_left_2.jpeg";
+const char *DIRT_GIRL_WALK_LEFT_2 = "images/dirt_girl_walk_left_2.png";
 //TODO: add size info
-const char *DIRT_GIRL_WALK_RIGHT_1 = "images/dirt_girl_walk_right_1.jpeg";
+const char *DIRT_GIRL_WALK_RIGHT_1 = "images/dirt_girl_walk_right_1.png";
 //TODO: add size info
-const char *DIRT_GIRL_WALK_RIGHT_2 = "images/dirt_girl_walk_right_2.jpeg";
-//TODO: add size info
-
-const char *PLANT_BOY = "images/plant_boy_front_facing.jpeg";
-//TODO: add size info
-const char *PLANT_BOY_WALK_LEFT_1 = "images/plant_boy_walk_left_1.jpeg";
-//TODO: add size info
-const char *PLANT_BOY_WALK_LEFT_2 = "images/plant_boy_walk_left_2.jpeg";
-//TODO: add size info
-const char *PLANT_BOY_WALK_RIGHT_1 = "images/plant_boy_walk_right_1.jpeg";
-//TODO: add size info
-const char *PLANT_BOY_WALK_RIGHT_2 = "images/plant_boy_walk_right_2.jpeg";
+const char *DIRT_GIRL_WALK_RIGHT_2 = "images/dirt_girl_walk_right_2.png";
 //TODO: add size info
 
-const char *TREE = "images/tree.jpeg";
+
+//TODO: add size info
+const char *PLANT_BOY_WALK_LEFT_1 = "images/plant_boy_walk_left_1.png";
+//TODO: add size info
+const char *PLANT_BOY_WALK_LEFT_2 = "images/plant_boy_walk_left_2.png";
+//TODO: add size info
+const char *PLANT_BOY_WALK_RIGHT_1 = "images/plant_boy_walk_right_1.png";
+//TODO: add size info
+const char *PLANT_BOY_WALK_RIGHT_2 = "images/plant_boy_walk_right_2.png";
+//TODO: add size info
+
+const char *TREE = "images/tree.png";
 //TODO: add size info
 
 //OBSTACLES:
-const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.jpeg";
+const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.png";
 //TODO: add size info
-const char *PLANT_BOY_POISON = "images/plant_boy_poison.jpeg";
+const char *PLANT_BOY_POISON = "images/plant_boy_poison.png";
 //TODO: add size info
-const char *GENERAL_POISON = "images/general_poison.jpeg"; //ASK idek if we need this 
+const char *GENERAL_POISON = "images/general_poison.png"; //ASK idek if we need this 
 //TODO: add size info
-const char *BLOCK_TO_PUSH = "images/block_to_push.jpeg";
+const char *BLOCK_TO_PUSH = "images/block_to_push.png";
 //TODO: add size info
 
 //POWERUPS/BOOSTS:
-const char *TRAMPOLINE = "images/trampoline.jpeg";
+const char *TRAMPOLINE = "images/trampoline.png";
 //TODO: add size info
-const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.jpeg";
+const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png";
 //TODO: add size info
-const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.jpeg";
+const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
 //TODO: add size info
-const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.jpeg";
+const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.png";
 //TODO: add size info
-const char *PORTAL_LEFT_FACING = "images/portal_left_facing.jpeg";
+const char *PORTAL_LEFT_FACING = "images/portal_left_facing.png";
 //TODO: add size info
 */
 
@@ -267,13 +275,23 @@ void sdl_show(void) {
 
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
+  SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
+  SDL_Rect plant_boy_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
+    vector_t centroid = body_get_centroid(body);
+    vector_t window = get_window_position(centroid, get_window_center());
+    if (body_get_info(body) == 1) {
+      plant_boy_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      plant_boy_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    } 
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
+  SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   sdl_show();
 }
 
@@ -288,9 +306,9 @@ double time_since_last_tick(void) {
   return difference;
 }
 
-void images_init() {
-  //SURFACE_BACKGROUND = IMG_Load(BG_TEST);
-  //TEXTURE_PLAYER = SDL_CreateTextureFromSurface(renderer, SURFACE_BACKGROUND);
+/*void images_init() {
+  SURFACE_BACKGROUND = SDL_LoadBMP(BG_TEST);
+  TEXTURE_BACKGROUND = SDL_CreateTextureFromSurface(renderer, SURFACE_BACKGROUND);
   //background image
 
   //Dirt Girl: front facing, walking to left 1 and 2, walking to right 1 and 2 (ASK if necessary for so many sprites)
@@ -308,9 +326,12 @@ void images_init() {
 }
 
 void render_background_image(vector_t location) {
-  //vector_t bg_position = {.x = 1000, .y = 2000};
-  //SDL_Rect bg_pos_rect;
-  //SDL_RenderCopy(renderer, TEXTURE_PLAYER, NULL, &bg_pos_rect);
+  SDL_Rect bg_pos_rect;
+  RECT_BG.x = get_window_center().x;
+  RECT_BG.y = get_window_center().y;
+  RECT_BG.w = WINDOW_WIDTH;
+  RECT_BG.h = WINDOW_HEIGHT;
+  SDL_RenderCopy(renderer, TEXTURE_BACKGROUND, NULL, &bg_pos_rect);
   //vector_t plant_boy_post 
   //SDL rect_plant_boy
   //set x and y positions
@@ -319,8 +340,10 @@ void render_background_image(vector_t location) {
 }
 
 void image_free() {
-  //SDL_FreeSurface(SURFACE_BACKGROUND);
-  //SDL_DestroyTexture(TEXTURE_PLAYER);
+  SDL_FreeSurface(SURFACE_BACKGROUND);
+  SDL_DestroyTexture(TEXTURE_BACKGROUND);
   // free all the images (free surface)
   // destroy all the textures (destroy texture)
 }
+
+//TODO: update header file */
