@@ -107,7 +107,7 @@ typedef struct state {
 list_t *find_ledges(scene_t *scene){
   list_t *ledges = list_init(3, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == LEDGE || body_get_info(scene_get_body(scene,i)) == LEDGE){
+    if (body_get_info(scene_get_body(scene,i)) == LEDGE || body_get_info(scene_get_body(scene,i)) == BLOCK){
       list_add(ledges, scene_get_body(scene,i));
     }
   }
@@ -197,7 +197,7 @@ void add_normal_force(scene_t *scene) {
   list_t *ledges = find_ledges(scene);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) != LEDGE || body_get_info(body) != WALL) {
+    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
       for (size_t j = 0; j < list_size(ledges); j++) {
         body_t *ledge = list_get(ledges, j);
         create_normal_force(scene, body, ledge, GRAVITY);
@@ -264,8 +264,8 @@ list_t *make_block_shape(vector_t centroid) {
 }
 
 void add_blocks(scene_t *scene) {
-  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, LEDGE, NULL);          
+  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);
+  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);          
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
 }
