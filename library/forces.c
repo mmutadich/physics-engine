@@ -331,12 +331,16 @@ void normal_force_collision_handler(body_t *body, body_t *ledge, vector_t axis, 
   two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(body);
   assert(ledge);
-  //TODO GET RID OF MAGIC NUMBERS
   vector_t gravity = {.x = 0, .y = tba->constant};
   body_add_force(body, vec_multiply(-1, gravity));
   body_add_force(ledge, gravity);
-  vector_t new_velocity = {.x = body_get_velocity(body).x, .y = 0};
-  body_set_velocity(body, new_velocity);
+  if (axis.y == 0){
+    vector_t new_velocity = {.x = 0, .y = body_get_velocity(body).y};
+    body_set_velocity(body, new_velocity);
+  } else if (axis.x == 0){
+    vector_t new_velocity = {.x = body_get_velocity(body).x, .y = 0};
+    body_set_velocity(body, new_velocity);
+  }
 }
 
 void create_collision_hold_on(scene_t *scene, body_t *body1, body_t *body2,
