@@ -249,12 +249,16 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
   SDL_Rect tree_rect = {500,500,100,100};
 
+  SDL_Texture *BLOCK_TEXTURE = IMG_LoadTexture(renderer, BLOCK_TO_PUSH);
+  SDL_Rect block_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
     vector_t centroid = body_get_centroid(body);
     vector_t window = get_window_position(centroid, get_window_center());
+    //SPRITES:
     if (body_get_info(body) == 1) {
       plant_boy_rect.x = window.x - 140*get_scene_scale(get_window_center());
       plant_boy_rect.y = window.y - 140*get_scene_scale(get_window_center());
@@ -267,12 +271,18 @@ void sdl_render_scene(scene_t *scene) {
       tree_rect.x = window.x - 140*get_scene_scale(get_window_center());
       tree_rect.y = window.y - 140*get_scene_scale(get_window_center());
     } 
+    //OBSTACLES:
+    if (body_get_info(body) == 11) {
+      block_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      block_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    } 
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
+  SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   sdl_show();
 }
 
