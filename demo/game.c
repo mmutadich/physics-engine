@@ -82,6 +82,13 @@ const double FERTILIZER_LENGTH = 40;
 const vector_t STAR_CENTROID = {.x = 1000, .y = 500};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
+//PORTAL CONSTANTS
+const double PORTAL_HEIGHT = 190;
+const double PORTAL_WIDTH = 20;
+const vector_t ENTRY_PORTAL_CENTROID = {.x = 1850, .y = 95};
+const vector_t EXIT_PORTAL_CENTROID = {.x = 1600, .y = 465};
+const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -99,6 +106,7 @@ typedef enum {
   DIRT_GIRL_FERTILIZER = 14,
   STAR = 15,
   TREE = 16,
+  PORTAL = 17,
 } info_t;
 
 typedef struct state {
@@ -291,6 +299,25 @@ list_t *make_door_shape(vector_t centroid) {
   return points;
 }
 
+list_t *make_portal_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - PORTAL_WIDTH / 2;
+    else
+      point->x = centroid.x + PORTAL_WIDTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + PORTAL_HEIGHT / 2;
+    else
+      point->y = centroid.y - PORTAL_HEIGHT / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
+
 void add_doors(scene_t *scene) {
   body_t *plant_boy_door_right = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_RIGHT, NULL);
   body_t *plant_boy_door_left = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_LEFT, NULL);
@@ -382,6 +409,11 @@ void add_characters(scene_t *scene) {
 void add_star(scene_t *scene) {
   body_t *star = body_init_with_info(make_block_shape(STAR_CENTROID), INFINITY_MASS, STAR_COLOR, STAR, NULL);
   scene_add_body(scene, star);
+}
+
+void add_portals(scene_t *scene){
+  body_t *entry_portal = body_init_with_info(make_portal_shape(ENTRY_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
+  body_t *exit_portal = body_init_with_info(make_portal_shape(EXIT_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
 }
 
 size_t get_dirt_girl_index(scene_t *scene) {
@@ -534,6 +566,7 @@ scene_t *make_initial_scene() {
   add_doors(result);
   add_obstacles(result);
   add_fertilizer(result);
+  add_portals(result);
   // add players
   add_characters(result);
   // forces
