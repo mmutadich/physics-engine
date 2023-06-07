@@ -19,7 +19,19 @@ const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
 const char *PLANT_BOY_SPRITE = "images/plant_boy_front_facing-removebg-preview.png";
 const char *TREE_SPRITE = "images/tree.png";
 
-//TODO: IMPLEMENT THESE TEXTURES IF ANIMATING
+//OBSTACLES:
+const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.png"; //TEXTURE TODO
+const char *PLANT_BOY_POISON = "images/plant_boy_poison.png"; //TEXTURE TODO
+const char *BLOCK_TO_PUSH = "images/block_to_push.png";
+
+//POWERUPS/BOOSTS:
+const char *TRAMPOLINE = "images/trampoline.png"; //TEXTURE TODO
+const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png"; 
+const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
+const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.png"; //TEXTURE TODO
+const char *PORTAL_LEFT_FACING = "images/portal_left_facing.png"; //TEXTURE TODO
+
+//TEXTURE TODO: IMPLEMENT THESE TEXTURES IF ANIMATING
 const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.png";
 const char *DIRT_GIRL_WALK_LEFT_2 = "images/dirt_girl_walk_left_2.png";
 const char *DIRT_GIRL_WALK_RIGHT_1 = "images/dirt_girl_walk_right_1.png";
@@ -29,18 +41,6 @@ const char *PLANT_BOY_WALK_LEFT_1 = "images/plant_boy_walk_left_1.png";
 const char *PLANT_BOY_WALK_LEFT_2 = "images/plant_boy_walk_left_2.png";
 const char *PLANT_BOY_WALK_RIGHT_1 = "images/plant_boy_walk_right_1.png";
 const char *PLANT_BOY_WALK_RIGHT_2 = "images/plant_boy_walk_right_2.png";
-
-//OBSTACLES:
-const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.png";
-const char *PLANT_BOY_POISON = "images/plant_boy_poison.png";
-const char *BLOCK_TO_PUSH = "images/block_to_push.png";
-
-//POWERUPS/BOOSTS:
-const char *TRAMPOLINE = "images/trampoline.png";
-const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png";
-const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
-const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.png";
-const char *PORTAL_LEFT_FACING = "images/portal_left_facing.png";
 
 /**
  * The coordinate at the center of the screen.
@@ -255,6 +255,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
   SDL_Rect dirt_girl_fertilizer_rect = {500,500,100,100};
 
+  SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
+  SDL_Rect plant_boy_fertilizer_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -284,6 +287,10 @@ void sdl_render_scene(scene_t *scene) {
       dirt_girl_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
       dirt_girl_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
+    if (body_get_info(body) == 13) {
+      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    }
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
@@ -292,6 +299,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
   SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
+  SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
   sdl_show();
 }
 
