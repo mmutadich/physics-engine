@@ -32,9 +32,10 @@ const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
 const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.png"; //TEXTURE TODO
 const char *PORTAL_LEFT_FACING = "images/portal_left_facing.png"; //TEXTURE TODO
 
-//DOORS:
+//DOORS + LEDGES:
 const char *DIRT_GIRL_DOOR = "images/dirt_girl_door.jpg";
 const char *PLANT_BOY_DOOR = "images/plant_boy_door.jpg";
+const char *TOP_LEDGE = "images/top_ledge.png";
 
 //TEXTURE TODO: IMPLEMENT THESE TEXTURES IF ANIMATING
 const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.png";
@@ -276,6 +277,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *PLANT_BOY_DOOR_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_DOOR);
   SDL_Rect plant_boy_door_rect = {500,500,100,100};
 
+  SDL_Texture *TOP_LEDGE_TEXTURE = IMG_LoadTexture(renderer, TOP_LEDGE);
+  SDL_Rect top_ledge_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -313,7 +317,7 @@ void sdl_render_scene(scene_t *scene) {
       star_of_mastery_rect.x = window.x - 140*get_scene_scale(get_window_center());
       star_of_mastery_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    //DOORS:
+    //DOORS + LEDGES:
      if (body_get_info(body) == 9) {
       dirt_girl_door_rect.x = window.x - 140*get_scene_scale(get_window_center());
       dirt_girl_door_rect.y = window.y - 140*get_scene_scale(get_window_center());
@@ -321,6 +325,10 @@ void sdl_render_scene(scene_t *scene) {
     if (body_get_info(body) == 7) {
       plant_boy_door_rect.x = window.x - 140*get_scene_scale(get_window_center());
       plant_boy_door_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    }
+    if (body_get_info(body) == 10) {
+      top_ledge_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      top_ledge_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
@@ -341,6 +349,8 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
+  SDL_RenderCopy(renderer, TOP_LEDGE_TEXTURE, NULL, &top_ledge_rect);
+
 
   sdl_show();
 }
