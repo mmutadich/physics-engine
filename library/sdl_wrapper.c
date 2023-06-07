@@ -28,6 +28,7 @@ const char *BLOCK_TO_PUSH = "images/block_to_push.png";
 const char *TRAMPOLINE = "images/trampoline.png"; //TEXTURE TODO
 const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png"; 
 const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
+const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
 const char *PORTAL_RIGHT_FACING = "images/portal_right_facing.png"; //TEXTURE TODO
 const char *PORTAL_LEFT_FACING = "images/portal_left_facing.png"; //TEXTURE TODO
 
@@ -258,6 +259,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
   SDL_Rect plant_boy_fertilizer_rect = {500,500,100,100};
 
+  SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
+  SDL_Rect star_of_mastery_rect = {500,500,100,100};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -283,13 +287,17 @@ void sdl_render_scene(scene_t *scene) {
       block_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     //POWERUPS:
+    if (body_get_info(body) == 13) {
+      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    }
     if (body_get_info(body) == 14) {
       dirt_girl_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
       dirt_girl_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    if (body_get_info(body) == 13) {
-      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
-      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    if (body_get_info(body) == 15) {
+      star_of_mastery_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      star_of_mastery_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
@@ -300,6 +308,8 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
+  SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
+
   sdl_show();
 }
 

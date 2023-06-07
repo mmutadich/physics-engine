@@ -22,42 +22,6 @@ const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
 const double MASS = 10;
 const rgb_color_t COLOR = {1, 0.75, 0.75};
 
-
-typedef struct state {
-  scene_t *scene;
-  double time_elapsed;
-} state_t;
-
-list_t *make_body_shape() {
-  list_t *shape = list_init(4, free);
-
-  vector_t *point_1 = malloc(sizeof(vector_t));
-  assert(point_1);
-  point_1->x = 1;
-  point_1->y = 1;
-  list_add(shape, point_1);
-
-  vector_t *point_2 = malloc(sizeof(vector_t));
-  assert(point_2);
-  point_2->x = 100;
-  point_2->y = 1;
-  list_add(shape, point_2);
-
-  vector_t *point_3 = malloc(sizeof(vector_t));
-  assert(point_3);
-  point_3->x = 1;
-  point_3->y = 100;
-  list_add(shape, point_3);
-
-  return shape;
-}
-
-void add_body(scene_t *scene) {
-  list_t *shape = make_body_shape();
-  body_t *body = body_init_with_info(shape, MASS, COLOR, NULL, NULL);
-  scene_add_body(scene, body);
-}
-
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   add_body(result);
