@@ -242,6 +242,10 @@ void sdl_show(void) {
   SDL_RenderPresent(renderer);
 }
 
+/* REMOVE:
+SDL_RECT = {x of top left corner, y of top left corner, width, height}
+**/
+
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
 
@@ -251,7 +255,6 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
   SDL_Rect dirt_girl_rect = {500,500,100,100};
 
-
   SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
   SDL_Rect tree_rect = {500,500,100,100};
 
@@ -259,10 +262,10 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Rect block_rect = {500,500,100,100};
 
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
-  SDL_Rect dirt_girl_fertilizer_rect = {500,500,100,100};
+  SDL_Rect dirt_girl_fertilizer_rect = {0,0,75,75};
 
   SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
-  SDL_Rect plant_boy_fertilizer_rect = {500,500,100,100};
+  SDL_Rect plant_boy_fertilizer_rect = {0,0,75,75};
 
   SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
   SDL_Rect star_of_mastery_rect = {500,500,100,100};
@@ -322,6 +325,13 @@ void sdl_render_scene(scene_t *scene) {
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
+
+  /*
+  SDL_SetRenderDrawColor(renderer, 77, 176, 206, 255); //background color, rn it's blue
+  SDL_RenderClear(renderer);
+  SDL_RenderPresent(renderer);
+  SDL_Delay(5000); */
+
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
