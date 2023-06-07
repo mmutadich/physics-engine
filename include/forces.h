@@ -123,4 +123,6 @@ void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body);
 
+void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vector_t *character_dimensions);
+
 #endif // #ifndef __FORCES_H__

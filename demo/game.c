@@ -41,10 +41,13 @@ const double WALL_LENGTH = 10;
 
 // LEDGE CONSTANTS
 const vector_t LEDGE_FLOOR_CENTROID = {.x = 1000, .y = 20};
-const vector_t LEDGE_1_CENTROID = {.x = 800, .y = 350};
-const vector_t LEDGE_2_CENTROID = {.x = 1200, .y = 700};
-const double LEDGE_LENGTH = 1600;
+const vector_t LEDGE_1_CENTROID = {.x = 700, .y = 350};
+const vector_t LEDGE_2_CENTROID = {.x = 1300, .y = 700};
+const double LEDGE_LENGTH = 1700;
+const double FLOOR_LENGTH = 2200;
 const double LEDGE_HEIGHT = 40;
+
+
 
 // BLOCK CONSTANTS
 const vector_t BLOCK_1_CENTROID = {.x = 1905, .y = 95};
@@ -237,7 +240,7 @@ list_t *make_ledge_shape(vector_t centroid, double ledge_length) {
 }
 
 void add_ledges(scene_t *scene) {
-  body_t *ledge_floor = body_init_with_info(make_ledge_shape(LEDGE_FLOOR_CENTROID, SDL_MAX.x), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_floor = body_init_with_info(make_ledge_shape(LEDGE_FLOOR_CENTROID, FLOOR_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);
   body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);
   body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);   
   scene_add_body(scene, ledge_floor);     
@@ -404,7 +407,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   assert(body_get_info(plant_boy) == PLANT_BOY);
-  vector_t centroid_girl = body_get_centroid(dirt_girl);
+  /**vector_t centroid_girl = body_get_centroid(dirt_girl);
   vector_t centroid_boy = body_get_centroid(plant_boy);
   vector_t new_centroid_girl = {.x = centroid_girl.x, .y = centroid_girl.y};
   vector_t new_centroid_boy = {.x = centroid_boy.x, .y = centroid_boy.y};
@@ -423,7 +426,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     new_centroid_boy.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
   }
   body_set_centroid(plant_boy, new_centroid_boy);
-  body_set_centroid(dirt_girl, new_centroid_girl);
+  body_set_centroid(dirt_girl, new_centroid_girl);*/
   if (type == KEY_PRESSED) {
     if (key == D_KEY) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
@@ -495,6 +498,33 @@ void add_fertilizer_force(scene_t *scene) {
   }
 }
 
+list_t *get_boundary_items(scene_t *scene) {
+  list_t *answer = list_init(6, list_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == WALL) {
+      list_add(answer, body);
+    }
+  }
+  return answer;
+}
+
+void add_boundary_force(scene_t *scene) {
+  list_t *boundary_bodies = get_boundary_items(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  vector_t *dimensions = malloc(sizeof(vector_t));
+  dimensions->x = CHARACTER_SIDE_LENGTH;
+  dimensions->y = WALL_LENGTH;
+  for (size_t i = 0; i < list_size(boundary_bodies); i++) {
+    body_t *body = list_get(boundary_bodies, i);
+    create_boundary_force(scene, dirt_girl, body, dimensions);
+    create_boundary_force(scene, plant_boy, body, dimensions);
+  }
+}
+
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
@@ -511,6 +541,7 @@ scene_t *make_initial_scene() {
   add_normal_force(result);
   add_game_over_force(result);
   add_fertilizer_force(result);
+  add_boundary_force(result);
   return result;
 }
 
@@ -552,14 +583,12 @@ void emscripten_main(state_t *state) {
   scene_tick(state->scene, dt);
   sdl_show();
   if (scene_get_game_over(state->scene)) {
-    printf("game over\n");
     scene_free(state->scene);
     state->scene = make_initial_scene();
-    printf("made the new scene\n");
   }
   if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
-    printf("star of mastery\n");
-    add_star(state->scene);
+    //printf("star of mastery\n");
+    //add_star(state->scene);
   }
   sdl_render_scene(state->scene);
 }

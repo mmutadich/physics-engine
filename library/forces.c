@@ -364,7 +364,6 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
 }
 
 void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
-  printf("game over handler called\n");
   //we know the aux is a scene
   scene_t *scene = (scene_t*)aux;
   assert(scene);
@@ -379,7 +378,6 @@ void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
 }
 
 void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
-  printf("plant boy fertilizer handler called\n");
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_plant_boy_fertilizer_collected(scene, true);
@@ -392,7 +390,6 @@ void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 }
 
 void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
-  printf("dirt girl fertilizer handler called\n");
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
@@ -402,4 +399,28 @@ void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *b
   create_collision(scene, player, body,
                    dirt_girl_fertilizer_collision_handler, scene,
                    two_body_aux_freer);
+}
+
+void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis, void *aux) {
+  vector_t centroid_sprite = body_get_centroid(sprite);
+  vector_t new_centroid_sprite = {.x = centroid_sprite.x, .y = centroid_sprite.y};
+  vector_t *dimensions = (vector_t *)aux;
+  double cx = dimensions->x;
+  double b_dimensions = dimensions->y;
+  vector_t boundary_centroid = body_get_centroid(boundary);
+  if (centroid_sprite.x > boundary_centroid.x && centroid_sprite.x <= boundary_centroid.x + cx/2 + b_dimensions/2) {
+    printf("right boundary\n");
+    new_centroid_sprite.x = boundary_centroid.x + cx + b_dimensions/2;
+  }
+  if (centroid_sprite.x < boundary_centroid.x && centroid_sprite.x >= boundary_centroid.x - cx/2 - b_dimensions/2) {
+    printf("left boundary\n");
+    new_centroid_sprite.x = boundary_centroid.x - cx - b_dimensions/2;
+  }
+  body_set_centroid(sprite, new_centroid_sprite);
+}
+
+void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vector_t *character_dimensions) {
+  create_collision(scene, sprite, boundary,
+                  boundary_collision_handler, character_dimensions, 
+                  two_body_aux_freer);
 }
