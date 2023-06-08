@@ -21,7 +21,7 @@ const char *TREE_SPRITE = "images/tree.png";
 
 //OBSTACLES:
 const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.png"; //TEXTURE TODO
-const char *PLANT_BOY_POISON = "images/plant_boy_poison.png"; //TEXTURE TODO
+const char *PLANT_BOY_POISON = "images/plant_boy_poison.png"; 
 const char *BLOCK_TO_PUSH = "images/block_to_push.png";
 
 //POWERUPS/BOOSTS:
@@ -280,6 +280,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *TOP_LEDGE_TEXTURE = IMG_LoadTexture(renderer, TOP_LEDGE);
   SDL_Rect top_ledge_rect = {500,500,100,100};
 
+  SDL_Texture *PLANT_BOY_POISON_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_POISON);
+  SDL_Rect plant_boy_poison_rect = {600,30,120,20};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -303,6 +306,10 @@ void sdl_render_scene(scene_t *scene) {
     if (body_get_info(body) == 11) {
       block_rect.x = window.x - 140*get_scene_scale(get_window_center());
       block_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    }
+    if (body_get_info(body) == 3) {
+      plant_boy_poison_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      plant_boy_poison_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     //POWERUPS:
     if (body_get_info(body) == 13) {
@@ -350,7 +357,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
   SDL_RenderCopy(renderer, TOP_LEDGE_TEXTURE, NULL, &top_ledge_rect);
-
+  SDL_RenderCopy(renderer, PLANT_BOY_POISON_TEXTURE, NULL, &plant_boy_poison_rect);
 
   sdl_show();
 }
