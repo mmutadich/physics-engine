@@ -22,7 +22,7 @@ const double GRAVITY = -25000;
 const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
 const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
-const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will use drawings on top
+const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will add drawings on top
 
 // GENERAL BODY CONSTANTS
 const NUM_RECT_POINTS = 4;
@@ -47,18 +47,12 @@ const double LEDGE_LENGTH = 1700;
 const double FLOOR_LENGTH = 2200;
 const double LEDGE_HEIGHT = 40;
 
-
-
 // BLOCK CONSTANTS
 const vector_t BLOCK_1_CENTROID = {.x = 1905, .y = 95};
 const vector_t BLOCK_2_CENTROID = {.x = 95, .y = 465};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
-/*const vector_t PLANT_BOY_DOOR_CENTROID = {.x = 1600, .y = 780};
-const vector_t DIRT_GIRL_DOOR_CENTROID = {.x = 1800, .y = 780};
-const double DOOR_HEIGHT = 120;
-const double DOOR_LENGTH = 80;*/
 const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1565, .y = 780};
 const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1635, .y = 780};
 const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1765, .y = 780};
@@ -114,8 +108,7 @@ typedef struct state {
   double time_elapsed;
 } state_t;
 
-
-list_t *find_ledges(scene_t *scene){
+list_t *get_ledge_bodies(scene_t *scene){
   list_t *ledges = list_init(3, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == LEDGE || body_get_info(scene_get_body(scene,i)) == BLOCK){
@@ -147,6 +140,35 @@ list_t *get_fertilizer_bodies(scene_t *scene) {
     }
   }
   return answer;
+}
+
+list_t *get_boundary_bodies(scene_t *scene) {
+  list_t *answer = list_init(6, list_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == WALL) {
+      list_add(answer, body);
+    }
+  }
+  return answer;
+}
+
+size_t get_plant_boy_index(scene_t *scene){
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
+      return i;
+    }
+  }
+  return NULL;
+}
+
+size_t get_dirt_girl_index(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
+      return i;
+    }
+  }
+  return NULL;
 }
 
 list_t *make_wall_shape(char wall) {
@@ -193,7 +215,7 @@ list_t *make_wall_shape(char wall) {
   return wall_points;
 }
 
-//make a universal gravity for "players"
+//make universal gravity for the players
 void add_universal_gravity(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
@@ -205,7 +227,7 @@ void add_universal_gravity(scene_t *scene) {
 
 //make normal force between the ground and the players
 void add_normal_force(scene_t *scene) {
-  list_t *ledges = find_ledges(scene);
+  list_t *ledges = get_ledge_bodies(scene);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
@@ -299,25 +321,6 @@ list_t *make_door_shape(vector_t centroid) {
   return points;
 }
 
-list_t *make_portal_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - PORTAL_WIDTH / 2;
-    else
-      point->x = centroid.x + PORTAL_WIDTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + PORTAL_HEIGHT / 2;
-    else
-      point->y = centroid.y - PORTAL_HEIGHT / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
-
 void add_doors(scene_t *scene) {
   body_t *plant_boy_door_right = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_RIGHT, NULL);
   body_t *plant_boy_door_left = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_LEFT, NULL);
@@ -406,9 +409,22 @@ void add_characters(scene_t *scene) {
   scene_add_body(scene, dirt_girl);
 }
 
-void add_star(scene_t *scene) {
-  body_t *star = body_init_with_info(make_block_shape(STAR_CENTROID), INFINITY_MASS, STAR_COLOR, STAR, NULL);
-  scene_add_body(scene, star);
+list_t *make_portal_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - PORTAL_WIDTH / 2;
+    else
+      point->x = centroid.x + PORTAL_WIDTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + PORTAL_HEIGHT / 2;
+    else
+      point->y = centroid.y - PORTAL_HEIGHT / 2;
+    list_add(points, point);
+  }
+  return points;
 }
 
 void add_portals(scene_t *scene){
@@ -418,22 +434,51 @@ void add_portals(scene_t *scene){
   scene_add_body(scene, exit_portal);
 }
 
-size_t get_dirt_girl_index(scene_t *scene) {
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
-      return i;
-    }
-  }
-  return NULL;
+void add_star(scene_t *scene) {
+  body_t *star = body_init_with_info(make_block_shape(STAR_CENTROID), INFINITY_MASS, STAR_COLOR, STAR, NULL);
+  scene_add_body(scene, star);
 }
 
-size_t get_plant_boy_index(scene_t *scene){
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
-      return i;
-    }
+void add_game_over_force(scene_t *scene) {
+  list_t *game_over_bodies = get_game_over_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(game_over_bodies); i++) {
+    body_t *body = list_get(game_over_bodies, i);
+    create_game_over_force(scene, dirt_girl, body);
+    create_game_over_force(scene, plant_boy, body);
   }
-  return NULL;
+}
+
+void add_fertilizer_force(scene_t *scene) {
+  list_t *fertilizer_bodies = get_fertilizer_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(fertilizer_bodies); i++) {
+    body_t *body = list_get(fertilizer_bodies, i);
+    create_dirt_girl_fertilizer_force(scene, dirt_girl, body);
+    create_plant_boy_fertilizer_force(scene, plant_boy, body);
+  }
+}
+
+void add_boundary_force(scene_t *scene) {
+  list_t *boundary_bodies = get_boundary_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  vector_t *dimensions = malloc(sizeof(vector_t));
+  dimensions->x = CHARACTER_SIDE_LENGTH;
+  dimensions->y = WALL_LENGTH;
+  for (size_t i = 0; i < list_size(boundary_bodies); i++) {
+    body_t *body = list_get(boundary_bodies, i);
+    create_boundary_force(scene, dirt_girl, body, dimensions);
+    create_boundary_force(scene, plant_boy, body, dimensions);
+  }
 }
 
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
@@ -472,7 +517,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     }
     if (key == W_KEY) {
       if ( held_time < 0.01){
-        list_t *ledges = find_ledges(state->scene);
+        list_t *ledges = get_ledge_bodies(state->scene);
         for (size_t i = 0; i < list_size(ledges); i++) {
           body_t *ledge = list_get(ledges, i);
           assert(dirt_girl);
@@ -491,7 +536,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     }
     if (key == UP_ARROW) {
       if (held_time < 0.01 ){
-        list_t *ledges = find_ledges(state->scene);
+        list_t *ledges = get_ledge_bodies(state->scene);
         for (size_t i = 0; i < list_size(ledges); i++) {
           body_t *ledge = list_get(ledges, i);
           assert(plant_boy);
@@ -503,59 +548,6 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   } else {
     body_set_velocity(dirt_girl, ZERO_VECTOR);
     body_set_velocity(plant_boy, ZERO_VECTOR);
-  }
-}
-
-void add_game_over_force(scene_t *scene) {
-  list_t *game_over_bodies = get_game_over_bodies(scene);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
-  assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
-  assert(plant_boy);
-  for (size_t i = 0; i < list_size(game_over_bodies); i++) {
-    body_t *body = list_get(game_over_bodies, i);
-    create_game_over_force(scene, dirt_girl, body);
-    create_game_over_force(scene, plant_boy, body);
-  }
-}
-
-void add_fertilizer_force(scene_t *scene) {
-  list_t *fertilizer_bodies = get_fertilizer_bodies(scene);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
-  assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
-  assert(plant_boy);
-  for (size_t i = 0; i < list_size(fertilizer_bodies); i++) {
-    body_t *body = list_get(fertilizer_bodies, i);
-    create_dirt_girl_fertilizer_force(scene, dirt_girl, body);
-    create_plant_boy_fertilizer_force(scene, plant_boy, body);
-  }
-}
-
-list_t *get_boundary_items(scene_t *scene) {
-  list_t *answer = list_init(6, list_free);
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) == WALL) {
-      list_add(answer, body);
-    }
-  }
-  return answer;
-}
-
-void add_boundary_force(scene_t *scene) {
-  list_t *boundary_bodies = get_boundary_items(scene);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
-  assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
-  assert(plant_boy);
-  vector_t *dimensions = malloc(sizeof(vector_t));
-  dimensions->x = CHARACTER_SIDE_LENGTH;
-  dimensions->y = WALL_LENGTH;
-  for (size_t i = 0; i < list_size(boundary_bodies); i++) {
-    body_t *body = list_get(boundary_bodies, i);
-    create_boundary_force(scene, dirt_girl, body, dimensions);
-    create_boundary_force(scene, plant_boy, body, dimensions);
   }
 }
 
@@ -617,13 +609,13 @@ void emscripten_main(state_t *state) {
   }
   scene_tick(state->scene, dt);
   sdl_show();
-  if (scene_get_game_over(state->scene)) {
+  if (scene_get_game_over(state->scene)) { // NEED THIS TO BE IN A TIME INTERVAL SO THE STAR APPEARS 
+    if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
+      printf("star of mastery\n");
+      add_star(state->scene);
+    }
     scene_free(state->scene);
     state->scene = make_initial_scene();
-  }
-  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
-    //printf("star of mastery\n");
-    //add_star(state->scene);
   }
   sdl_render_scene(state->scene);
 }
