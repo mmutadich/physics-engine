@@ -245,9 +245,9 @@ void sdl_show(void) {
   SDL_RenderPresent(renderer);
 }
 
-/* REMOVE:
-SDL_RECT = {x of top left corner, y of top left corner, width, height}
-**/
+/*void load_textures() {
+  TODO: move the texture loading into this method
+}*/
 
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
@@ -280,13 +280,7 @@ void sdl_render_scene(scene_t *scene) {
 
   SDL_Texture *PLANT_BOY_DOOR_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_DOOR);
   SDL_Rect plant_boy_door_rect = {500,500,100,100};
-
-  SDL_Texture *TOP_LEDGE_TEXTURE = IMG_LoadTexture(renderer, TOP_LEDGE);
-  SDL_Rect top_ledge_rect = {500,500,100,100};
-
-  SDL_Texture *PLANT_BOY_POISON_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_POISON);
-  SDL_Rect plant_boy_poison_rect = {600,30,120,20};
-
+  
   SDL_Texture *PORTAL_TEXTURE = IMG_LoadTexture(renderer, PORTAL);
   SDL_Rect portal_rect = {500,500,25,100};
 
@@ -357,11 +351,28 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
-  SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
   SDL_RenderCopy(renderer, PORTAL_TEXTURE, NULL, &portal_rect);
 
   sdl_show();
 }
+
+/*void destroy_textures() {
+  SDL_Delay(2000);
+  SDL_DestroyTexture(BG_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
+  SDL_DestroyTexture(TREE_TEXTURE);
+  SDL_DestroyTexture(BLOCK_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
+  SDL_DestroyTexture(PORTAL_TEXTURE);
+  SDL_RenderPresent(renderer);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+}*/
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
 
