@@ -17,6 +17,7 @@ const double DISTANCE_0 = 5;
 const double ELASTIC = 1;
 const double INELASTIC = 0;
 const double JUMP_IMPULSE = 10000;
+const double P_WIDTH = 20;
 
 typedef struct two_body_aux {
   body_t *body1;
@@ -423,4 +424,31 @@ void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vec
   create_collision(scene, sprite, boundary,
                   boundary_collision_handler, character_dimensions, 
                   two_body_aux_freer);
+}
+void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axis,
+                               void *aux) {
+  two_body_aux_t *tba = (two_body_aux_t *)aux;
+  body_t *exit_portal = tba->body2;
+  assert(sprite);
+  assert(entry_portal);
+  vector_t current_velocity = body_get_velocity(sprite);
+  vector_t spawn = body_get_centroid(exit_portal);
+  if ( current_velocity.x > 0){
+    vector_t new_centroid = {.x = (spawn.x - P_WIDTH), .y = spawn.y};
+    body_set_centroid(sprite, new_centroid);
+  } else {
+    vector_t new_centroid = {.x = (spawn.x + P_WIDTH), .y = spawn.y};
+    body_set_centroid(sprite, new_centroid);
+  }
+  vector_t reverse_x = vec_multiply(-1, current_velocity);
+  vector_t new_velocity = {.x = reverse_x.x, .y = current_velocity.y};
+  body_set_velocity(sprite, new_velocity);
+  //if colliding, what happens?
+}
+
+void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity) {
+  two_body_aux_t *aux = two_body_aux_init(entry_portal, exit_portal, elasticity);
+  collision_aux_t *collision_aux = collision_aux_init(sprite, entry_portal, 
+                          portal_collision_handler, aux, two_body_aux_freer);
+  apply_collision(collision_aux);
 }

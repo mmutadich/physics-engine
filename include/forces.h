@@ -125,4 +125,6 @@ void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 
 void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vector_t *character_dimensions);
 
+void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity);
+
 #endif // #ifndef __FORCES_H__

@@ -154,6 +154,17 @@ list_t *get_boundary_bodies(scene_t *scene) {
   return answer;
 }
 
+list_t *get_portal_bodies(scene_t *scene) {
+  list_t *answer = list_init(2, list_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == PORTAL) {
+      list_add(answer, body);
+    }
+  }
+  return answer;
+}
+
 size_t get_plant_boy_index(scene_t *scene){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
@@ -511,6 +522,23 @@ void add_boundary_force(scene_t *scene) {
   }
 }
 
+void add_portal_force(scene_t *scene) {
+  list_t *portals = get_portal_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(portals); i+=2) {
+    body_t *portal_1 = list_get(portals, i);
+    body_t *portal_2 = list_get(portals, i+1);
+    create_portal_force(scene, dirt_girl, portal_1, portal_2, 0);
+    create_portal_force(scene, plant_boy, portal_1, portal_2, 0);
+    create_portal_force(scene, dirt_girl, portal_2, portal_1, 0);
+    create_portal_force(scene, plant_boy, portal_2, portal_1, 0);
+  }
+
+}
+
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
   body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
@@ -599,6 +627,7 @@ scene_t *make_initial_scene() {
   add_game_over_force(result);
   add_fertilizer_force(result);
   add_boundary_force(result);
+  add_portal_force(result);
   return result;
 }
 
