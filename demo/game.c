@@ -73,7 +73,7 @@ const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1500, .y = 120};
 const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
-const vector_t STAR_CENTROID = {.x = 1000, .y = 500};
+const vector_t STAR_CENTROID = {.x = 200, .y = 800};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
 //PORTAL CONSTANTS
@@ -610,12 +610,12 @@ void emscripten_main(state_t *state) {
   scene_tick(state->scene, dt);
   sdl_show();
   if (scene_get_game_over(state->scene)) { // NEED THIS TO BE IN A TIME INTERVAL SO THE STAR APPEARS 
-    if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
-      printf("star of mastery\n");
-      add_star(state->scene);
-    }
     scene_free(state->scene);
     state->scene = make_initial_scene();
+  }
+  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
+    printf("star of mastery\n");
+    add_star(state->scene);
   }
   sdl_render_scene(state->scene);
 }
