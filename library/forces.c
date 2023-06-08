@@ -366,6 +366,7 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
 
 void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   //we know the aux is a scene
+  printf("anything\n");
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_game_over(scene, true);
@@ -431,6 +432,7 @@ void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axi
   body_t *exit_portal = tba->body2;
   assert(sprite);
   assert(entry_portal);
+  assert(exit_portal);
   vector_t current_velocity = body_get_velocity(sprite);
   vector_t spawn = body_get_centroid(exit_portal);
   if ( current_velocity.x > 0){

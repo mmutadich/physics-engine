@@ -31,8 +31,8 @@ const double INFINITY_MASS = INFINITY;
 const double ELASTICITY = 0.5;
 
 // CHARACTER CONSTANTS
-const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 80};
-const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 80};
+const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 500, .y = 500};
+const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 500, .y = 500};
 const double CHARACTER_VELOCITY = 1000;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
@@ -84,6 +84,11 @@ const vector_t ENTRY_PORTAL_CENTROID = {.x = 1850, .y = 95};
 const vector_t EXIT_PORTAL_CENTROID = {.x = 1600, .y = 465};
 const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
+//TRAMPLOINE CONSTANTS
+const vector_t TRAMPOLINE_CENTROID = {.x = 210, .y= 430};
+const double TRAMPLOINE_LENGTH = 70;
+const double TRAMPLOINE_WIDTH = 40;
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -102,6 +107,7 @@ typedef enum {
   STAR = 15,
   TREE = 16,
   PORTAL = 17,
+  TRAMPOLINE = 18,
 } info_t;
 
 typedef struct state {
@@ -457,11 +463,34 @@ list_t *make_portal_shape(vector_t centroid) {
   return points;
 }
 
+list_t *make_trampoline_shape(vector_t centroid) {
+  list_t *points = list_init(NUM_RECT_POINTS, free);
+  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
+    vector_t *point = malloc(sizeof(vector_t));
+    assert(point);
+    if (i == 0 || i == 1)
+      point->x = centroid.x - TRAMPLOINE_WIDTH / 2;
+    else
+      point->x = centroid.x + TRAMPLOINE_WIDTH / 2;
+    if (i == 0 || i == 3)
+      point->y = centroid.y + TRAMPLOINE_LENGTH / 2;
+    else
+      point->y = centroid.y - TRAMPLOINE_LENGTH / 2;
+    list_add(points, point);
+  }
+  return points;
+}
+
 void add_portals(scene_t *scene){
   body_t *entry_portal = body_init_with_info(make_portal_shape(ENTRY_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   body_t *exit_portal = body_init_with_info(make_portal_shape(EXIT_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   scene_add_body(scene, entry_portal);
   scene_add_body(scene, exit_portal);
+}
+
+void add_trampoline(scene_t *scene){
+  body_t *trampoline = body_init_with_info(make_trampoline_shape(TRAMPOLINE_CENTROID), INFINITY_MASS, COLOR, TRAMPOLINE, NULL);
+  scene_add_body(scene, trampoline);
 }
 
 void add_star(scene_t *scene) {
@@ -619,6 +648,7 @@ scene_t *make_initial_scene() {
   add_obstacles(result);
   add_fertilizer(result);
   add_portals(result);
+  add_trampoline(result);
   // add players
   add_characters(result);
   // forces
