@@ -14,6 +14,9 @@ const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
 
+//DELTE THIS:
+const char *TESTING_BG = "images/background_1.jpeg";
+
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
 const char *PLANT_BOY_SPRITE = "images/plant_boy_front_facing-removebg-preview.png";
@@ -250,6 +253,9 @@ SDL_RECT = {x of top left corner, y of top left corner, width, height}
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
 
+  SDL_Texture *TESTING_BG_TEXTURE = IMG_LoadTexture(renderer, TESTING_BG);
+  SDL_Rect test_bg_rect = {500,500,100,100};
+
   SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
   SDL_Rect plant_boy_rect = {500,500,100,100};
 
@@ -307,10 +313,10 @@ void sdl_render_scene(scene_t *scene) {
       block_rect.x = window.x - 140*get_scene_scale(get_window_center());
       block_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    if (body_get_info(body) == 3) {
+    /*if (body_get_info(body) == 3) {
       plant_boy_poison_rect.x = window.x - 140*get_scene_scale(get_window_center());
       plant_boy_poison_rect.y = window.y - 140*get_scene_scale(get_window_center());
-    }
+    }*/
     //POWERUPS:
     if (body_get_info(body) == 13) {
       plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
@@ -333,14 +339,14 @@ void sdl_render_scene(scene_t *scene) {
       plant_boy_door_rect.x = window.x - 140*get_scene_scale(get_window_center());
       plant_boy_door_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    if (body_get_info(body) == 10) {
+    /*if (body_get_info(body) == 10) {
       top_ledge_rect.x = window.x - 140*get_scene_scale(get_window_center());
       top_ledge_rect.y = window.y - 140*get_scene_scale(get_window_center());
-    }
+    }*/
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
-
+  SDL_RenderCopy(renderer, TESTING_BG_TEXTURE, NULL, NULL);  
   /*
   SDL_SetRenderDrawColor(renderer, 77, 176, 206, 255); //background color, rn it's blue
   SDL_RenderClear(renderer);
@@ -356,8 +362,8 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
-  SDL_RenderCopy(renderer, TOP_LEDGE_TEXTURE, NULL, &top_ledge_rect);
-  SDL_RenderCopy(renderer, PLANT_BOY_POISON_TEXTURE, NULL, &plant_boy_poison_rect);
+  //SDL_RenderCopy(renderer, TOP_LEDGE_TEXTURE, NULL, &top_ledge_rect);
+  //SDL_RenderCopy(renderer, PLANT_BOY_POISON_TEXTURE, NULL, &plant_boy_poison_rect);
 
   sdl_show();
 }
