@@ -414,6 +414,8 @@ void add_star(scene_t *scene) {
 void add_portals(scene_t *scene){
   body_t *entry_portal = body_init_with_info(make_portal_shape(ENTRY_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   body_t *exit_portal = body_init_with_info(make_portal_shape(EXIT_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
+  scene_add_body(scene, entry_portal);
+  scene_add_body(scene, exit_portal);
 }
 
 size_t get_dirt_girl_index(scene_t *scene) {
