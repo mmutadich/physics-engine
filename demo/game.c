@@ -23,6 +23,7 @@ const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
 const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
 const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will add drawings on top
+const rgb_color_t BACKGROUND_COLOR = {1, 1, 1}; 
 
 // GENERAL BODY CONSTANTS
 const NUM_RECT_POINTS = 4;
@@ -165,6 +166,24 @@ size_t get_plant_boy_index(scene_t *scene){
 size_t get_dirt_girl_index(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
+      return i;
+    }
+  }
+  return NULL;
+}
+
+size_t get_plant_boy_fertilizer_index(scene_t *scene){
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY_FERTILIZER){
+      return i;
+    }
+  }
+  return NULL;
+}
+
+size_t get_dirt_girl_fertilizer_index(scene_t *scene){
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL_FERTILIZER){
       return i;
     }
   }
@@ -453,6 +472,7 @@ void add_game_over_force(scene_t *scene) {
 }
 
 void add_fertilizer_force(scene_t *scene) {
+  /*
   list_t *fertilizer_bodies = get_fertilizer_bodies(scene);
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
@@ -463,6 +483,16 @@ void add_fertilizer_force(scene_t *scene) {
     create_dirt_girl_fertilizer_force(scene, dirt_girl, body);
     create_plant_boy_fertilizer_force(scene, plant_boy, body);
   }
+  */
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));  
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  size_t index = get_plant_boy_fertilizer_index(scene);
+  body_t *plant_boy_fertilizer = scene_get_body(scene, index);
+  body_t *dirt_girl_fertilizer = scene_get_body(scene, get_dirt_girl_fertilizer_index(scene));
+  create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
+  create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
+  create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
+  create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
 }
 
 void add_boundary_force(scene_t *scene) {
@@ -595,17 +625,22 @@ void emscripten_main(state_t *state) {
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
     body_t *body = scene_get_body(state->scene, i);
     list_t *shape = body_get_shape(body);
-    if (body_get_info(body) != WALL && body_get_info(body) != PLANT_BOY_FERTILIZER && body_get_info(body) != DIRT_GIRL_FERTILIZER) {
+    if (body_get_info(body) != WALL) {
       sdl_draw_polygon(shape, body_get_color(body));
     }
-    if (scene_get_plant_boy_fertilizer_collected(state->scene) == false) {
-      if (body_get_info(body) == PLANT_BOY_FERTILIZER)
-        sdl_draw_polygon(shape, body_get_color(body));
+    /*
+    if (scene_get_plant_boy_fertilizer_collected(state->scene)) {
+      if (body_get_info(body) == PLANT_BOY_FERTILIZER) {
+        //scene_remove_body(state->scene, get_plant_boy_fertilizer_index(state->scene));
+        //body_set_color(body, BACKGROUND_COLOR);
+      }
     }
-    if (scene_get_dirt_girl_fertilizer_collected(state->scene) == false) {
-      if (body_get_info(body) == DIRT_GIRL_FERTILIZER)
-        sdl_draw_polygon(shape, body_get_color(body));
-    }
+    if (scene_get_dirt_girl_fertilizer_collected(state->scene)) {
+      if (body_get_info(body) == DIRT_GIRL_FERTILIZER) {
+        body_remove(body);
+        //body_set_color(body, BACKGROUND_COLOR);
+      }
+    }*/
   }
   scene_tick(state->scene, dt);
   sdl_show();
