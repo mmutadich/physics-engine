@@ -562,8 +562,6 @@ void add_portal_force(scene_t *scene) {
     body_t *portal_2 = list_get(portals, i+1);
     create_portal_force(scene, dirt_girl, portal_1, portal_2, 0);
     create_portal_force(scene, plant_boy, portal_1, portal_2, 0);
-    create_portal_force(scene, dirt_girl, portal_2, portal_1, 0);
-    create_portal_force(scene, plant_boy, portal_2, portal_1, 0);
   }
 
 }
