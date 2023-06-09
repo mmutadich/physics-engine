@@ -385,19 +385,25 @@ void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
 void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
+  vector_t new_centroid = {.x = 120, .y = 850};
+  body_set_centroid(target, new_centroid);
   scene_set_plant_boy_fertilizer_collected(scene, true);
   printf("made through plant boy\n");
+  //nothing is wrong with the collision handler
 }
 
 void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
   create_collision(scene, player, body,
                    plant_boy_fertilizer_collision_handler, scene,
                    two_body_aux_freer);
+  //this is not what is causing the exception
 }
 
 void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
+  vector_t new_centroid = {.x = 220, .y = 860};
+  body_set_centroid(target, new_centroid);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
   printf("made through dirt girl\n");
 }
@@ -406,6 +412,7 @@ void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *b
   create_collision(scene, player, body,
                    dirt_girl_fertilizer_collision_handler, scene,
                    two_body_aux_freer);
+  //in the collision handler, we want to move the fertilizer to the top left corner
 }
 
 void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis, void *aux) {

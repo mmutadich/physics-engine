@@ -376,6 +376,16 @@ void add_star(scene_t *scene) {
   scene_add_body(scene, star);
 }
 
+int doesnt_contain_star(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == STAR) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void add_universal_gravity(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
@@ -430,9 +440,10 @@ void add_fertilizer_force(scene_t *scene) {
   body_t *plant_boy_fertilizer = scene_get_body(scene, index);
   body_t *dirt_girl_fertilizer = scene_get_body(scene, get_dirt_girl_fertilizer_index(scene));
   create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
-  create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
+  //create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
+  //this should not be here
   create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
-  create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
+  //create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
   create_dirt_girl_fertilizer_force(scene, dirt_girl, dirt_girl_fertilizer);
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
 }
@@ -636,8 +647,8 @@ void emscripten_main(state_t *state) {
     scene_free(state->scene);
     state->scene = make_initial_scene();
   }
-  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene)) {
-    printf("star of mastery\n");
+  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
+    printf("added star\n");
     add_star(state->scene);
   }
   sdl_render_scene(state->scene);
