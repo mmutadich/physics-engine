@@ -117,6 +117,7 @@ typedef struct state {
   double time_elapsed;
 } state_t;
 
+// TODO: CONSOLIDATE ALL GET_X_BODIES
 list_t *get_ledge_bodies(scene_t *scene){
   list_t *ledges = list_init(3, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
@@ -195,6 +196,7 @@ list_t *get_ice_bodies(scene_t *scene) {
   return answer;
 }
 
+// TODO: CONSOLIDATE ALL GET_X_INDEX
 size_t get_plant_boy_index(scene_t *scene){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
@@ -562,11 +564,13 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
+  // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
   add_walls(result);
   add_ledges(result);
   add_blocks(result);
   add_doors(result);
   add_obstacles(result);
+  // TODO: CONSOLIDATE FERTILIZER, PORTALS, TRAMPOLINE TO OBJECT FEATURES
   add_fertilizer(result);
   add_portals(result);
   add_trampoline(result);
