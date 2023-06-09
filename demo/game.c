@@ -433,6 +433,8 @@ void add_fertilizer_force(scene_t *scene) {
   create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
   create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
   create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
+  create_dirt_girl_fertilizer_force(scene, dirt_girl, dirt_girl_fertilizer);
+  create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
 }
 
 void add_boundary_force(scene_t *scene) {

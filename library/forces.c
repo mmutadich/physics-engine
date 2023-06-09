@@ -386,6 +386,7 @@ void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_plant_boy_fertilizer_collected(scene, true);
+  printf("made through plant boy\n");
 }
 
 void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
@@ -398,6 +399,7 @@ void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
+  printf("made through dirt girl\n");
 }
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
