@@ -61,7 +61,7 @@ const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1835, .y = 780};
 const double DOOR_HEIGHT = 120;
 const double DOOR_LENGTH = 10;
 
-// OBSTACLE CONSTANTS
+// OBSTACLE/ICE CONSTANTS
 const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 600, .y = 30};
 const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
 const double OBSTACLE_LENGTH = 120;
@@ -605,18 +605,13 @@ void add_trampoline_force(scene_t *scene) {
 }
 
 void add_ice_force(scene_t *scene) {
-  printf("add ice force\n");
   list_t *ice_bodies = get_ice_bodies(scene);
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
   assert(plant_boy);
-  printf("a checkpoint\n");
-  printf("ice bodies %zu\n", list_size(ice_bodies));
   for (size_t i = 0; i < list_size(ice_bodies); i+=2) {
-    printf("another checkpoint\n");
     body_t *ice = list_get(ice_bodies, i);
-    printf("made it??\n");
     create_ice_force(scene, dirt_girl, ice, 0);
     create_ice_force(scene, plant_boy, ice, 0);
   }
