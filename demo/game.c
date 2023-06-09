@@ -80,8 +80,8 @@ const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 //PORTAL CONSTANTS
 const double PORTAL_HEIGHT = 140;
 const double PORTAL_WIDTH = 20;
-const vector_t ENTRY_PORTAL_CENTROID = {.x = 1650, .y = 95};
-const vector_t EXIT_PORTAL_CENTROID = {.x = 1400, .y = 465};
+const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
+const vector_t EXIT_PORTAL_CENTROID = {.x = 1000, .y = 790};
 const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
 //TRAMPLOINE CONSTANTS

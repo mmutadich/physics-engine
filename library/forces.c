@@ -17,9 +17,9 @@ const double DISTANCE_0 = 5;
 const double ELASTIC = 1;
 const double INELASTIC = 0;
 const double JUMP_IMPULSE = 10000;
-const double TRAMPOLINE_IMPULSE = 10000;
+const double TRAMPOLINE_IMPULSE = 20000;
 const double P_WIDTH = 50;
-const vector_t SPAWN = {.x = 1400, .y = 465};
+const vector_t SPAWN = {.x = 1000, .y = 790};
 
 typedef struct two_body_aux {
   body_t *body1;
@@ -434,7 +434,7 @@ void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axi
   vector_t current_velocity = body_get_velocity(sprite);
   vector_t centroid_sprite = body_get_centroid(sprite);
   vector_t portal_centroid = body_get_centroid(entry_portal);
-  if ( centroid_sprite.x < portal_centroid.x){
+  if ( centroid_sprite.x > portal_centroid.x){
     vector_t new_centroid = {.x = (SPAWN.x - P_WIDTH), .y = SPAWN.y};
     body_set_centroid(sprite, new_centroid);
   } else {
