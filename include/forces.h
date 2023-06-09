@@ -127,4 +127,6 @@ void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vec
 
 void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity);
 
+void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline, double elasticity);
+
 #endif // #ifndef __FORCES_H__

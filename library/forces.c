@@ -17,6 +17,7 @@ const double DISTANCE_0 = 5;
 const double ELASTIC = 1;
 const double INELASTIC = 0;
 const double JUMP_IMPULSE = 10000;
+const double TRAMPOLINE_IMPULSE = 10000;
 const double P_WIDTH = 50;
 const vector_t SPAWN = {.x = 1400, .y = 465};
 
@@ -198,10 +199,9 @@ vector_t calculate_impulse(body_t *body1, body_t *body2, double elasticity,
 }
 
 
-vector_t get_jump_impulse(body_t *body1, body_t *body2, double elasticity,
-                           vector_t collision_axis) {
+vector_t get_impulse(double impulse) {
   //for jumping, we want there to always be a velocity up
-  vector_t result = {.x = 0, .y = JUMP_IMPULSE};
+  vector_t result = {.x = 0, .y = impulse};
   return result;
 }
 
@@ -265,7 +265,7 @@ void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
   assert(ball);
   assert(target);
   //TODO GET RID OF MAGIC NUMBERS
-  vector_t impulse_vector = get_jump_impulse(ball, target, .5, axis); 
+  vector_t impulse_vector = get_impulse(JUMP_IMPULSE); 
   body_add_impulse(ball, impulse_vector);
   vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
   body_add_impulse(target, opposite_impulse_vector);
@@ -454,3 +454,18 @@ void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, b
                    two_body_aux_freer);
   
 }
+
+void trampoline_collision_handler(body_t *sprite, body_t *trampoline, vector_t axis,
+                               void *aux) {
+  assert(sprite);
+  assert(trampoline);
+  vector_t impulse_vector = get_impulse(TRAMPOLINE_IMPULSE); 
+  body_add_impulse(sprite, impulse_vector);
+}
+
+void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline, double elasticity) {
+  create_collision(scene, sprite, trampoline,
+                   trampoline_collision_handler, scene,
+                   two_body_aux_freer);
+}
+  

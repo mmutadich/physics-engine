@@ -171,6 +171,17 @@ list_t *get_portal_bodies(scene_t *scene) {
   return answer;
 }
 
+list_t *get_trampoline_bodies(scene_t *scene) {
+  list_t *answer = list_init(2, list_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == TRAMPOLINE) {
+      list_add(answer, body);
+    }
+  }
+  return answer;
+}
+
 size_t get_plant_boy_index(scene_t *scene){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
@@ -566,6 +577,19 @@ void add_portal_force(scene_t *scene) {
 
 }
 
+void add_trampoline_force(scene_t *scene) {
+  list_t *trampolines = get_trampoline_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  for (size_t i = 0; i < list_size(trampolines); i+=2) {
+    body_t *trampoline = list_get(trampolines, i);
+    create_trampoline_force(scene, dirt_girl, trampoline, 0);
+    create_trampoline_force(scene, plant_boy, trampoline, 0);
+  }
+}
+
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
   body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
@@ -656,6 +680,7 @@ scene_t *make_initial_scene() {
   add_fertilizer_force(result);
   add_boundary_force(result);
   add_portal_force(result);
+  add_trampoline_force(result);
   return result;
 }
 
