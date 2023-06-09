@@ -339,7 +339,7 @@ void sdl_render_scene(scene_t *scene) {
   }
 
   //BACKGROUND IMAGE
-  //SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
+  SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
   //SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
@@ -354,7 +354,23 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, PORTAL_TEXTURE, NULL, &portal_rect);
 
   sdl_show();
-}
+
+  SDL_DestroyTexture(BG_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
+  SDL_DestroyTexture(TREE_TEXTURE);
+  SDL_DestroyTexture(BLOCK_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
+  SDL_DestroyTexture(PORTAL_TEXTURE);
+  //SDL_RenderPresent(renderer);
+  //SDL_DestroyRenderer(renderer);
+  //SDL_DestroyWindow(window); 
+  
+  }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
 
