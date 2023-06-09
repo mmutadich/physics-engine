@@ -79,16 +79,16 @@ const vector_t STAR_CENTROID = {.x = 200, .y = 800};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
 // PORTAL CONSTANTS
-const double PORTAL_HEIGHT = 140;
-const double PORTAL_WIDTH = 20;
 const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
 const vector_t EXIT_PORTAL_CENTROID = {.x = 1000, .y = 790};
+const double PORTAL_HEIGHT = 140;
+const double PORTAL_LENGTH = 20;
 const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
 // TRAMPLOINE CONSTANTS
 const vector_t TRAMPOLINE_CENTROID = {.x = 300, .y= 400};
-const double TRAMPLOINE_LENGTH = 40;
-const double TRAMPLOINE_WIDTH = 120;
+const double TRAMPOLINE_HEIGHT = 40;
+const double TRAMPOLINE_LENGTH = 120;
 
 typedef enum {
   PLANT_BOY = 1,
@@ -275,30 +275,6 @@ list_t *make_wall_shape(char wall) {
   return wall_points;
 }
 
-//make universal gravity for the players
-void add_universal_gravity(scene_t *scene) {
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
-      create_universal_gravity(scene, body, GRAVITY);
-    }
-  }
-}
-
-//make normal force between the ground and the players
-void add_normal_force(scene_t *scene) {
-  list_t *ledges = get_ledge_bodies(scene);
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
-      for (size_t j = 0; j < list_size(ledges); j++) {
-        body_t *ledge = list_get(ledges, j);
-        create_normal_force(scene, body, ledge, GRAVITY);
-      }
-    }
-  }
-}
-
 void add_walls(scene_t *scene) {
   body_t *left_wall = body_init_with_info(make_wall_shape(0), INFINITY_MASS,
                                           COLOR, WALL, NULL);
@@ -311,217 +287,113 @@ void add_walls(scene_t *scene) {
   scene_add_body(scene, right_wall);
 }
 
-list_t *make_ledge_shape(vector_t centroid, double ledge_length) {
+list_t *make_rect_shape(vector_t centroid, double length, double height) {
   list_t *points = list_init(NUM_RECT_POINTS, free);
   for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
     vector_t *point = malloc(sizeof(vector_t));
     assert(point);
     if (i == 0 || i == 1)
-      point->x = centroid.x - ledge_length / 2;
+      point->x = centroid.x - length / 2;
     else
-      point->x = centroid.x + ledge_length / 2;
+      point->x = centroid.x + length / 2;
     if (i == 0 || i == 3)
-      point->y = centroid.y + LEDGE_HEIGHT / 2;
+      point->y = centroid.y + height / 2;
     else
-      point->y = centroid.y - LEDGE_HEIGHT / 2;
+      point->y = centroid.y - height / 2;
     list_add(points, point);
   }
   return points;
 }
 
 void add_ledges(scene_t *scene) {
-  body_t *ledge_floor = body_init_with_info(make_ledge_shape(LEDGE_FLOOR_CENTROID, FLOOR_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *ledge_1 = body_init_with_info(make_ledge_shape(LEDGE_1_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);
-  body_t *ledge_2 = body_init_with_info(make_ledge_shape(LEDGE_2_CENTROID, LEDGE_LENGTH), INFINITY_MASS, COLOR, LEDGE, NULL);   
+  body_t *ledge_floor = body_init_with_info(make_rect_shape(LEDGE_FLOOR_CENTROID, FLOOR_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_1 = body_init_with_info(make_rect_shape(LEDGE_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *ledge_2 = body_init_with_info(make_rect_shape(LEDGE_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);   
   scene_add_body(scene, ledge_floor);     
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
 }
 
-list_t *make_block_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - BLOCK_LENGTH / 2;
-    else
-      point->x = centroid.x + BLOCK_LENGTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + BLOCK_LENGTH / 2;
-    else
-      point->y = centroid.y - BLOCK_LENGTH / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_blocks(scene_t *scene) {
-  body_t *block_1 = body_init_with_info(make_block_shape(BLOCK_1_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);
-  body_t *block_2 = body_init_with_info(make_block_shape(BLOCK_2_CENTROID), INFINITY_MASS, COLOR, BLOCK, NULL);          
+  body_t *block_1 = body_init_with_info(make_rect_shape(BLOCK_1_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, COLOR, BLOCK, NULL);
+  body_t *block_2 = body_init_with_info(make_rect_shape(BLOCK_2_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, COLOR, BLOCK, NULL);          
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
 }
 
-list_t *make_door_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - DOOR_LENGTH / 2;
-    else
-      point->x = centroid.x + DOOR_LENGTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + DOOR_HEIGHT / 2;
-    else
-      point->y = centroid.y - DOOR_HEIGHT / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_doors(scene_t *scene) {
-  body_t *plant_boy_door_right = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_RIGHT, NULL);
-  body_t *plant_boy_door_left = body_init_with_info(make_door_shape(PLANT_BOY_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_LEFT, NULL);
-  body_t *dirt_girl_door_right = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_RIGHT_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_RIGHT, NULL);        
-  body_t *dirt_girl_door_left = body_init_with_info(make_door_shape(DIRT_GIRL_DOOR_LEFT_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_LEFT, NULL);                                                               
+  body_t *plant_boy_door_right = body_init_with_info(make_rect_shape(PLANT_BOY_DOOR_RIGHT_CENTROID, DOOR_LENGTH, DOOR_HEIGHT), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_RIGHT, NULL);
+  body_t *plant_boy_door_left = body_init_with_info(make_rect_shape(PLANT_BOY_DOOR_LEFT_CENTROID, DOOR_LENGTH, DOOR_HEIGHT), INFINITY_MASS, COLOR, PLANT_BOY_DOOR_LEFT, NULL);
+  body_t *dirt_girl_door_right = body_init_with_info(make_rect_shape(DIRT_GIRL_DOOR_RIGHT_CENTROID, DOOR_LENGTH, DOOR_HEIGHT), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_RIGHT, NULL);        
+  body_t *dirt_girl_door_left = body_init_with_info(make_rect_shape(DIRT_GIRL_DOOR_LEFT_CENTROID, DOOR_LENGTH, DOOR_HEIGHT), INFINITY_MASS, COLOR, DIRT_GIRL_DOOR_LEFT, NULL);                                                               
   scene_add_body(scene, plant_boy_door_right);
   scene_add_body(scene, plant_boy_door_left);
   scene_add_body(scene, dirt_girl_door_right);
   scene_add_body(scene, dirt_girl_door_left);
 }
 
-list_t *make_obstacle_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - OBSTACLE_LENGTH / 2;
-    else
-      point->x = centroid.x + OBSTACLE_LENGTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + OBSTACLE_HEIGHT / 2;
-    else
-      point->y = centroid.y - OBSTACLE_HEIGHT / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_obstacles(scene_t *scene) {
-  body_t *plant_boy_obstacle = body_init_with_info(make_obstacle_shape(PLANT_BOY_OBSTACLE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, PLANT_BOY_OBSTACLE, NULL);
-  body_t *dirt_girl_obstacle = body_init_with_info(make_obstacle_shape(DIRT_GIRL_OBSTACLE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
+  body_t *plant_boy_obstacle = body_init_with_info(make_rect_shape(PLANT_BOY_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, PLANT_BOY_OBSTACLE, NULL);
+  body_t *dirt_girl_obstacle = body_init_with_info(make_rect_shape(DIRT_GIRL_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
   scene_add_body(scene, plant_boy_obstacle);
   scene_add_body(scene, dirt_girl_obstacle);
-  body_t *ice = body_init_with_info(make_obstacle_shape(ICE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, ICE, NULL);   
+  body_t *ice = body_init_with_info(make_rect_shape(ICE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, ICE, NULL);   
   scene_add_body(scene, ice);                                  
 }
 
-list_t *make_fertilizer_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - FERTILIZER_LENGTH / 2;
-    else
-      point->x = centroid.x + FERTILIZER_LENGTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + FERTILIZER_LENGTH / 2;
-    else
-      point->y = centroid.y - FERTILIZER_LENGTH / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_fertilizer(scene_t *scene) {
-  body_t *plant_boy_fertilizer = body_init_with_info(make_fertilizer_shape(PLANT_BOY_FERTILIZER_CENTROID), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
-  body_t *dirt_girl_fertilizer = body_init_with_info(make_fertilizer_shape(DIRT_GIRL_FERTILIZER_CENTROID), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
+  body_t *plant_boy_fertilizer = body_init_with_info(make_rect_shape(PLANT_BOY_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
+  body_t *dirt_girl_fertilizer = body_init_with_info(make_rect_shape(DIRT_GIRL_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
   scene_add_body(scene, plant_boy_fertilizer);
   scene_add_body(scene, dirt_girl_fertilizer);
 }
 
-list_t *make_character_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - CHARACTER_SIDE_LENGTH / 2;
-    else
-      point->x = centroid.x + CHARACTER_SIDE_LENGTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + CHARACTER_SIDE_LENGTH / 2;
-    else
-      point->y = centroid.y - CHARACTER_SIDE_LENGTH / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_characters(scene_t *scene) {
-  list_t *plant_boy_shape = make_character_shape(INITIAL_PLANT_BOY_POSITION);
+  list_t *plant_boy_shape = make_rect_shape(INITIAL_PLANT_BOY_POSITION, CHARACTER_SIDE_LENGTH, CHARACTER_SIDE_LENGTH);
   body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
   scene_add_body(scene, plant_boy);
-  list_t *dirt_girl_shape = make_character_shape(INITIAL_DIRT_GIRL_POSITION);
+  list_t *dirt_girl_shape = make_rect_shape(INITIAL_DIRT_GIRL_POSITION, CHARACTER_SIDE_LENGTH, CHARACTER_SIDE_LENGTH);
   body_t *dirt_girl = body_init_with_info(dirt_girl_shape, CHARACTER_MASS, COLOR, DIRT_GIRL, NULL);
   scene_add_body(scene, dirt_girl);
 }
 
-list_t *make_portal_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - PORTAL_WIDTH / 2;
-    else
-      point->x = centroid.x + PORTAL_WIDTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + PORTAL_HEIGHT / 2;
-    else
-      point->y = centroid.y - PORTAL_HEIGHT / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
-list_t *make_trampoline_shape(vector_t centroid) {
-  list_t *points = list_init(NUM_RECT_POINTS, free);
-  for (size_t i = 0; i < NUM_RECT_POINTS; i++) {
-    vector_t *point = malloc(sizeof(vector_t));
-    assert(point);
-    if (i == 0 || i == 1)
-      point->x = centroid.x - TRAMPLOINE_WIDTH / 2;
-    else
-      point->x = centroid.x + TRAMPLOINE_WIDTH / 2;
-    if (i == 0 || i == 3)
-      point->y = centroid.y + TRAMPLOINE_LENGTH / 2;
-    else
-      point->y = centroid.y - TRAMPLOINE_LENGTH / 2;
-    list_add(points, point);
-  }
-  return points;
-}
-
 void add_portals(scene_t *scene){
-  body_t *entry_portal = body_init_with_info(make_portal_shape(ENTRY_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
-  body_t *exit_portal = body_init_with_info(make_portal_shape(EXIT_PORTAL_CENTROID), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
+  body_t *entry_portal = body_init_with_info(make_rect_shape(ENTRY_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
+  body_t *exit_portal = body_init_with_info(make_rect_shape(EXIT_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   scene_add_body(scene, entry_portal);
   scene_add_body(scene, exit_portal);
 }
 
 void add_trampoline(scene_t *scene){
-  body_t *trampoline = body_init_with_info(make_trampoline_shape(TRAMPOLINE_CENTROID), INFINITY_MASS, COLOR, TRAMPOLINE, NULL);
+  body_t *trampoline = body_init_with_info(make_rect_shape(TRAMPOLINE_CENTROID, TRAMPOLINE_LENGTH, TRAMPOLINE_HEIGHT), INFINITY_MASS, COLOR, TRAMPOLINE, NULL);
   scene_add_body(scene, trampoline);
 }
 
 void add_star(scene_t *scene) {
-  body_t *star = body_init_with_info(make_block_shape(STAR_CENTROID), INFINITY_MASS, STAR_COLOR, STAR, NULL);
+  body_t *star = body_init_with_info(make_rect_shape(STAR_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, STAR_COLOR, STAR, NULL);
   scene_add_body(scene, star);
+}
+
+void add_universal_gravity(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
+      create_universal_gravity(scene, body, GRAVITY);
+    }
+  }
+}
+
+void add_normal_force(scene_t *scene) {
+  list_t *ledges = get_ledge_bodies(scene);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
+      for (size_t j = 0; j < list_size(ledges); j++) {
+        body_t *ledge = list_get(ledges, j);
+        create_normal_force(scene, body, ledge, GRAVITY);
+      }
+    }
+  }
 }
 
 void add_game_over_force(scene_t *scene) {
