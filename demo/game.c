@@ -67,6 +67,7 @@ const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
 const double OBSTACLE_LENGTH = 120;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
+const vector_t ICE_CENTROID = {.x = 1300, .y= 370};
 
 // FERTILIZER CONSTANTS
 const vector_t PLANT_BOY_FERTILIZER_CENTROID = {.x = 900, .y = 470};
@@ -77,14 +78,14 @@ const double FERTILIZER_LENGTH = 40;
 const vector_t STAR_CENTROID = {.x = 200, .y = 800};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
-//PORTAL CONSTANTS
+// PORTAL CONSTANTS
 const double PORTAL_HEIGHT = 140;
 const double PORTAL_WIDTH = 20;
 const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
 const vector_t EXIT_PORTAL_CENTROID = {.x = 1000, .y = 790};
 const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
-//TRAMPLOINE CONSTANTS
+// TRAMPLOINE CONSTANTS
 const vector_t TRAMPOLINE_CENTROID = {.x = 300, .y= 400};
 const double TRAMPLOINE_LENGTH = 40;
 const double TRAMPLOINE_WIDTH = 120;
@@ -108,6 +109,7 @@ typedef enum {
   TREE = 16,
   PORTAL = 17,
   TRAMPOLINE = 18,
+  ICE = 19,
 } info_t;
 
 typedef struct state {
@@ -176,6 +178,17 @@ list_t *get_trampoline_bodies(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     if (body_get_info(body) == TRAMPOLINE) {
+      list_add(answer, body);
+    }
+  }
+  return answer;
+}
+
+list_t *get_ice_bodies(scene_t *scene) {
+  list_t *answer = list_init(2, list_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == ICE) {
       list_add(answer, body);
     }
   }
@@ -402,6 +415,8 @@ void add_obstacles(scene_t *scene) {
   body_t *dirt_girl_obstacle = body_init_with_info(make_obstacle_shape(DIRT_GIRL_OBSTACLE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
   scene_add_body(scene, plant_boy_obstacle);
   scene_add_body(scene, dirt_girl_obstacle);
+  body_t *ice = body_init_with_info(make_obstacle_shape(ICE_CENTROID), INFINITY_MASS, OBSTACLE_COLOR, ICE, NULL);   
+  scene_add_body(scene, ice);                                  
 }
 
 list_t *make_fertilizer_shape(vector_t centroid) {
@@ -574,7 +589,6 @@ void add_portal_force(scene_t *scene) {
     create_portal_force(scene, dirt_girl, portal_1, portal_2, 0);
     create_portal_force(scene, plant_boy, portal_1, portal_2, 0);
   }
-
 }
 
 void add_trampoline_force(scene_t *scene) {
@@ -587,6 +601,24 @@ void add_trampoline_force(scene_t *scene) {
     body_t *trampoline = list_get(trampolines, i);
     create_trampoline_force(scene, dirt_girl, trampoline, 0);
     create_trampoline_force(scene, plant_boy, trampoline, 0);
+  }
+}
+
+void add_ice_force(scene_t *scene) {
+  printf("add ice force\n");
+  list_t *ice_bodies = get_ice_bodies(scene);
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  printf("a checkpoint\n");
+  printf("ice bodies %zu\n", list_size(ice_bodies));
+  for (size_t i = 0; i < list_size(ice_bodies); i+=2) {
+    printf("another checkpoint\n");
+    body_t *ice = list_get(ice_bodies, i);
+    printf("made it??\n");
+    create_ice_force(scene, dirt_girl, ice, 0);
+    create_ice_force(scene, plant_boy, ice, 0);
   }
 }
 
@@ -681,6 +713,7 @@ scene_t *make_initial_scene() {
   add_boundary_force(result);
   add_portal_force(result);
   add_trampoline_force(result);
+  add_ice_force(result);
   return result;
 }
 

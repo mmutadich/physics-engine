@@ -18,6 +18,7 @@ const double ELASTIC = 1;
 const double INELASTIC = 0;
 const double JUMP_IMPULSE = 10000;
 const double TRAMPOLINE_IMPULSE = 20000;
+const double ICE_VELOCITY_FACTOR = 0.1;
 const double P_WIDTH = 50;
 const vector_t SPAWN = {.x = 1000, .y = 790};
 
@@ -467,5 +468,16 @@ void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline,
   create_collision(scene, sprite, trampoline,
                    trampoline_collision_handler, scene,
                    two_body_aux_freer);
+}
+
+void ice_collision_handler(body_t *sprite, body_t *ice, vector_t axis,
+                               void *aux) {
+  assert(sprite);
+  assert(ice);
+  body_decrease_velocity(sprite, ICE_VELOCITY_FACTOR);
+}
+
+void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity) {
+  create_collision(scene, sprite, ice, ice_collision_handler, scene, two_body_aux_freer);
 }
   

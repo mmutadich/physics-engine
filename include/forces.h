@@ -129,4 +129,6 @@ void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, b
 
 void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline, double elasticity);
 
+void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity);
+
 #endif // #ifndef __FORCES_H__

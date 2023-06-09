@@ -174,3 +174,8 @@ void body_reset(body_t *body) {
   body->impulse = IMPULSE_0;
   body->force = FORCE_0;
 }
+
+void body_decrease_velocity(body_t *body, double factor) {
+  vector_t new_velocity = vec_multiply(factor, body->velocity); 
+  body->velocity = new_velocity;
+}

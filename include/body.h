@@ -201,4 +201,6 @@ void body_reset(body_t *body);
 
 void body_set_color(body_t *body, rgb_color_t color);
 
+void body_decrease_velocity(body_t *body, double factor);
+
 #endif // #ifndef __BODY_H__
