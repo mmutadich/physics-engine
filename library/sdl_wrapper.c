@@ -356,24 +356,6 @@ void sdl_render_scene(scene_t *scene) {
   sdl_show();
 }
 
-/*void destroy_textures() {
-  SDL_Delay(2000);
-  SDL_DestroyTexture(BG_TEXTURE);
-  SDL_DestroyTexture(PLANT_BOY_TEXTURE);
-  SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
-  SDL_DestroyTexture(TREE_TEXTURE);
-  SDL_DestroyTexture(BLOCK_TEXTURE);
-  SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
-  SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
-  SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
-  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
-  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
-  SDL_DestroyTexture(PORTAL_TEXTURE);
-  SDL_RenderPresent(renderer);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-}*/
-
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
 
 double time_since_last_tick(void) {

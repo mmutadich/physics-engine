@@ -83,6 +83,23 @@ void scene_free(scene_t *scene) {
   list_free(scene->bodies);
   list_free(scene->forces);
   free(scene);
+
+  //TODO: make these calls to destroy textures and then free each texture after
+   /*
+  SDL_DestroyTexture(BG_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
+  SDL_DestroyTexture(TREE_TEXTURE);
+  SDL_DestroyTexture(BLOCK_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
+  SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
+  SDL_DestroyTexture(PORTAL_TEXTURE);
+  SDL_RenderPresent(renderer);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window); */ 
 }
 
 /**
