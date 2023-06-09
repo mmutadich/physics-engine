@@ -340,7 +340,7 @@ void add_obstacles(scene_t *scene) {
   scene_add_body(scene, plant_boy_obstacle);
   scene_add_body(scene, dirt_girl_obstacle);
   body_t *ice = body_init_with_info(make_rect_shape(ICE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, ICE, NULL);   
-  scene_add_body(scene, ice);                                  
+  scene_add_body(scene, ice);                             
 }
 
 void add_fertilizer(scene_t *scene) {
