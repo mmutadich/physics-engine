@@ -252,7 +252,7 @@ void sdl_show(void) {
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
 
-  SDL_Texture *BG_TEXTURE = IMG_LoadTexture(renderer, BG);
+  //SDL_Texture *BG_TEXTURE = IMG_LoadTexture(renderer, BG);
 
   SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
   SDL_Rect plant_boy_rect = {500,500,100,100};
