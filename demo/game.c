@@ -31,8 +31,8 @@ const double INFINITY_MASS = INFINITY;
 const double ELASTICITY = 0.5;
 
 // CHARACTER CONSTANTS
-const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 500, .y = 500};
-const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 500, .y = 500};
+const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 80};
+const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 80};
 const double CHARACTER_VELOCITY = 1000;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
@@ -78,16 +78,16 @@ const vector_t STAR_CENTROID = {.x = 200, .y = 800};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
 //PORTAL CONSTANTS
-const double PORTAL_HEIGHT = 190;
+const double PORTAL_HEIGHT = 140;
 const double PORTAL_WIDTH = 20;
-const vector_t ENTRY_PORTAL_CENTROID = {.x = 1850, .y = 95};
-const vector_t EXIT_PORTAL_CENTROID = {.x = 1600, .y = 465};
+const vector_t ENTRY_PORTAL_CENTROID = {.x = 1650, .y = 95};
+const vector_t EXIT_PORTAL_CENTROID = {.x = 1400, .y = 465};
 const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
 //TRAMPLOINE CONSTANTS
-const vector_t TRAMPOLINE_CENTROID = {.x = 210, .y= 430};
-const double TRAMPLOINE_LENGTH = 70;
-const double TRAMPLOINE_WIDTH = 40;
+const vector_t TRAMPOLINE_CENTROID = {.x = 300, .y= 400};
+const double TRAMPLOINE_LENGTH = 40;
+const double TRAMPLOINE_WIDTH = 120;
 
 typedef enum {
   PLANT_BOY = 1,
