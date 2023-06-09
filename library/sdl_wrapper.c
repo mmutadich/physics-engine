@@ -339,7 +339,7 @@ void sdl_render_scene(scene_t *scene) {
   }
 
   //BACKGROUND IMAGE
-  SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
+  //SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
   //SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
