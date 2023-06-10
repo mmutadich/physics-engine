@@ -14,6 +14,8 @@
 typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
                                     void *aux);
 
+typedef void (*bodies_collision_handler_t)(list_t *bodies, void *aux);
+
 /**
  * Adds a force creator to a scene that applies gravity between two bodies.
  * The force creator will be called each tick
@@ -130,5 +132,9 @@ void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, b
 void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline, double elasticity);
 
 void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity);
+
+void create_win_force(scene_t *scene, body_t *player, body_t *body);
+
+void guarantee_all_collisions(scene_t *scene, list_t *bodies);
 
 #endif // #ifndef __FORCES_H__

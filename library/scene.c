@@ -17,6 +17,7 @@ typedef struct scene {
   bool game_over; //true when the game is over
   bool plant_boy_fertilizer_collected;
   bool dirt_girl_fertilizer_collected;
+  int doors_reached; //should be two when the game is over
 } scene_t;
 
 typedef struct force {

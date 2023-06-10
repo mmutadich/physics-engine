@@ -132,14 +132,13 @@ list_t *get_game_over_bodies(scene_t *scene) {
   list_t *answer = list_init(8, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     void *info = body_get_info(scene_get_body(scene,i));
-    if (info == PLANT_BOY_DOOR_LEFT || info == PLANT_BOY_DOOR_RIGHT ||
-        info == DIRT_GIRL_DOOR_LEFT || info == DIRT_GIRL_DOOR_RIGHT ||
-        info == PLANT_BOY_OBSTACLE || info == DIRT_GIRL_OBSTACLE) {
+    if (info == PLANT_BOY_OBSTACLE || info == DIRT_GIRL_OBSTACLE) {
       list_add(answer, scene_get_body(scene,i));
     }
   }
   return answer;
 }
+
 
 list_t *get_fertilizer_bodies(scene_t *scene) {
   list_t *answer = list_init(8, body_free);
@@ -421,19 +420,30 @@ void add_game_over_force(scene_t *scene) {
   }
 }
 
-void add_fertilizer_force(scene_t *scene) {
-  /*
-  list_t *fertilizer_bodies = get_fertilizer_bodies(scene);
+void add_win_force(scene_t *scene) {
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
   assert(plant_boy);
-  for (size_t i = 0; i < list_size(fertilizer_bodies); i++) {
-    body_t *body = list_get(fertilizer_bodies, i);
-    create_dirt_girl_fertilizer_force(scene, dirt_girl, body);
-    create_plant_boy_fertilizer_force(scene, plant_boy, body);
+
+  list_t *bodies = list_init(10, body_free);
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    void *info = body_get_info(scene_get_body(scene,i));
+    if (info == PLANT_BOY_DOOR_LEFT || info == PLANT_BOY_DOOR_RIGHT) {
+      list_add(bodies, plant_boy);
+      list_add(bodies, scene_get_body(scene,i));
+    }
+    else if (info == DIRT_GIRL_DOOR_LEFT || info == DIRT_GIRL_DOOR_RIGHT) {
+      list_add(bodies, dirt_girl);
+      list_add(bodies, scene_get_body(scene,i));
+    }
   }
-  */
+  printf("amount of doors: %d\n", list_size(bodies));
+  guarantee_all_collisions(scene, bodies);
+}
+
+
+void add_fertilizer_force(scene_t *scene) {
   body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));  
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   size_t index = get_plant_boy_fertilizer_index(scene);
@@ -598,6 +608,7 @@ scene_t *make_initial_scene() {
   add_portal_force(result);
   add_trampoline_force(result);
   add_ice_force(result);
+  add_win_force(result);
   return result;
 }
 
@@ -648,7 +659,6 @@ void emscripten_main(state_t *state) {
     state->scene = make_initial_scene();
   }
   if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
-    printf("added star\n");
     add_star(state->scene);
   }
   sdl_render_scene(state->scene);

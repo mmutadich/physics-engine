@@ -44,6 +44,15 @@ typedef struct collision_aux {
   bool hold_colliding; //true when we want the force to be applied multiple times if is_collision is true
 } collision_aux_t;
 
+typedef struct bodies_collision_aux {
+  list_t *bodies;
+  bodies_collision_handler_t handler;
+  free_func_t aux_freer;
+  bool is_colliding;
+  void *aux;
+  bool hold_colliding; //true when we want the force to be applied multiple times if is_collision is true
+} bodies_collision_aux_t;
+
 void collision_aux_freer(void *collision_aux) {
   collision_aux_t *ca = (collision_aux_t *)collision_aux;
   assert(ca);
@@ -320,7 +329,6 @@ void apply_universal_gravity(void *aux) {
   one_body_aux_t *oba = (one_body_aux_t*)aux;
   vector_t gravity = {.x = 0, .y = oba->constant};
   body_add_force(oba->body, gravity);
-  //printf("force y after g: %f, \n", body_get_force(oba->body).y);
 }
 
 void create_universal_gravity(scene_t *scene, body_t *body, double gravity) {
@@ -369,7 +377,6 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
 
 void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   //we know the aux is a scene
-  printf("anything\n");
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_game_over(scene, true);
@@ -388,8 +395,6 @@ void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   vector_t new_centroid = {.x = 120, .y = 850};
   body_set_centroid(target, new_centroid);
   scene_set_plant_boy_fertilizer_collected(scene, true);
-  printf("made through plant boy\n");
-  //nothing is wrong with the collision handler
 }
 
 void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
@@ -405,7 +410,6 @@ void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   vector_t new_centroid = {.x = 220, .y = 860};
   body_set_centroid(target, new_centroid);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
-  printf("made through dirt girl\n");
 }
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
@@ -492,4 +496,78 @@ void ice_collision_handler(body_t *sprite, body_t *ice, vector_t axis,
 void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity) {
   create_collision_hold_on(scene, sprite, ice, ice_collision_handler, scene, two_body_aux_freer);
 }
-  
+
+
+
+
+bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
+                                    bodies_collision_handler_t handler,
+                                    free_func_t aux_freer, void *aux) {
+  bodies_collision_aux_t *result = malloc(sizeof(collision_aux_t));
+  assert(result);
+  result->bodies = bodies;
+  result->handler = handler;
+  result->aux = aux;
+  result->aux_freer = aux_freer;
+  result->is_colliding = false;
+  result->hold_colliding = false;
+  return result;
+}
+
+
+void apply_collision_multiple(void *c_aux) {
+  bodies_collision_aux_t *collision_aux = (bodies_collision_aux_t *)c_aux;
+  assert(collision_aux);
+  bool keep_track = false;
+  for (size_t i = 0; i < list_size(collision_aux->bodies) - 1; i++) {
+    body_t *body1 = list_get(collision_aux->bodies, i);
+    body_t *body2 = list_get(collision_aux->bodies, i + 1);
+    list_t *shape1 = body_get_shape(body1);
+    list_t *shape2 = body_get_shape(body2);
+    assert(shape1);
+    assert(shape2);
+    bool keep_track = true;
+    if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
+      vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
+      printf("found a collision\n");
+    }
+    if (!collision_get_collided(find_collision(shape1, shape2))) {
+      keep_track = false;
+    }
+    list_free(shape1);
+    list_free(shape2);
+  }
+  collision_aux->is_colliding = keep_track;
+  if (collision_aux->is_colliding) {
+    collision_aux->handler(collision_aux->bodies, collision_aux->aux);
+  }
+}
+
+void bodies_collision_aux_freer(void *collision_aux) {
+  bodies_collision_aux_t *ca = (bodies_collision_aux_t *)collision_aux;
+  assert(ca);
+  if (ca->aux_freer != NULL) {
+    ca->aux_freer(ca->aux);
+  }
+  free(ca);
+}
+
+void create_collision_multiple(scene_t *scene, list_t *bodies,
+                      bodies_collision_handler_t handler, void *aux,
+                      free_func_t freer) {
+  bodies_collision_aux_t *collision_aux =
+      bodies_collision_aux_init(bodies, handler, freer, aux);
+  scene_add_bodies_force_creator(scene, apply_collision_multiple, collision_aux, bodies,
+                                 bodies_collision_aux_freer);
+  printf("made multiple collision\n");
+}
+
+void win_handler(list_t *bodies, void *aux) {
+  printf("won the game\n");
+}
+
+void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
+  create_collision_multiple(scene, bodies, win_handler, NULL, NULL);
+  printf("made to the end of guarantee all collisions\n");
+}
+
