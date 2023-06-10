@@ -518,16 +518,17 @@ bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
 void apply_collision_multiple(void *c_aux) {
   bodies_collision_aux_t *collision_aux = (bodies_collision_aux_t *)c_aux;
   assert(collision_aux);
-  bool keep_track = false;
-  for (size_t i = 0; i < list_size(collision_aux->bodies) - 1; i++) {
+  bool keep_track = true;
+  for (size_t i = 0; i < list_size(collision_aux->bodies) - 1; i+=2) {
     body_t *body1 = list_get(collision_aux->bodies, i);
     body_t *body2 = list_get(collision_aux->bodies, i + 1);
     list_t *shape1 = body_get_shape(body1);
     list_t *shape2 = body_get_shape(body2);
     assert(shape1);
     assert(shape2);
-    bool keep_track = true;
     if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
+      printf("body1: %d\n", body_get_info(body1));
+      printf("body2: %d\n", body_get_info(body2));
       vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
     }
     if (!collision_get_collided(find_collision(shape1, shape2))) {
@@ -559,7 +560,6 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
       bodies_collision_aux_init(bodies, handler, freer, aux);
   scene_add_bodies_force_creator(scene, apply_collision_multiple, collision_aux, bodies,
                                  bodies_collision_aux_freer);
-  printf("made multiple collision\n");
 }
 
 void win_handler(list_t *bodies, void *aux) {
