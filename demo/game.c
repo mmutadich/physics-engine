@@ -54,9 +54,9 @@ const vector_t BLOCK_2_CENTROID = {.x = 95, .y = 465};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
-const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1565, .y = 780};
+const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1585, .y = 780};
 const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1635, .y = 780};
-const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1765, .y = 780};
+const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1785, .y = 780};
 const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1835, .y = 780};
 const double DOOR_HEIGHT = 120;
 const double DOOR_LENGTH = 10;

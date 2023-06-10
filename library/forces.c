@@ -529,7 +529,6 @@ void apply_collision_multiple(void *c_aux) {
     bool keep_track = true;
     if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
       vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
-      printf("found a collision\n");
     }
     if (!collision_get_collided(find_collision(shape1, shape2))) {
       keep_track = false;
@@ -539,6 +538,7 @@ void apply_collision_multiple(void *c_aux) {
   }
   collision_aux->is_colliding = keep_track;
   if (collision_aux->is_colliding) {
+    printf("yes! both collisions!\n");
     collision_aux->handler(collision_aux->bodies, collision_aux->aux);
   }
 }
