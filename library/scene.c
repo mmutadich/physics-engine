@@ -71,6 +71,7 @@ scene_t *scene_init(void) {
   result->game_over = false;
   result->plant_boy_fertilizer_collected = false;
   result->dirt_girl_fertilizer_collected = false;
+  result->doors_reached = false;
   assert(result);
   return result;
 }

@@ -545,13 +545,18 @@ void apply_collision_multiple(void *c_aux) {
 }
 
 void bodies_collision_aux_freer(void *collision_aux) {
+  printf("calling freer\n");
   bodies_collision_aux_t *ca = (bodies_collision_aux_t *)collision_aux;
   assert(ca);
   if (ca->aux_freer != NULL) {
     ca->aux_freer(ca->aux);
   }
+  free(ca->bodies);
   free(ca);
+  printf("freed bodies collision\n");
 }
+
+///looks good below this point?
 
 void create_collision_multiple(scene_t *scene, list_t *bodies,
                       bodies_collision_handler_t handler, void *aux,
@@ -559,7 +564,7 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
   bodies_collision_aux_t *collision_aux =
       bodies_collision_aux_init(bodies, handler, freer, aux);
   scene_add_bodies_force_creator(scene, apply_collision_multiple, collision_aux, bodies,
-                                 bodies_collision_aux_freer);
+                                 bodies_collision_aux_freer); ////
 }
 
 void win_handler(list_t *bodies, void *aux) {
