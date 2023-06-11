@@ -60,6 +60,7 @@ void force_free(force_t *force) {
     //printf("freed the bodies\n");
   if (force->aux_freer != NULL) //
     force->aux_freer(force->aux);
+  free(force->bodies);
   free(force);
 }
 

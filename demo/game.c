@@ -627,16 +627,17 @@ void emscripten_free(state_t *state) {
 }
 
 void emscripten_main(state_t *state) {
+  assert(state->scene);
+    //when referencing scene ALWAYS call state->scene
+  sdl_clear();
+  double dt = time_since_last_tick();
+
   if (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN) {
-    sdl_clear();
+    scene_tick(state->scene, dt);
     sdl_show();
     //need to render the background here?
   }
   if (scene_get_screen(state->scene) == GAME_SCREEN) {
-    assert(state->scene);
-    //when referencing scene ALWAYS call state->scene
-    sdl_clear();
-    double dt = time_since_last_tick();
     state->time_elapsed += dt;
     for (size_t i = 0; i < scene_bodies(state->scene); i++) {
       body_t *body = scene_get_body(state->scene, i);
