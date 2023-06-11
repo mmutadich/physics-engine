@@ -75,7 +75,7 @@ const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1500, .y = 120};
 const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
-const vector_t STAR_CENTROID = {.x = 200, .y = 800};
+const vector_t STAR_CENTROID = {.x = 350, .y = 850};
 const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
 // PORTAL CONSTANTS
@@ -238,7 +238,7 @@ size_t get_dirt_girl_fertilizer_index(scene_t *scene){
   return NULL;
 }
 
-list_t *make_wall_shape(char wall) {
+list_t *make_wall_shape(char wall, wall_length) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
   for (size_t i = 0; i < NUM_RECT_POINTS;i++) {        
@@ -247,7 +247,7 @@ list_t *make_wall_shape(char wall) {
       if (i == 0 || i == 1)
         point->x = SDL_MIN.x;
       else
-        point->x = SDL_MIN.x + WALL_LENGTH;
+        point->x = SDL_MIN.x + wall_length;
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
@@ -263,13 +263,13 @@ list_t *make_wall_shape(char wall) {
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
-        point->y = SDL_MAX.y - WALL_LENGTH;
+        point->y = SDL_MAX.y - wall_length;
       list_add(wall_points, point);
     }
     if (wall == 2) { // right
       vector_t *point = malloc(sizeof(vector_t));
       if (i == 0 || i == 1)
-        point->x = SDL_MAX.x - WALL_LENGTH;
+        point->x = SDL_MAX.x - wall_length;
       else
         point->x = SDL_MAX.x;
       if (i == 0 || i == 3)
@@ -283,12 +283,13 @@ list_t *make_wall_shape(char wall) {
 }
 
 void add_walls(scene_t *scene) {
-  body_t *left_wall = body_init_with_info(make_wall_shape(0), INFINITY_MASS,
+  body_t *left_wall = body_init_with_info(make_wall_shape(0, WALL_LENGTH), INFINITY_MASS,
                                           COLOR, WALL, NULL);
-  body_t *top_wall = body_init_with_info(make_wall_shape(1), INFINITY_MASS,
+  body_t *top_wall = body_init_with_info(make_wall_shape(1, WALL_LENGTH), INFINITY_MASS,
                                          COLOR, WALL, NULL);
-  body_t *right_wall = body_init_with_info(make_wall_shape(2), INFINITY_MASS,
+  body_t *right_wall = body_init_with_info(make_wall_shape(2, WALL_LENGTH), INFINITY_MASS,
                                            COLOR, WALL, NULL);
+
   scene_add_body(scene, left_wall);
   scene_add_body(scene, top_wall);
   scene_add_body(scene, right_wall);
@@ -454,10 +455,10 @@ void add_fertilizer_force(scene_t *scene) {
   size_t index = get_plant_boy_fertilizer_index(scene);
   body_t *plant_boy_fertilizer = scene_get_body(scene, index);
   body_t *dirt_girl_fertilizer = scene_get_body(scene, get_dirt_girl_fertilizer_index(scene));
-  create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
+  //create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
   //create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
   //this should not be here
-  create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
+  //create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
   //create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
   create_dirt_girl_fertilizer_force(scene, dirt_girl, dirt_girl_fertilizer);
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
