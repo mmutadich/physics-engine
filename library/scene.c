@@ -53,14 +53,13 @@ force_t *force_bodies_init(force_creator_t force_creator, void *aux,
 void force_free(force_t *force) {
   //printf("started force free\n");
     //printf("freed the aux\n");
-  //if (force->bodies != NULL)
+  if (force->bodies != NULL)
     //the freer at this point is null!
     //list_get_freer(force->bodies);
-    //list_free(force->bodies); //messing up at this part
+    list_free(force->bodies); //messing up at this part
     //printf("freed the bodies\n");
   if (force->aux_freer != NULL) //
     force->aux_freer(force->aux);
-  free(force->bodies);
   free(force);
 }
 

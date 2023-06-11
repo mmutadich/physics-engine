@@ -570,6 +570,7 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
     body_t *body = list_get(bodies, i);
     list_add(bodies_null_freer, body);
   }
+  
   bodies_collision_aux_t *collision_aux =
       bodies_collision_aux_init(bodies_null_freer, handler, aux_freer, aux);
   assert(list_size(bodies_null_freer) > 0);

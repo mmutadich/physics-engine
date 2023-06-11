@@ -33,7 +33,7 @@ const double ELASTICITY = 0.5;
 // CHARACTER CONSTANTS
 const vector_t INITIAL_PLANT_BOY_POSITION = {.x = 100, .y = 80};
 const vector_t INITIAL_DIRT_GIRL_POSITION = {.x = 300, .y = 80};
-const double CHARACTER_VELOCITY = 1000;
+const double CHARACTER_VELOCITY = 650;
 const double CHARACTER_SIDE_LENGTH = 80;
 const double CHARACTER_MASS = 10;
 
@@ -557,7 +557,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     assert(body_get_info(plant_boy) == PLANT_BOY);
   }
   if (type == KEY_PRESSED) {
-    if (key == ' ' && (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN)) {
+    if (key == ' ' && scene_get_screen(state->scene) == START_SCREEN) {
       state->scene = make_initial_scene();
       scene_set_screen(state->scene, GAME_SCREEN);
     }
@@ -632,7 +632,12 @@ void emscripten_main(state_t *state) {
   sdl_clear();
   double dt = time_since_last_tick();
 
-  if (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN) {
+  if (scene_get_screen(state->scene) == WIN_SCREEN) {
+    scene_free(state->scene);
+    state->scene = make_start_scene();
+    scene_set_screen(state->scene, START_SCREEN);
+  }
+  if (scene_get_screen(state->scene) == START_SCREEN) {
     scene_tick(state->scene, dt);
     sdl_show();
     //need to render the background here?
