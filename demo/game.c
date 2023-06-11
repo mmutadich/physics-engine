@@ -338,16 +338,35 @@ list_t *make_rect_shape(vector_t centroid, double length, double height) {
 }
 
 void add_ledges(scene_t *scene) {
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  vector_t *dimensions_character = malloc(sizeof(vector_t));
+  dimensions_character->x = CHARACTER_SIDE_LENGTH;
+  dimensions_character->y = CHARACTER_SIDE_LENGTH;
+  vector_t *dimensions_ledge = malloc(sizeof(vector_t));
+  dimensions_ledge->x = LEDGE_LENGTH;
+  dimensions_ledge->y = LEDGE_HEIGHT;
+
   body_t *ledge_floor = body_init_with_info(make_rect_shape(LEDGE_FLOOR_CENTROID, FLOOR_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);
   body_t *ledge_1 = body_init_with_info(make_rect_shape(LEDGE_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);
   body_t *ledge_2 = body_init_with_info(make_rect_shape(LEDGE_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);   
   scene_add_body(scene, ledge_floor);     
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
+  
   body_t *boundary_1 = body_init_with_info(make_rect_shape(BOUNDARY_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);
   body_t *boundary_2 = body_init_with_info(make_rect_shape(BOUNDARY_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);   
   scene_add_body(scene, boundary_1);
   scene_add_body(scene, boundary_2);
+  list_t *dimensions = list_init(2, free);
+  list_add(dimensions, dimensions_character);
+  list_add(dimensions, dimensions_ledge);
+  create_boundary_force(scene, dirt_girl, boundary_1, dimensions);
+  create_boundary_force(scene, plant_boy, boundary_1, dimensions);
+  create_boundary_force(scene, dirt_girl, boundary_2, dimensions);
+  create_boundary_force(scene, plant_boy, boundary_2, dimensions);
 }
 
 void add_blocks(scene_t *scene) {
@@ -356,10 +375,28 @@ void add_blocks(scene_t *scene) {
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
 
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  vector_t *dimensions_character = malloc(sizeof(vector_t));
+  dimensions_character->x = CHARACTER_SIDE_LENGTH;
+  dimensions_character->y = CHARACTER_SIDE_LENGTH;
+  vector_t *dimensions_block = malloc(sizeof(vector_t));
+  dimensions_block->x = WALL_LENGTH;
+  dimensions_block->y = BLOCK_LENGTH;
   body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);
   body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);          
   scene_add_body(scene, boundary_block_1);
   scene_add_body(scene, boundary_block_2);
+
+  list_t *dimensions = list_init(2, free);
+  list_add(dimensions, dimensions_character);
+  list_add(dimensions, dimensions_block);
+  create_boundary_force(scene, dirt_girl, boundary_block_1, dimensions);
+  create_boundary_force(scene, plant_boy, boundary_block_1, dimensions);
+  create_boundary_force(scene, dirt_girl, boundary_block_2, dimensions);
+  create_boundary_force(scene, plant_boy, boundary_block_2, dimensions);
 }
 
 void add_doors(scene_t *scene) {
@@ -497,24 +534,6 @@ void add_fertilizer_force(scene_t *scene) {
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
 }
 
-/*
-void add_boundary_force(scene_t *scene) {
-  list_t *boundary_bodies = get_wall_bodies(scene);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
-  assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
-  assert(plant_boy);
-  vector_t character_dimensions = {.x = CHARACTER_SIDE_LENGTH, .y = CHARACTER_SIDE_LENGTH};
-
-
-  for (size_t i = 0; i < list_size(boundary_bodies); i++) {
-    vector_t boundary_dimensions = {.x = WALL_LENGTH, .y}
-    body_t *body = list_get(boundary_bodies, i);
-    create_boundary_force(scene, dirt_girl, body, dimensions);
-    create_boundary_force(scene, plant_boy, body, dimensions);
-  }
-}*/
-
 void add_portal_force(scene_t *scene) {
   list_t *portals = get_portal_bodies(scene);
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
@@ -559,8 +578,11 @@ scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
   // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
-  printf("added walls\n");
+  // add players
+  add_characters(result);
   add_ledges(result);
+  add_walls(result);
+  printf("added walls\n");
   add_blocks(result);
   add_doors(result);
   add_obstacles(result);
@@ -568,9 +590,6 @@ scene_t *make_initial_scene() {
   add_fertilizer(result);
   add_portals(result);
   add_trampoline(result);
-  // add players
-  add_characters(result);
-  add_walls(result);
   // forces
   add_universal_gravity(result);
   add_normal_force(result);
