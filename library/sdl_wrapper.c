@@ -305,7 +305,7 @@ void sdl_render_scene(scene_t *scene) {
     }
     //OBSTACLES:
     if (body_get_info(body) == 11) {
-      block_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 5;
+      block_rect.x = window.x - 140*get_scene_scale(get_window_center()) - 40;
       block_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 5;
     }
     //POWERUPS:

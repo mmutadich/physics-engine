@@ -23,6 +23,7 @@ const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
 const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
 const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will add drawings on top
+const rgb_color_t BOUNDARY_COLOR = {.5, 0.9, 0.5}; //color to see the boundaries
 const rgb_color_t BACKGROUND_COLOR = {1, 1, 1}; 
 
 // GENERAL BODY CONSTANTS
@@ -44,13 +45,17 @@ const double WALL_LENGTH = 10;
 const vector_t LEDGE_FLOOR_CENTROID = {.x = 1000, .y = 20};
 const vector_t LEDGE_1_CENTROID = {.x = 700, .y = 350};
 const vector_t LEDGE_2_CENTROID = {.x = 1300, .y = 700};
+const vector_t BOUNDARY_1_CENTROID = {.x = 700, .y = 330};
+const vector_t BOUNDARY_2_CENTROID = {.x = 1300, .y = 680};
 const double LEDGE_LENGTH = 1700;
 const double FLOOR_LENGTH = 2200;
-const double LEDGE_HEIGHT = 40;
+const double LEDGE_HEIGHT = 20;
 
 // BLOCK CONSTANTS
 const vector_t BLOCK_1_CENTROID = {.x = 1905, .y = 95};
 const vector_t BLOCK_2_CENTROID = {.x = 95, .y = 465};
+const vector_t BOUNDARY_BLOCK_1_CENTROID = {.x = 1810, .y = 95};
+const vector_t BOUNDARY_BLOCK_2_CENTROID = {.x = 190, .y = 465};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
@@ -110,6 +115,7 @@ typedef enum {
   PORTAL = 17,
   TRAMPOLINE = 18,
   ICE = 19,
+  BOUNDARY = 20,
 } info_t;
 
 typedef enum {
@@ -238,7 +244,7 @@ size_t get_dirt_girl_fertilizer_index(scene_t *scene){
   return NULL;
 }
 
-list_t *make_wall_shape(char wall, wall_length) {
+list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
   for (size_t i = 0; i < NUM_RECT_POINTS;i++) {        
@@ -247,7 +253,7 @@ list_t *make_wall_shape(char wall, wall_length) {
       if (i == 0 || i == 1)
         point->x = SDL_MIN.x;
       else
-        point->x = SDL_MIN.x + wall_length;
+        point->x = SDL_MIN.x + WALL_LENGTH;
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
@@ -263,13 +269,13 @@ list_t *make_wall_shape(char wall, wall_length) {
       if (i == 0 || i == 3)
         point->y = SDL_MAX.y;
       else
-        point->y = SDL_MAX.y - wall_length;
+        point->y = SDL_MAX.y - WALL_LENGTH;
       list_add(wall_points, point);
     }
     if (wall == 2) { // right
       vector_t *point = malloc(sizeof(vector_t));
       if (i == 0 || i == 1)
-        point->x = SDL_MAX.x - wall_length;
+        point->x = SDL_MAX.x - WALL_LENGTH;
       else
         point->x = SDL_MAX.x;
       if (i == 0 || i == 3)
@@ -283,16 +289,11 @@ list_t *make_wall_shape(char wall, wall_length) {
 }
 
 void add_walls(scene_t *scene) {
-  body_t *left_wall = body_init_with_info(make_wall_shape(0, WALL_LENGTH), INFINITY_MASS,
+  for (size_t i = 0; i < 3; i++) {
+    body_t *wall = body_init_with_info(make_wall_shape(i), INFINITY_MASS,
                                           COLOR, WALL, NULL);
-  body_t *top_wall = body_init_with_info(make_wall_shape(1, WALL_LENGTH), INFINITY_MASS,
-                                         COLOR, WALL, NULL);
-  body_t *right_wall = body_init_with_info(make_wall_shape(2, WALL_LENGTH), INFINITY_MASS,
-                                           COLOR, WALL, NULL);
-
-  scene_add_body(scene, left_wall);
-  scene_add_body(scene, top_wall);
-  scene_add_body(scene, right_wall);
+    scene_add_body(scene, wall);
+  }
 }
 
 list_t *make_rect_shape(vector_t centroid, double length, double height) {
@@ -320,6 +321,10 @@ void add_ledges(scene_t *scene) {
   scene_add_body(scene, ledge_floor);     
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
+  body_t *boundary_1 = body_init_with_info(make_rect_shape(BOUNDARY_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);
+  body_t *boundary_2 = body_init_with_info(make_rect_shape(BOUNDARY_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);   
+  scene_add_body(scene, boundary_1);
+  scene_add_body(scene, boundary_2);
 }
 
 void add_blocks(scene_t *scene) {
@@ -327,6 +332,11 @@ void add_blocks(scene_t *scene) {
   body_t *block_2 = body_init_with_info(make_rect_shape(BLOCK_2_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, COLOR, BLOCK, NULL);          
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
+
+  body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);
+  body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);          
+  scene_add_body(scene, boundary_block_1);
+  scene_add_body(scene, boundary_block_2);
 }
 
 void add_doors(scene_t *scene) {
