@@ -125,7 +125,7 @@ void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body);
 
-void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vector_t *character_dimensions);
+void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, void *character_dimensions);
 
 void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity);
 

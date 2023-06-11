@@ -57,7 +57,7 @@ void force_free(force_t *force) {
     //the freer at this point is null!
     //list_get_freer(force->bodies);
 
-    list_free(force->bodies); //messing up at this part
+    free(force->bodies); //messing up at this part
 
     // free(force->bodies); //THIS IS NOT WORKING!! THIS PART IS WRONG!!
     //printf("freed the bodies\n");

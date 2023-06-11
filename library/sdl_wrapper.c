@@ -15,7 +15,7 @@ const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
 
 //BACKGROUND
-const char *BG = "images/background_1.jpeg";
+//const char *BG = "images/background_1.jpeg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";

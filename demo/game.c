@@ -163,7 +163,7 @@ list_t *get_fertilizer_bodies(scene_t *scene) {
   return answer;
 }
 
-list_t *get_boundary_bodies(scene_t *scene) {
+list_t *get_wall_bodies(scene_t *scene) {
   list_t *answer = list_init(6, list_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
@@ -289,10 +289,33 @@ list_t *make_wall_shape(char wall) {
 }
 
 void add_walls(scene_t *scene) {
+  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  assert(body_get_info(dirt_girl) == DIRT_GIRL);
+  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  assert(plant_boy);
+  vector_t *dimensions_character = malloc(sizeof(vector_t));
+  dimensions_character->x = CHARACTER_SIDE_LENGTH;
+  dimensions_character->y = CHARACTER_SIDE_LENGTH;
+  vector_t *dimensions_wall = malloc(sizeof(vector_t));
+
   for (size_t i = 0; i < 3; i++) {
     body_t *wall = body_init_with_info(make_wall_shape(i), INFINITY_MASS,
-                                          COLOR, WALL, NULL);
+                                        COLOR, WALL, NULL);
     scene_add_body(scene, wall);
+    if (i == 0) { 
+      dimensions_wall->x = WALL_LENGTH;
+      dimensions_wall->y = SDL_MAX.y; }
+    if (i == 1) {
+      dimensions_wall->x = SDL_MAX.x;
+      dimensions_wall->y = WALL_LENGTH; }
+    if (i == 2) {
+      dimensions_wall->x = WALL_LENGTH;
+      dimensions_wall->y = SDL_MAX.y; }
+    list_t *dimensions = list_init(2, free);
+    list_add(dimensions, dimensions_character);
+    list_add(dimensions, dimensions_wall);
+    create_boundary_force(scene, dirt_girl, wall, dimensions);
+    create_boundary_force(scene, plant_boy, wall, dimensions);
   }
 }
 
@@ -474,21 +497,23 @@ void add_fertilizer_force(scene_t *scene) {
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
 }
 
+/*
 void add_boundary_force(scene_t *scene) {
-  list_t *boundary_bodies = get_boundary_bodies(scene);
+  list_t *boundary_bodies = get_wall_bodies(scene);
   body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
   assert(plant_boy);
-  vector_t *dimensions = malloc(sizeof(vector_t));
-  dimensions->x = CHARACTER_SIDE_LENGTH;
-  dimensions->y = WALL_LENGTH;
+  vector_t character_dimensions = {.x = CHARACTER_SIDE_LENGTH, .y = CHARACTER_SIDE_LENGTH};
+
+
   for (size_t i = 0; i < list_size(boundary_bodies); i++) {
+    vector_t boundary_dimensions = {.x = WALL_LENGTH, .y}
     body_t *body = list_get(boundary_bodies, i);
     create_boundary_force(scene, dirt_girl, body, dimensions);
     create_boundary_force(scene, plant_boy, body, dimensions);
   }
-}
+}*/
 
 void add_portal_force(scene_t *scene) {
   list_t *portals = get_portal_bodies(scene);
@@ -534,7 +559,6 @@ scene_t *make_initial_scene() {
   scene_t *result = scene_init();
   // add bodies
   // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
-  add_walls(result);
   printf("added walls\n");
   add_ledges(result);
   add_blocks(result);
@@ -546,12 +570,13 @@ scene_t *make_initial_scene() {
   add_trampoline(result);
   // add players
   add_characters(result);
+  add_walls(result);
   // forces
   add_universal_gravity(result);
   add_normal_force(result);
   add_game_over_force(result);
   add_fertilizer_force(result);
-  add_boundary_force(result);
+  //add_boundary_force(result);
   add_portal_force(result);
   add_trampoline_force(result);
   add_ice_force(result);

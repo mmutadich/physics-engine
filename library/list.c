@@ -128,7 +128,7 @@ void list_free(list_t *list) {
         list->freer(list->data[i]);
     }
   }
-  //free(list->data);
+  free(list->data);
   assert(list);
   free(list);
 }

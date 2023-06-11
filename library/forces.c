@@ -427,26 +427,28 @@ void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis, void *aux) {
   vector_t centroid_sprite = body_get_centroid(sprite);
   vector_t new_centroid_sprite = {.x = centroid_sprite.x, .y = centroid_sprite.y};
-  vector_t *dimensions = (vector_t *)aux;
-  double cx = dimensions->x;
-  double b_dimensions = dimensions->y;
+  list_t *dimensions = (list_t *)aux;
+  vector_t *character_dimensions = (vector_t*)list_get(dimensions, 0);
+  vector_t *boundary_dimensions = (vector_t*)list_get(dimensions, 1);
   vector_t boundary_centroid = body_get_centroid(boundary);
-  if (centroid_sprite.x > boundary_centroid.x && centroid_sprite.x <= boundary_centroid.x + cx/2 + b_dimensions/2) {
+
+  if (centroid_sprite.x > boundary_centroid.x && centroid_sprite.x <= boundary_centroid.x + character_dimensions->x/2 + boundary_dimensions->x/2) {
     printf("right boundary\n");
-    new_centroid_sprite.x = boundary_centroid.x + cx + b_dimensions/2;
+    new_centroid_sprite.x = boundary_centroid.x + character_dimensions->x + boundary_dimensions->x/2;
   }
-  if (centroid_sprite.x < boundary_centroid.x && centroid_sprite.x >= boundary_centroid.x - cx/2 - b_dimensions/2) {
+  if (centroid_sprite.x < boundary_centroid.x && centroid_sprite.x >= boundary_centroid.x - character_dimensions->x/2 - boundary_dimensions->x/2) {
     printf("left boundary\n");
-    new_centroid_sprite.x = boundary_centroid.x - cx - b_dimensions/2;
+    new_centroid_sprite.x = boundary_centroid.x - character_dimensions->x - boundary_dimensions->x/2;
   }
   body_set_centroid(sprite, new_centroid_sprite);
 }
 
-void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, vector_t *character_dimensions) {
+void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, void *character_dimensions) {
   create_collision(scene, sprite, boundary,
                   boundary_collision_handler, character_dimensions, 
-                  two_body_aux_freer);
+                  free);
 }
+
 void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axis,
                                void *aux) {
   assert(sprite);
