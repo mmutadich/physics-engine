@@ -524,6 +524,7 @@ scene_t *make_initial_scene() {
   // add bodies
   // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
   add_walls(result);
+  printf("added walls\n");
   add_ledges(result);
   add_blocks(result);
   add_doors(result);

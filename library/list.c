@@ -121,6 +121,7 @@ void *list_remove(list_t *list, size_t index) {
 }
 
 void list_free(list_t *list) {
+  // convert freer to pointer
   if (list->freer != NULL) {
     for (size_t i = 0; i < list->size; i++) {
       if (list->data[i] != NULL)
