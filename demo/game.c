@@ -91,6 +91,12 @@ const double TRAMPOLINE_HEIGHT = 40;
 const double TRAMPOLINE_LENGTH = 120;
 
 typedef enum {
+  START_SCREEN = 0,
+  GAME_SCREEN = 1,
+  WIN_SCREEN = 2,
+} screen_t;
+
+typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
   PLANT_BOY_OBSTACLE = 3, // obstacle for plantboy
@@ -438,7 +444,6 @@ void add_win_force(scene_t *scene) {
       list_add(bodies, scene_get_body(scene,i));
     }
   }
-  printf("amount of doors: %d\n", list_size(bodies));
   guarantee_all_collisions(scene, bodies);
 }
 
@@ -514,32 +519,44 @@ void add_ice_force(scene_t *scene) {
   }
 }
 
+scene_t *make_initial_scene() {
+  scene_t *result = scene_init();
+  // add bodies
+  // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
+  add_walls(result);
+  add_ledges(result);
+  add_blocks(result);
+  add_doors(result);
+  add_obstacles(result);
+  // TODO: CONSOLIDATE FERTILIZER, PORTALS, TRAMPOLINE TO OBJECT FEATURES
+  add_fertilizer(result);
+  add_portals(result);
+  add_trampoline(result);
+  // add players
+  add_characters(result);
+  // forces
+  add_universal_gravity(result);
+  add_normal_force(result);
+  add_game_over_force(result);
+  add_fertilizer_force(result);
+  add_boundary_force(result);
+  add_portal_force(result);
+  add_trampoline_force(result);
+  add_ice_force(result);
+  add_win_force(result);
+  return result;
+}
+
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
   body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   assert(body_get_info(plant_boy) == PLANT_BOY);
-  /**vector_t centroid_girl = body_get_centroid(dirt_girl);
-  vector_t centroid_boy = body_get_centroid(plant_boy);
-  vector_t new_centroid_girl = {.x = centroid_girl.x, .y = centroid_girl.y};
-  vector_t new_centroid_boy = {.x = centroid_boy.x, .y = centroid_boy.y};
-  if (centroid_girl.x <= SDL_MIN.x + CHARACTER_SIDE_LENGTH/2) {
-    new_centroid_girl.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2;
-  }
-  if (centroid_girl.x >= SDL_MAX.x - CHARACTER_SIDE_LENGTH/2) {
-    new_centroid_girl.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
-  }
-  if (centroid_boy.x <= SDL_MIN.x + CHARACTER_SIDE_LENGTH/2) {
-    printf("reached boundary\n");
-    new_centroid_boy.x = SDL_MIN.x + CHARACTER_SIDE_LENGTH/2 + 50;
-  }
-  if (centroid_boy.x >= SDL_MAX.x - CHARACTER_SIDE_LENGTH/2) {
-    printf("reached boundary\n");
-    new_centroid_boy.x = SDL_MAX.x - CHARACTER_SIDE_LENGTH/2;
-  }
-  body_set_centroid(plant_boy, new_centroid_boy);
-  body_set_centroid(dirt_girl, new_centroid_girl);*/
   if (type == KEY_PRESSED) {
+    if (key == ' ' && (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN)) {
+      state->scene = make_initial_scene();
+      scene_set_screen(state->scene, GAME_SCREEN);
+    }
     if (key == D_KEY) {
       vector_t velocity = {.x = CHARACTER_VELOCITY, .y = 0};
       body_set_velocity(dirt_girl, velocity);
@@ -584,31 +601,9 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   }
 }
 
-scene_t *make_initial_scene() {
+scene_t *make_start_scene() {
   scene_t *result = scene_init();
-  // add bodies
-  // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
-  add_walls(result);
-  add_ledges(result);
-  add_blocks(result);
-  add_doors(result);
-  add_obstacles(result);
-  // TODO: CONSOLIDATE FERTILIZER, PORTALS, TRAMPOLINE TO OBJECT FEATURES
-  add_fertilizer(result);
-  add_portals(result);
-  add_trampoline(result);
-  // add players
   add_characters(result);
-  // forces
-  add_universal_gravity(result);
-  add_normal_force(result);
-  add_game_over_force(result);
-  add_fertilizer_force(result);
-  add_boundary_force(result);
-  add_portal_force(result);
-  add_trampoline_force(result);
-  add_ice_force(result);
-  add_win_force(result);
   return result;
 }
 
@@ -617,7 +612,8 @@ state_t *emscripten_init() {
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
   assert(state);
-  state->scene = make_initial_scene();
+  state->scene = make_start_scene();
+  scene_set_screen(state->scene, START_SCREEN);
   state->time_elapsed = 0;
   return state;
 }
@@ -628,39 +624,35 @@ void emscripten_free(state_t *state) {
 }
 
 void emscripten_main(state_t *state) {
-  //when referencing scene ALWAYS call state->scene
-  sdl_clear();
-  double dt = time_since_last_tick();
-  state->time_elapsed += dt;
-  for (size_t i = 0; i < scene_bodies(state->scene); i++) {
-    body_t *body = scene_get_body(state->scene, i);
-    list_t *shape = body_get_shape(body);
-    if (body_get_info(body) != WALL) {
-      sdl_draw_polygon(shape, body_get_color(body));
-    }
-    /*
-    if (scene_get_plant_boy_fertilizer_collected(state->scene)) {
-      if (body_get_info(body) == PLANT_BOY_FERTILIZER) {
-        //scene_remove_body(state->scene, get_plant_boy_fertilizer_index(state->scene));
-        //body_set_color(body, BACKGROUND_COLOR);
+  if (scene_get_screen(state->scene) == START_SCREEN) {
+    sdl_clear();
+    sdl_show();
+    //need to render the background here?
+  }
+  if (scene_get_screen(state->scene) == GAME_SCREEN) {
+    assert(state->scene);
+    //when referencing scene ALWAYS call state->scene
+    sdl_clear();
+    double dt = time_since_last_tick();
+    state->time_elapsed += dt;
+    for (size_t i = 0; i < scene_bodies(state->scene); i++) {
+      body_t *body = scene_get_body(state->scene, i);
+      list_t *shape = body_get_shape(body);
+      if (body_get_info(body) != WALL) {
+        sdl_draw_polygon(shape, body_get_color(body));
       }
     }
-    if (scene_get_dirt_girl_fertilizer_collected(state->scene)) {
-      if (body_get_info(body) == DIRT_GIRL_FERTILIZER) {
-        body_remove(body);
-        //body_set_color(body, BACKGROUND_COLOR);
-      }
-    }*/
+    scene_tick(state->scene, dt);
+    sdl_show();
+    if (scene_get_game_over(state->scene)) { // NEED THIS TO BE IN A TIME INTERVAL SO THE STAR APPEARS 
+      scene_free(state->scene);
+      state->scene = make_initial_scene();
+      scene_set_screen(state->scene, GAME_SCREEN);
+    }
+    if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
+      add_star(state->scene);
+    }
+    sdl_render_scene(state->scene);
   }
-  scene_tick(state->scene, dt);
-  sdl_show();
-  if (scene_get_game_over(state->scene)) { // NEED THIS TO BE IN A TIME INTERVAL SO THE STAR APPEARS 
-    scene_free(state->scene);
-    state->scene = make_initial_scene();
-  }
-  if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
-    add_star(state->scene);
-  }
-  sdl_render_scene(state->scene);
 }
 

@@ -18,6 +18,7 @@ typedef struct scene {
   bool plant_boy_fertilizer_collected;
   bool dirt_girl_fertilizer_collected;
   int doors_reached; //should be two when the game is over
+  void *screen;
 } scene_t;
 
 typedef struct force {
@@ -77,6 +78,7 @@ scene_t *scene_init(void) {
   result->plant_boy_fertilizer_collected = false;
   result->dirt_girl_fertilizer_collected = false;
   result->doors_reached = false;
+  result->screen = NULL;
   assert(result);
   return result;
 }
@@ -88,9 +90,7 @@ scene_t *scene_init(void) {
  */
 void scene_free(scene_t *scene) {
   //for some reason this is moving double the number of bodies?
-  printf("num bodies before: %zu\n", list_size(scene->bodies));
   list_free(scene->bodies);
-  printf("num bodies after: %zu\n", list_size(scene->bodies));
   list_free(scene->forces);
   free(scene);
 }
@@ -219,3 +219,13 @@ bool scene_get_dirt_girl_fertilizer_collected(scene_t *scene) {
   return scene->dirt_girl_fertilizer_collected;
   printf("set plant boy\n");
 }
+
+void scene_set_screen(scene_t *scene, void *screen) {
+  assert(scene);
+  scene->screen = screen;
+}
+
+void *scene_get_screen(scene_t *scene) {
+  return scene->screen;
+}
+

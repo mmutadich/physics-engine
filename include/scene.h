@@ -124,4 +124,8 @@ void scene_set_dirt_girl_fertilizer_collected(scene_t *scene, bool value);
 
 bool scene_get_dirt_girl_fertilizer_collected(scene_t *scene);
 
+void scene_set_screen(scene_t *scene, void *screen);
+
+void *scene_get_screen(scene_t *scene);
+
 #endif // #ifndef __SCENE_H__

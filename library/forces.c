@@ -531,8 +531,6 @@ void apply_collision_multiple(void *c_aux) {
     assert(shape1);
     assert(shape2);
     if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
-      printf("body1: %d\n", body_get_info(body1));
-      printf("body2: %d\n", body_get_info(body2));
       vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
     }
     if (!collision_get_collided(find_collision(shape1, shape2))) {
@@ -543,7 +541,6 @@ void apply_collision_multiple(void *c_aux) {
   }
   collision_aux->is_colliding = keep_track;
   if (collision_aux->is_colliding) {
-    printf("yes! both collisions!\n");
     collision_aux->handler(collision_aux->bodies, collision_aux->aux);
   }
 }
@@ -556,7 +553,6 @@ void bodies_collision_aux_freer(void *collision_aux) {
   }
   //SHOULD NOT FREE THE BODIES
   free(ca);
-  printf("completed bodies collision freer\n");
 }
 
 void create_collision_multiple(scene_t *scene, list_t *bodies,
@@ -581,6 +577,5 @@ void win_handler(list_t *bodies, void *aux) {
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
   create_collision_multiple(scene, bodies, win_handler, NULL, NULL);
-  printf("made to the end of guarantee all collisions\n");
 }
 
