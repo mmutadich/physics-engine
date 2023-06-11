@@ -15,7 +15,7 @@ const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
 
 //BACKGROUND
-const char *BG = "images/background_2.jpeg";
+const char *BG = "images/background_1.jpeg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
@@ -278,7 +278,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_DOOR_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_DOOR);
   SDL_Rect dirt_girl_door_rect = {500,500,100,100};
 
-  //SDL_Texture *PLANT_BOY_DOOR_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_DOOR);
+  SDL_Texture *PLANT_BOY_DOOR_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_DOOR);
   SDL_Rect plant_boy_door_rect = {500,500,100,100};
   
   SDL_Texture *PORTAL_TEXTURE = IMG_LoadTexture(renderer, PORTAL);
@@ -292,11 +292,11 @@ void sdl_render_scene(scene_t *scene) {
     vector_t window = get_window_position(centroid, get_window_center());
     //SPRITES:
     if (body_get_info(body) == 1) {
-      plant_boy_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 20;
+      plant_boy_rect.x = window.x - 140*get_scene_scale(get_window_center());
       plant_boy_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     if (body_get_info(body) == 2) {
-      dirt_girl_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 20;
+      dirt_girl_rect.x = window.x - 140*get_scene_scale(get_window_center());
       dirt_girl_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     if (body_get_info(body) == 16) {
@@ -310,19 +310,19 @@ void sdl_render_scene(scene_t *scene) {
     }
     //POWERUPS:
     if (body_get_info(body) == 13) {
-      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 20;
-      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 20;
+      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     if (body_get_info(body) == 14) {
-      dirt_girl_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 20;
-      dirt_girl_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 20;
+      dirt_girl_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center());
+      dirt_girl_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     if (body_get_info(body) == 15) {
       star_of_mastery_rect.x = window.x - 140*get_scene_scale(get_window_center());
       star_of_mastery_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     if (body_get_info(body) == 17) {
-      portal_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 40;
+      portal_rect.x = window.x - 140*get_scene_scale(get_window_center());
       portal_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
     //DOORS + LEDGES:
@@ -339,23 +339,23 @@ void sdl_render_scene(scene_t *scene) {
   }
 
   //BACKGROUND IMAGE
-  //SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
+  SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
   //SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
   //OBJECTS
-  //SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
+  SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
-  //SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
-  //SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
-  //SDL_RenderCopy(renderer, PORTAL_TEXTURE, NULL, &portal_rect);
+  SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
+  SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
+  SDL_RenderCopy(renderer, PORTAL_TEXTURE, NULL, &portal_rect);
 
   sdl_show();
 
-  //SDL_DestroyTexture(BG_TEXTURE);
+  SDL_DestroyTexture(BG_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
   SDL_DestroyTexture(TREE_TEXTURE);
@@ -363,8 +363,8 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
-  //SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
-  //SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
+  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
+  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
   SDL_DestroyTexture(PORTAL_TEXTURE);
   //SDL_RenderPresent(renderer);
   //SDL_DestroyRenderer(renderer);
