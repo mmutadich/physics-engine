@@ -264,7 +264,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Rect tree_rect = {500,500,100,100};
 
   SDL_Texture *BLOCK_TEXTURE = IMG_LoadTexture(renderer, BLOCK_TO_PUSH);
-  SDL_Rect block_rect = {500,500,130,140};
+  SDL_Rect block_rect = {0,0,130,140};
 
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
   SDL_Rect dirt_girl_fertilizer_rect = {0,0,50,50};
