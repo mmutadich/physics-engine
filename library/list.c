@@ -98,6 +98,10 @@ size_t list_size(list_t *list) {
   return list->size;
 }
 
+void list_get_freer(list_t *list) {
+  printf("freer: %s\n", list->freer);
+}
+
 /**
  * Removes the item from that index and shifts left
  * Assert that the index is within range
@@ -124,6 +128,7 @@ void list_free(list_t *list) {
     }
   }
   free(list->data);
+  assert(list);
   free(list);
 }
 

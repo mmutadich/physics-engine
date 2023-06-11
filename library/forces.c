@@ -500,22 +500,26 @@ void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasti
 
 
 
+
+//start bodies collision aux
+
 bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
                                     bodies_collision_handler_t handler,
                                     free_func_t aux_freer, void *aux) {
   bodies_collision_aux_t *result = malloc(sizeof(collision_aux_t));
-  assert(result);
   result->bodies = bodies;
+  assert(result->bodies);
   result->handler = handler;
   result->aux = aux;
   result->aux_freer = aux_freer;
   result->is_colliding = false;
   result->hold_colliding = false;
+  assert(result);
   return result;
 }
 
-
 void apply_collision_multiple(void *c_aux) {
+  //the error is not within apply_collision
   bodies_collision_aux_t *collision_aux = (bodies_collision_aux_t *)c_aux;
   assert(collision_aux);
   bool keep_track = true;
@@ -545,26 +549,30 @@ void apply_collision_multiple(void *c_aux) {
 }
 
 void bodies_collision_aux_freer(void *collision_aux) {
-  printf("calling freer\n");
   bodies_collision_aux_t *ca = (bodies_collision_aux_t *)collision_aux;
   assert(ca);
   if (ca->aux_freer != NULL) {
     ca->aux_freer(ca->aux);
   }
-  free(ca->bodies);
+  //SHOULD NOT FREE THE BODIES
   free(ca);
-  printf("freed bodies collision\n");
+  printf("completed bodies collision freer\n");
 }
-
-///looks good below this point?
 
 void create_collision_multiple(scene_t *scene, list_t *bodies,
                       bodies_collision_handler_t handler, void *aux,
-                      free_func_t freer) {
+                      free_func_t aux_freer) {
+  //need to make a hard copy of bodies, but have the freer be null
+  list_t *bodies_null_freer = list_init(10, NULL);
+  for (size_t i = 0; i < list_size(bodies); i++) {
+    body_t *body = list_get(bodies, i);
+    list_add(bodies_null_freer, body);
+  }
   bodies_collision_aux_t *collision_aux =
-      bodies_collision_aux_init(bodies, handler, freer, aux);
-  scene_add_bodies_force_creator(scene, apply_collision_multiple, collision_aux, bodies,
-                                 bodies_collision_aux_freer); ////
+      bodies_collision_aux_init(bodies_null_freer, handler, aux_freer, aux);
+  assert(list_size(bodies_null_freer) > 0);
+  scene_add_bodies_force_creator(scene, apply_collision_multiple, collision_aux, bodies_null_freer,
+                                 bodies_collision_aux_freer);
 }
 
 void win_handler(list_t *bodies, void *aux) {

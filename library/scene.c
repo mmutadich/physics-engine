@@ -50,10 +50,15 @@ force_t *force_bodies_init(force_creator_t force_creator, void *aux,
 }
 
 void force_free(force_t *force) {
-  if (force->aux_freer != NULL)
+  //printf("started force free\n");
+    //printf("freed the aux\n");
+  //if (force->bodies != NULL)
+    //the freer at this point is null!
+    //list_get_freer(force->bodies);
+    //list_free(force->bodies); //messing up at this part
+    //printf("freed the bodies\n");
+  if (force->aux_freer != NULL) //
     force->aux_freer(force->aux);
-  if (force->bodies != NULL)
-    list_free(force->bodies);
   free(force);
 }
 
@@ -82,7 +87,10 @@ scene_t *scene_init(void) {
  * @param scene a pointer to a scene returned from scene_init()
  */
 void scene_free(scene_t *scene) {
+  //for some reason this is moving double the number of bodies?
+  printf("num bodies before: %zu\n", list_size(scene->bodies));
   list_free(scene->bodies);
+  printf("num bodies after: %zu\n", list_size(scene->bodies));
   list_free(scene->forces);
   free(scene);
 }
@@ -170,9 +178,9 @@ void scene_tick(scene_t *scene, double dt) {
 }
 
 void scene_add_force_creator(scene_t *scene, force_creator_t force_creator,
-                             void *aux, free_func_t freer) {
+                             void *aux, free_func_t aux_freer) {
   list_t *bodies = list_init(10, free);
-  scene_add_bodies_force_creator(scene, force_creator, aux, bodies, freer);
+  scene_add_bodies_force_creator(scene, force_creator, aux, bodies, aux_freer);
 }
 
 void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,

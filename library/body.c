@@ -63,6 +63,7 @@ body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
 void body_free(body_t *body) {
   if (body->info != NULL && body->info_freer != NULL)
     body->info_freer(body->info);
+  assert(body->points);
   list_free(body->points);
   free(body);
 }
