@@ -91,12 +91,6 @@ const double TRAMPOLINE_HEIGHT = 40;
 const double TRAMPOLINE_LENGTH = 120;
 
 typedef enum {
-  START_SCREEN = 0,
-  GAME_SCREEN = 1,
-  WIN_SCREEN = 2,
-} screen_t;
-
-typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
   PLANT_BOY_OBSTACLE = 3, // obstacle for plantboy
@@ -117,6 +111,12 @@ typedef enum {
   TRAMPOLINE = 18,
   ICE = 19,
 } info_t;
+
+typedef enum {
+  START_SCREEN = 0,
+  GAME_SCREEN = 1,
+  WIN_SCREEN = 2,
+} screen_t;
 
 typedef struct state {
   scene_t *scene;
@@ -548,10 +548,14 @@ scene_t *make_initial_scene() {
 }
 
 void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
-  body_t *dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
-  body_t *plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
-  assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  assert(body_get_info(plant_boy) == PLANT_BOY);
+  body_t *dirt_girl;
+  body_t *plant_boy;
+  if (scene_get_screen(state->scene) == GAME_SCREEN) {
+    dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
+    plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
+    assert(body_get_info(dirt_girl) == DIRT_GIRL);
+    assert(body_get_info(plant_boy) == PLANT_BOY);
+  }
   if (type == KEY_PRESSED) {
     if (key == ' ' && (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN)) {
       state->scene = make_initial_scene();
@@ -603,7 +607,6 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
 
 scene_t *make_start_scene() {
   scene_t *result = scene_init();
-  add_characters(result);
   return result;
 }
 
@@ -624,7 +627,7 @@ void emscripten_free(state_t *state) {
 }
 
 void emscripten_main(state_t *state) {
-  if (scene_get_screen(state->scene) == START_SCREEN) {
+  if (scene_get_screen(state->scene) == START_SCREEN || scene_get_screen(state->scene) == WIN_SCREEN) {
     sdl_clear();
     sdl_show();
     //need to render the background here?

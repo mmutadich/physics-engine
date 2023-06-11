@@ -23,6 +23,12 @@ const double ICE_VELOCITY_FACTOR = 0.7;
 const double P_WIDTH = 50;
 const vector_t SPAWN = {.x = 1000, .y = 790};
 
+typedef enum {
+  START_SCREEN = 0,
+  GAME_SCREEN = 1,
+  WIN_SCREEN = 2,
+} screen_t;
+
 typedef struct two_body_aux {
   body_t *body1;
   body_t *body2;
@@ -572,10 +578,13 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
 }
 
 void win_handler(list_t *bodies, void *aux) {
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_screen(scene, WIN_SCREEN); //this is the win_screen
   printf("won the game\n");
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
-  create_collision_multiple(scene, bodies, win_handler, NULL, NULL);
+  create_collision_multiple(scene, bodies, win_handler, scene, NULL);
 }
 
