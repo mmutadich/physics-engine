@@ -132,46 +132,17 @@ typedef struct state {
 list_t *get_x_bodies(scene_t *scene, void *info1, void *info2){
   list_t *bodies = list_init(8, body_free);
   for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == info1 || body_get_info(scene_get_body(scene,i)) == info2) {
+    if (body_get_info(scene_get_body(scene,i)) == info1 || body_get_info(scene_get_body(scene,i)) == info2)
       list_add(bodies, scene_get_body(scene,i));
-    }
   }
   return bodies;
 }
 
 // TODO: CONSOLIDATE ALL GET_X_INDEX
-size_t get_plant_boy_index(scene_t *scene){
+size_t get_x_index(scene_t *scene, void *info){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY){
+    if (body_get_info(scene_get_body(scene,i)) == info)
       return i;
-    }
-  }
-  return NULL;
-}
-
-size_t get_dirt_girl_index(scene_t *scene) {
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL){
-      return i;
-    }
-  }
-  return NULL;
-}
-
-size_t get_plant_boy_fertilizer_index(scene_t *scene){
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == PLANT_BOY_FERTILIZER){
-      return i;
-    }
-  }
-  return NULL;
-}
-
-size_t get_dirt_girl_fertilizer_index(scene_t *scene){
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    if (body_get_info(scene_get_body(scene,i)) == DIRT_GIRL_FERTILIZER){
-      return i;
-    }
   }
   return NULL;
 }
@@ -221,9 +192,9 @@ list_t *make_wall_shape(char wall) {
 }
 
 void add_walls(scene_t *scene) {
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   vector_t *dimensions_character = malloc(sizeof(vector_t));
   dimensions_character->x = CHARACTER_SIDE_LENGTH;
@@ -270,9 +241,9 @@ list_t *make_rect_shape(vector_t centroid, double length, double height) {
 }
 
 void add_ledges(scene_t *scene) {
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   vector_t *dimensions_character = malloc(sizeof(vector_t));
   dimensions_character->x = CHARACTER_SIDE_LENGTH;
@@ -307,9 +278,9 @@ void add_blocks(scene_t *scene) {
   scene_add_body(scene, block_1);
   scene_add_body(scene, block_2);
 
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   vector_t *dimensions_character = malloc(sizeof(vector_t));
   dimensions_character->x = CHARACTER_SIDE_LENGTH;
@@ -418,9 +389,9 @@ void add_normal_force(scene_t *scene) {
 
 void add_game_over_force(scene_t *scene) {
   list_t *game_over_bodies = get_x_bodies(scene, PLANT_BOY_OBSTACLE, DIRT_GIRL_OBSTACLE); // game over bodies
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   for (size_t i = 0; i < list_size(game_over_bodies); i++) {
     body_t *body = list_get(game_over_bodies, i);
@@ -430,9 +401,9 @@ void add_game_over_force(scene_t *scene) {
 }
 
 void add_win_force(scene_t *scene) {
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
 
   list_t *bodies = list_init(10, body_free);
@@ -452,11 +423,11 @@ void add_win_force(scene_t *scene) {
 
 
 void add_fertilizer_force(scene_t *scene) {
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));  
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
-  size_t index = get_plant_boy_fertilizer_index(scene);
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));  
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
+  size_t index = get_x_index(scene, PLANT_BOY_FERTILIZER);
   body_t *plant_boy_fertilizer = scene_get_body(scene, index);
-  body_t *dirt_girl_fertilizer = scene_get_body(scene, get_dirt_girl_fertilizer_index(scene));
+  body_t *dirt_girl_fertilizer = scene_get_body(scene, get_x_index(scene, DIRT_GIRL_FERTILIZER));
   //create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
   //create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
   //this should not be here
@@ -468,9 +439,9 @@ void add_fertilizer_force(scene_t *scene) {
 
 void add_portal_force(scene_t *scene) {
   list_t *portals = get_x_bodies(scene, PORTAL, NULL);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   for (size_t i = 0; i < list_size(portals); i+=2) {
     body_t *portal_1 = list_get(portals, i);
@@ -482,9 +453,9 @@ void add_portal_force(scene_t *scene) {
 
 void add_trampoline_force(scene_t *scene) {
   list_t *trampolines = get_x_bodies(scene, TRAMPOLINE, NULL);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   for (size_t i = 0; i < list_size(trampolines); i+=2) {
     body_t *trampoline = list_get(trampolines, i);
@@ -495,9 +466,9 @@ void add_trampoline_force(scene_t *scene) {
 
 void add_ice_force(scene_t *scene) {
   list_t *ice_bodies = get_x_bodies(scene, ICE, NULL);
-  body_t *dirt_girl = scene_get_body(scene, get_dirt_girl_index(scene));
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
-  body_t *plant_boy = scene_get_body(scene, get_plant_boy_index(scene));
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
   assert(plant_boy);
   for (size_t i = 0; i < list_size(ice_bodies); i+=2) {
     body_t *ice = list_get(ice_bodies, i);
@@ -538,8 +509,8 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
   body_t *dirt_girl;
   body_t *plant_boy;
   if (scene_get_screen(state->scene) == GAME_SCREEN) {
-    dirt_girl = scene_get_body(state->scene, get_dirt_girl_index(state->scene));
-    plant_boy = scene_get_body(state->scene, get_plant_boy_index(state->scene));
+    dirt_girl = scene_get_body(state->scene, get_x_index(state->scene, DIRT_GIRL));
+    plant_boy = scene_get_body(state->scene, get_x_index(state->scene, PLANT_BOY));
     assert(body_get_info(dirt_girl) == DIRT_GIRL);
     assert(body_get_info(plant_boy) == PLANT_BOY);
   }
