@@ -69,7 +69,7 @@ const double DOOR_LENGTH = 10;
 
 // OBSTACLE/ICE CONSTANTS
 const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 725, .y = 30};
-const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1330, .y = 710};
+const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1310, .y = 710};
 const double OBSTACLE_LENGTH = 140;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
@@ -425,11 +425,11 @@ void add_win_force(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     void *info = body_get_info(scene_get_body(scene,i));
     if (info == PLANT_BOY_DOOR_LEFT || info == PLANT_BOY_DOOR_RIGHT) {
-      list_add(bodies, plant_boy);
+      list_add(bodies, dirt_girl);
       list_add(bodies, scene_get_body(scene,i));
     }
     else if (info == DIRT_GIRL_DOOR_LEFT || info == DIRT_GIRL_DOOR_RIGHT) {
-      list_add(bodies, dirt_girl);
+      list_add(bodies, plant_boy);
       list_add(bodies, scene_get_body(scene,i));
     }
   }
