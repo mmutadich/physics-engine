@@ -436,13 +436,11 @@ void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis,
   if ((centroid_sprite.y > boundary_centroid.y && centroid_sprite.y <= boundary_centroid.y + character_dimensions->y/2 + boundary_dimensions->y/2) &&
       (centroid_sprite.x - character_dimensions->x/2 > boundary_centroid.x - boundary_dimensions->x/2) &&
       (centroid_sprite.x + character_dimensions->x/2 < boundary_centroid.x + boundary_dimensions->x/2)) {
-    printf("top boundary\n");
     new_centroid_sprite.y = boundary_centroid.y + character_dimensions->y + boundary_dimensions->y/2;
   }
   if ((centroid_sprite.y < boundary_centroid.y && centroid_sprite.y >= boundary_centroid.y - character_dimensions->y/2 - boundary_dimensions->y/2) &&
       (centroid_sprite.x - character_dimensions->x/2 > boundary_centroid.x - boundary_dimensions->x/2) &&
       (centroid_sprite.x + character_dimensions->x/2 < boundary_centroid.x + boundary_dimensions->x/2)) {
-    printf("bottom boundary\n");
     new_centroid_sprite.y = boundary_centroid.y - character_dimensions->y - boundary_dimensions->y/2;
   }
 
@@ -450,13 +448,11 @@ void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis,
   if ((centroid_sprite.x > boundary_centroid.x && centroid_sprite.x <= boundary_centroid.x + character_dimensions->x/2 + boundary_dimensions->x/2) &&
       (centroid_sprite.y - character_dimensions->y/2 > boundary_centroid.y - boundary_dimensions->y/2) &&
       (centroid_sprite.y + character_dimensions->y/2 < boundary_centroid.y + boundary_dimensions->y/2)) {
-    printf("right boundary\n");
     new_centroid_sprite.x = boundary_centroid.x + character_dimensions->x + boundary_dimensions->x/2;
   }
   if ((centroid_sprite.x < boundary_centroid.x && centroid_sprite.x >= boundary_centroid.x - character_dimensions->x/2 - boundary_dimensions->x/2) &&
       (centroid_sprite.y - character_dimensions->y/2 > boundary_centroid.y - boundary_dimensions->y/2) &&
       (centroid_sprite.y + character_dimensions->y/2 < boundary_centroid.y + boundary_dimensions->y/2)) {
-    printf("left boundary\n");
     new_centroid_sprite.x = boundary_centroid.x - character_dimensions->x - boundary_dimensions->x/2;
   }
   body_set_centroid(sprite, new_centroid_sprite);
