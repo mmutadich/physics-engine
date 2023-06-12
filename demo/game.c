@@ -147,6 +147,16 @@ size_t get_x_index(scene_t *scene, void *info){
   return NULL;
 }
 
+bool doesnt_contain_star(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == STAR) {
+      return false;
+    }
+  }
+  return true;
+}
+
 list_t *make_wall_shape(char wall) {
   list_t *wall_points = list_init(NUM_RECT_POINTS, free);
   // top left, bottom left, bottom right, top right
@@ -322,13 +332,6 @@ void add_obstacles(scene_t *scene) {
   scene_add_body(scene, ice);                             
 }
 
-void add_fertilizer(scene_t *scene) {
-  body_t *plant_boy_fertilizer = body_init_with_info(make_rect_shape(PLANT_BOY_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
-  body_t *dirt_girl_fertilizer = body_init_with_info(make_rect_shape(DIRT_GIRL_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
-  scene_add_body(scene, plant_boy_fertilizer);
-  scene_add_body(scene, dirt_girl_fertilizer);
-}
-
 void add_characters(scene_t *scene) {
   list_t *plant_boy_shape = make_rect_shape(INITIAL_PLANT_BOY_POSITION, CHARACTER_SIDE_LENGTH, CHARACTER_SIDE_LENGTH);
   body_t *plant_boy = body_init_with_info(plant_boy_shape, CHARACTER_MASS, COLOR, PLANT_BOY, NULL);
@@ -338,14 +341,17 @@ void add_characters(scene_t *scene) {
   scene_add_body(scene, dirt_girl);
 }
 
-void add_portals(scene_t *scene){
+void add_object_features(scene_t *scene) {
+  body_t *plant_boy_fertilizer = body_init_with_info(make_rect_shape(PLANT_BOY_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
+  body_t *dirt_girl_fertilizer = body_init_with_info(make_rect_shape(DIRT_GIRL_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
+  scene_add_body(scene, plant_boy_fertilizer);
+  scene_add_body(scene, dirt_girl_fertilizer);
+
   body_t *entry_portal = body_init_with_info(make_rect_shape(ENTRY_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   body_t *exit_portal = body_init_with_info(make_rect_shape(EXIT_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
   scene_add_body(scene, entry_portal);
   scene_add_body(scene, exit_portal);
-}
 
-void add_trampoline(scene_t *scene){
   body_t *trampoline = body_init_with_info(make_rect_shape(TRAMPOLINE_CENTROID, TRAMPOLINE_LENGTH, TRAMPOLINE_HEIGHT), INFINITY_MASS, COLOR, TRAMPOLINE, NULL);
   scene_add_body(scene, trampoline);
 }
@@ -353,16 +359,6 @@ void add_trampoline(scene_t *scene){
 void add_star(scene_t *scene) {
   body_t *star = body_init_with_info(make_rect_shape(STAR_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, STAR_COLOR, STAR, NULL);
   scene_add_body(scene, star);
-}
-
-bool doesnt_contain_star(scene_t *scene) {
-  for (size_t i = 0; i < scene_bodies(scene); i++) {
-    body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) == STAR) {
-      return false;
-    }
-  }
-  return true;
 }
 
 void add_universal_gravity(scene_t *scene) {
@@ -474,19 +470,14 @@ void add_ice_force(scene_t *scene) {
 
 scene_t *make_initial_scene() {
   scene_t *result = scene_init();
-  // add bodies
-  // TODO: CONSOLIDATE WALLS, LEDGES, BLOCKS, DOORS, TO BACKGROUND FEATURES
-  // add players
+  // bodies
   add_characters(result);
   add_ledges(result);
   add_walls(result);
   add_blocks(result);
   add_doors(result);
   add_obstacles(result);
-  // TODO: CONSOLIDATE FERTILIZER, PORTALS, TRAMPOLINE TO OBJECT FEATURES
-  add_fertilizer(result);
-  add_portals(result);
-  add_trampoline(result);
+  add_object_features(result);
   // forces
   add_universal_gravity(result);
   add_normal_force(result);
@@ -600,7 +591,7 @@ void emscripten_main(state_t *state) {
     }
     scene_tick(state->scene, dt);
     sdl_show();
-    if (scene_get_game_over(state->scene)) { // NEED THIS TO BE IN A TIME INTERVAL SO THE STAR APPEARS 
+    if (scene_get_game_over(state->scene)) {
       scene_free(state->scene);
       state->scene = make_initial_scene();
       scene_set_screen(state->scene, GAME_SCREEN);
@@ -616,4 +607,3 @@ void emscripten_free(state_t *state) {
   scene_free(state->scene);
   free(state);
 }
-
