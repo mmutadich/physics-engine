@@ -582,6 +582,7 @@ scene_t *make_start_scene() {
 }
 
 state_t *emscripten_init() {
+  background_music();
   sdl_init(SDL_MIN, SDL_MAX);
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
@@ -605,7 +606,6 @@ void emscripten_main(state_t *state) {
   if (scene_get_screen(state->scene) == START_SCREEN) {
     scene_tick(state->scene, dt);
     sdl_show();
-    //need to render the background here?
   }
   if (scene_get_screen(state->scene) == GAME_SCREEN) {
     state->time_elapsed += dt;
@@ -641,4 +641,5 @@ void emscripten_main(state_t *state) {
 void emscripten_free(state_t *state) {
   scene_free(state->scene);
   free(state);
+  free_audio();
 }

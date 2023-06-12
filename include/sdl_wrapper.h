@@ -126,7 +126,8 @@ void sdl_on_key(key_handler_t handler);
  * @return the number of seconds that have elapsed
  */
 double time_since_last_tick(void);
-void render_background_image(vector_t location);
-void images_init();
-void image_free();
+int load_sound_effects();
+int play_sound_effect(int index);
+int background_music();
+int free_audio();
 #endif // #ifndef __SDL_WRAPPER_H__
