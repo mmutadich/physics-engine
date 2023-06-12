@@ -52,10 +52,10 @@ const double FLOOR_LENGTH = 2200;
 const double LEDGE_HEIGHT = 20;
 
 // BLOCK CONSTANTS
-const vector_t BLOCK_1_CENTROID = {.x = 1910, .y = 190};
+const vector_t BLOCK_1_CENTROID = {.x = 1900, .y = 190};
 const vector_t BLOCK_2_CENTROID = {.x = 80, .y = 550};
 const vector_t BOUNDARY_BLOCK_1_CENTROID = {.x = 1810, .y = 95};
-const vector_t BOUNDARY_BLOCK_2_CENTROID = {.x = 190, .y = 465};
+const vector_t BOUNDARY_BLOCK_2_CENTROID = {.x = 180, .y = 455};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
@@ -383,10 +383,10 @@ void add_blocks(scene_t *scene) {
   dimensions_character->x = CHARACTER_SIDE_LENGTH;
   dimensions_character->y = CHARACTER_SIDE_LENGTH;
   vector_t *dimensions_block = malloc(sizeof(vector_t));
-  dimensions_block->x = WALL_LENGTH;
+  dimensions_block->x = WALL_LENGTH * 2;
   dimensions_block->y = BLOCK_LENGTH;
-  body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);
-  body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BLOCK, NULL);          
+  body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BOUNDARY, NULL);
+  body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BOUNDARY, NULL);          
   scene_add_body(scene, boundary_block_1);
   scene_add_body(scene, boundary_block_2);
 

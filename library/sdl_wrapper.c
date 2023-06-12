@@ -263,7 +263,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
   SDL_Rect tree_rect = {500,500,100,100};
 
-  SDL_Texture *BLOCK_TEXTURE = IMG_LoadTexture(renderer, BLOCK_TO_PUSH);
+  //SDL_Texture *BLOCK_TEXTURE = IMG_LoadTexture(renderer, BLOCK_TO_PUSH);
   SDL_Rect block_rect = {0,0,130,140};
 
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
@@ -345,7 +345,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
   //OBJECTS
-  SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
+  //SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
@@ -359,7 +359,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
   SDL_DestroyTexture(TREE_TEXTURE);
-  SDL_DestroyTexture(BLOCK_TEXTURE);
+  //SDL_DestroyTexture(BLOCK_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);

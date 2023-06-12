@@ -463,7 +463,7 @@ void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis,
 }
 
 void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, void *character_dimensions) {
-  create_collision(scene, sprite, boundary,
+  create_collision_hold_on(scene, sprite, boundary,
                   boundary_collision_handler, character_dimensions, 
                   free);
 }
