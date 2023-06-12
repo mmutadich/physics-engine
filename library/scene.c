@@ -17,6 +17,8 @@ typedef struct scene {
   bool game_over; //true when the game is over
   bool plant_boy_fertilizer_collected;
   bool dirt_girl_fertilizer_collected;
+  bool plant_boy_obstacle_hit;
+  bool dirt_girl_obstacle_hit;
   int doors_reached; //should be two when the game is over
   void *screen;
 } scene_t;
@@ -80,6 +82,8 @@ scene_t *scene_init(void) {
   result->game_over = false;
   result->plant_boy_fertilizer_collected = false;
   result->dirt_girl_fertilizer_collected = false;
+  result->plant_boy_obstacle_hit = false;
+  result->dirt_girl_obstacle_hit = false;
   result->doors_reached = false;
   result->screen = NULL;
   assert(result);
@@ -220,6 +224,25 @@ bool scene_get_dirt_girl_fertilizer_collected(scene_t *scene) {
   assert(scene);
   return scene->dirt_girl_fertilizer_collected;
 }
+
+void scene_set_plant_boy_obstacle_hit(scene_t *scene, bool value) {
+  scene->plant_boy_obstacle_hit = value;
+}
+
+bool scene_get_plant_boy_obstacle_hit(scene_t *scene) {
+  return scene->plant_boy_obstacle_hit;
+}
+
+void scene_set_dirt_girl_obstacle_hit(scene_t *scene, bool value) {
+  assert(scene);
+  scene->dirt_girl_obstacle_hit = value;
+}
+
+bool scene_get_dirt_girl_obstacle_hit(scene_t *scene) {
+  assert(scene);
+  return scene->dirt_girl_obstacle_hit;
+}
+
 
 void scene_set_screen(scene_t *scene, void *screen) {
   assert(scene);

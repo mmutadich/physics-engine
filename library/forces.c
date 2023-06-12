@@ -398,7 +398,7 @@ void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
 void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  vector_t new_centroid = {.x = 70, .y = 910};
+  vector_t new_centroid = {.x = 70, .y = 910}; // TODO: MAGIC NUMBER
   body_set_centroid(target, new_centroid);
   scene_set_plant_boy_fertilizer_collected(scene, true);
 }
@@ -412,7 +412,7 @@ void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  vector_t new_centroid = {.x = 160, .y = 920};
+  vector_t new_centroid = {.x = 160, .y = 920}; // TODO: MAGIC NUMBER
   body_set_centroid(target, new_centroid);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
 }
@@ -519,10 +519,6 @@ void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasti
   create_collision_hold_on(scene, sprite, ice, ice_collision_handler, scene, two_body_aux_freer);
 }
 
-
-
-
-
 //start bodies collision aux
 
 bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
@@ -605,3 +601,26 @@ void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
   create_collision_multiple(scene, bodies, win_handler, scene, NULL);
 }
 
+void plant_boy_obstacle_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_plant_boy_obstacle_hit(scene, true);
+}
+
+void create_plant_boy_obstacle_force(scene_t *scene, body_t *player, body_t *body) {
+  create_collision(scene, player, body,
+                   plant_boy_obstacle_collision_handler, scene,
+                   two_body_aux_freer);
+}
+
+void dirt_girl_obstacle_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
+  scene_t *scene = (scene_t*)aux;
+  assert(scene);
+  scene_set_dirt_girl_obstacle_hit(scene, true);
+}
+
+void create_dirt_girl_obstacle_force(scene_t *scene, body_t *player, body_t *body) {
+  create_collision(scene, player, body,
+                   dirt_girl_obstacle_collision_handler, scene,
+                   two_body_aux_freer);
+}

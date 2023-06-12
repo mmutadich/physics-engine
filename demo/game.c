@@ -96,6 +96,10 @@ const vector_t TRAMPOLINE_CENTROID = {.x = 300, .y= 400};
 const double TRAMPOLINE_HEIGHT = 40;
 const double TRAMPOLINE_LENGTH = 120;
 
+// TREE CONSTANTS
+const vector_t PLANT_BOY_TREE_CENTROID = {.x = 625, .y = 50};
+const vector_t DIRT_GIRL_TREE_CENTROID = {.x = 1300, .y = 730};
+
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -151,6 +155,16 @@ bool doesnt_contain_star(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     if (body_get_info(body) == STAR) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool doesnt_contain_tree(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    body_t *body = scene_get_body(scene, i);
+    if (body_get_info(body) == TREE) {
       return false;
     }
   }
@@ -361,6 +375,11 @@ void add_star(scene_t *scene) {
   scene_add_body(scene, star);
 }
 
+void add_tree(scene_t *scene, vector_t centroid) {
+  body_t *tree = body_init_with_info(make_rect_shape(centroid, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, STAR_COLOR, TREE, NULL);
+  scene_add_body(scene, tree);
+}
+
 void add_universal_gravity(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
@@ -417,12 +436,19 @@ void add_win_force(scene_t *scene) {
   guarantee_all_collisions(scene, bodies);
 }
 
+void add_obstacle_force(scene_t *scene) {
+  body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));  
+  body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
+  body_t *plant_boy_obstacle = scene_get_body(scene, get_x_index(scene, PLANT_BOY_OBSTACLE));
+  body_t *dirt_girl_obstacle = scene_get_body(scene, get_x_index(scene, DIRT_GIRL_OBSTACLE));
+  create_dirt_girl_obstacle_force(scene, dirt_girl, dirt_girl_obstacle);
+  create_plant_boy_obstacle_force(scene, plant_boy, plant_boy_obstacle);
+}
 
 void add_fertilizer_force(scene_t *scene) {
   body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));  
   body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
-  size_t index = get_x_index(scene, PLANT_BOY_FERTILIZER);
-  body_t *plant_boy_fertilizer = scene_get_body(scene, index);
+  body_t *plant_boy_fertilizer = scene_get_body(scene, get_x_index(scene, PLANT_BOY_FERTILIZER));
   body_t *dirt_girl_fertilizer = scene_get_body(scene, get_x_index(scene, DIRT_GIRL_FERTILIZER));
   create_dirt_girl_fertilizer_force(scene, dirt_girl, dirt_girl_fertilizer);
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
@@ -482,6 +508,7 @@ scene_t *make_initial_scene() {
   add_universal_gravity(result);
   add_normal_force(result);
   add_game_over_force(result);
+  add_obstacle_force(result);
   add_fertilizer_force(result);
   //add_boundary_force(result);
   add_portal_force(result);
@@ -533,14 +560,14 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(plant_boy, velocity);
     }
     if (key == UP_ARROW) {
-      if (held_time < 0.01 ){
+      if (held_time < 0.01 ) {
         list_t *ledges = get_x_bodies(state->scene, LEDGE, BLOCK);
         for (size_t i = 0; i < list_size(ledges); i++) {
           body_t *ledge = list_get(ledges, i);
           assert(plant_boy);
           assert(ledge);
           jump_up(state->scene, plant_boy, ledge, ELASTICITY);
-      }
+        }
       }
     }
   } else {
@@ -598,6 +625,14 @@ void emscripten_main(state_t *state) {
     }
     if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
       add_star(state->scene);
+    }
+    if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
+      add_tree(state->scene, PLANT_BOY_TREE_CENTROID);
+      printf("plant boy tree\n");
+    }
+    if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
+      add_tree(state->scene, DIRT_GIRL_TREE_CENTROID);
+      printf("dirt girl tree\n");
     }
     sdl_render_scene(state->scene);
   }

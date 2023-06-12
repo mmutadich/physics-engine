@@ -116,6 +116,14 @@ bool scene_get_game_over(scene_t *scene);
 
 size_t scene_forces(scene_t *scene);
 
+void scene_set_plant_boy_obstacle_hit(scene_t *scene, bool value);
+
+bool scene_get_plant_boy_obstacle_hit(scene_t *scene);
+
+void scene_set_dirt_girl_obstacle_hit(scene_t *scene, bool value);
+
+bool scene_get_dirt_girl_obstacle_hit(scene_t *scene);
+
 void scene_set_plant_boy_fertilizer_collected(scene_t *scene, bool value);
 
 bool scene_get_plant_boy_fertilizer_collected(scene_t *scene);

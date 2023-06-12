@@ -121,6 +121,10 @@ void create_universal_gravity(scene_t *scene, body_t *body, double gravity);
 
 void create_game_over_force(scene_t *scene, body_t *player, body_t *body);
 
+void create_plant_boy_obstacle_force(scene_t *scene, body_t *player, body_t *body);
+
+void create_dirt_girl_obstacle_force(scene_t *scene, body_t *player, body_t *body);
+
 void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body);
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body);
