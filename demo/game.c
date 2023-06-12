@@ -59,24 +59,24 @@ const vector_t BOUNDARY_BLOCK_2_CENTROID = {.x = 180, .y = 455};
 const double BLOCK_LENGTH = 190;
 
 // DOOR CONSTANTS
-const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1585, .y = 780};
-const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1635, .y = 780};
-const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1785, .y = 780};
-const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1835, .y = 780};
+const vector_t PLANT_BOY_DOOR_RIGHT_CENTROID = {.x = 1577, .y = 780};
+const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1627, .y = 780};
+const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1777, .y = 780};
+const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1827, .y = 780};
 const double DOOR_HEIGHT = 120;
 const double DOOR_LENGTH = 10;
 
 // OBSTACLE/ICE CONSTANTS
-const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 600, .y = 30};
+const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 625, .y = 30};
 const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
-const double OBSTACLE_LENGTH = 120;
+const double OBSTACLE_LENGTH = 140;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
 const vector_t ICE_CENTROID = {.x = 1300, .y= 370};
 
 // FERTILIZER CONSTANTS
 const vector_t PLANT_BOY_FERTILIZER_CENTROID = {.x = 900, .y = 470};
-const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1500, .y = 120};
+const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1480, .y = 130};
 const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
@@ -582,7 +582,6 @@ scene_t *make_initial_scene() {
   add_characters(result);
   add_ledges(result);
   add_walls(result);
-  printf("added walls\n");
   add_blocks(result);
   add_doors(result);
   add_obstacles(result);

@@ -214,13 +214,11 @@ bool scene_get_plant_boy_fertilizer_collected(scene_t *scene) {
 void scene_set_dirt_girl_fertilizer_collected(scene_t *scene, bool value) {
   assert(scene);
   scene->dirt_girl_fertilizer_collected = value;
-  printf("set dirt girl\n");
 }
 
 bool scene_get_dirt_girl_fertilizer_collected(scene_t *scene) {
   assert(scene);
   return scene->dirt_girl_fertilizer_collected;
-  printf("set plant boy\n");
 }
 
 void scene_set_screen(scene_t *scene, void *screen) {
