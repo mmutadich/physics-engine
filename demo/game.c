@@ -68,8 +68,8 @@ const double DOOR_HEIGHT = 120;
 const double DOOR_LENGTH = 10;
 
 // OBSTACLE/ICE CONSTANTS
-const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 625, .y = 30};
-const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1300, .y = 710};
+const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 725, .y = 30};
+const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1330, .y = 710};
 const double OBSTACLE_LENGTH = 140;
 const double OBSTACLE_HEIGHT = 20;
 const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
@@ -634,8 +634,8 @@ void emscripten_main(state_t *state) {
       add_tree(state->scene, DIRT_GIRL_TREE_CENTROID);
       printf("dirt girl tree\n");
     }
-    sdl_render_scene(state->scene);
   }
+  sdl_render_scene(state->scene);
 }
 
 void emscripten_free(state_t *state) {

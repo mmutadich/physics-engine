@@ -13,68 +13,8 @@
 
 const size_t NUM_SOUNDS = 1;
 const char WAV_PATH[NUM_SOUNDS] = {"win.wav"};
-Mix_Chunk *wave[NUM_SOUNDS] = {NULL};
-Mix_Music *music = NULL;
-
-const char WINDOW_TITLE[] = "Starlight Dash";
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 500;
-const double MS_PER_S = 1e3;
-
-int load_sound_effects() {
-  // Load our sound effects
-  for (size_t i = 0; i < NUM_SOUNDS; i++) {
-    wave[i] = Mix_LoadWAV(WAV_PATH[i]);
-    if (wave[i] == NULL) {
-      printf("\n%s", Mix_GetError()); // for debugging
-      return -1;
-    }
-  }
-  return 0;
-}
-
-// plays from load up of game
-int load_and_play_music() {
-
-  // Initialize SDL.
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		return -1;
-  }
-
-  //Initialize SDL_mixer 
-	if(Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
-		return -1; 
-  }
-
-  // Load our music
-	music = Mix_LoadMUS(MUS_PATH);
-	if (music == NULL) {
-		return -1;
-  }
-  // this thing runs it on repeat
-	if (Mix_PlayMusic( music, -1) == -1) {
-		return -1;
-  }
-  return 0;
-}
-
-int play_sound_effect(size_t index) {
-  if (Mix_PlayChannel(-1, wave[index], 0) == -1) { //making sound
-		return -1;
-  }
-  return 0;
-}
-
-int free_all_audio() {
-  // clean up our resources
-	Mix_FreeChunk(wave);
-	Mix_FreeMusic(music);
-	
-  // quit SDL_mixer
-	Mix_CloseAudio();
-}
-
-
+//Mix_Chunk *wave[NUM_SOUNDS] = {NULL};
+//Mix_Music *music = NULL;
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -83,6 +23,7 @@ const double MS_PER_S = 1e3;
 
 //BACKGROUND
 const char *BG = "images/background_2.jpeg";
+const char *BG_START = "images/IMG_0462.jpg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
@@ -296,7 +237,13 @@ void sdl_show(void) {
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
 
-  SDL_Texture *BG_TEXTURE = IMG_LoadTexture(renderer, BG);
+  SDL_Texture *BG_TEXTURE;
+  if (scene_get_screen(scene) == 0) {
+    BG_TEXTURE = IMG_LoadTexture(renderer, BG_START);
+  } 
+  if (scene_get_screen(scene) == 1) {
+    BG_TEXTURE = IMG_LoadTexture(renderer, BG);
+  } 
 
   SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
   SDL_Rect plant_boy_rect = {500,500,80,80};
@@ -372,7 +319,61 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+}
+
+/*int load_sound_effects() {
+  for (size_t i = 0; i < NUM_SOUNDS; i++) {
+    wave[i] = Mix_LoadWAV(WAV_PATH[i]);
+    if (wave[i] == NULL) {
+      printf("\n%s", Mix_GetError()); // for debugging
+      return -1;
+    }
   }
+  return 0;
+}
+
+// plays from load up of game
+int load_and_play_music() {
+
+  // Initialize SDL.
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		return -1;
+  }
+
+  //Initialize SDL_mixer 
+	if(Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
+		return -1; 
+  }
+
+  // Load our music
+	music = Mix_LoadMUS(MUS_PATH);
+	if (music == NULL) {
+		return -1;
+  }
+  // this thing runs it on repeat
+	if (Mix_PlayMusic( music, -1) == -1) {
+		return -1;
+  }
+  return 0;
+}
+
+int play_sound_effect(size_t index) {
+  if (Mix_PlayChannel(-1, wave[index], 0) == -1) { //making sound
+		return -1;
+  }
+  return 0;
+}
+
+int free_all_audio() {
+  // clean up our resources
+	Mix_FreeChunk(wave);
+	Mix_FreeMusic(music);
+	
+  // quit SDL_mixer
+	Mix_CloseAudio();
+}
+*/
+
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
 
