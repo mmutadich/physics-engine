@@ -9,46 +9,90 @@
 #include <stdlib.h>
 #include <time.h> 
 
+#define MUS_PATH "assets/lofi.wav"
+
+const size_t NUM_SOUNDS = 1;
+const char WAV_PATH[NUM_SOUNDS] = {"win.wav"};
+Mix_Chunk *wave[NUM_SOUNDS] = {NULL};
+Mix_Music *music = NULL;
+
+const char WINDOW_TITLE[] = "Starlight Dash";
+const int WINDOW_WIDTH = 1000;
+const int WINDOW_HEIGHT = 500;
+const double MS_PER_S = 1e3;
+
+int load_sound_effects() {
+  // Load our sound effects
+  for (size_t i = 0; i < NUM_SOUNDS; i++) {
+    wave[i] = Mix_LoadWAV(WAV_PATH[i]);
+    if (wave[i] == NULL) {
+      printf("\n%s", Mix_GetError()); // for debugging
+      return -1;
+    }
+  }
+  return 0;
+}
+
+// plays from load up of game
+int load_and_play_music() {
+
+  // Initialize SDL.
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		return -1;
+  }
+
+  //Initialize SDL_mixer 
+	if(Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
+		return -1; 
+  }
+
+  // Load our music
+	music = Mix_LoadMUS(MUS_PATH);
+	if (music == NULL) {
+		return -1;
+  }
+  // this thing runs it on repeat
+	if (Mix_PlayMusic( music, -1) == -1) {
+		return -1;
+  }
+  return 0;
+}
+
+int play_sound_effect(size_t index) {
+  if (Mix_PlayChannel(-1, wave[index], 0) == -1) { //making sound
+		return -1;
+  }
+  return 0;
+}
+
+int free_all_audio() {
+  // clean up our resources
+	Mix_FreeChunk(wave);
+	Mix_FreeMusic(music);
+	
+  // quit SDL_mixer
+	Mix_CloseAudio();
+}
+
+
+
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
 
 //BACKGROUND
-const char *BG = "images/background_1.jpeg";
+const char *BG = "images/background_2.jpeg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
 const char *PLANT_BOY_SPRITE = "images/plant_boy_front_facing-removebg-preview.png";
 const char *TREE_SPRITE = "images/tree.png";
 
-//OBSTACLES:
-const char *DIRT_GIRL_POISON = "images/dirt_girl_poison.png"; //TEXTURE TODO
-const char *PLANT_BOY_POISON = "images/plant_boy_poison.png"; 
-const char *BLOCK_TO_PUSH = "images/block_to_push.png";
-
 //POWERUPS/BOOSTS:
-const char *TRAMPOLINE = "images/trampoline.png"; //TEXTURE TODO
 const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png"; 
 const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
 const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
-const char *PORTAL = "images/portal.png"; //TEXTURE TODO
-
-//DOORS + LEDGES:
-const char *DIRT_GIRL_DOOR = "images/dirt_girl_door.jpg";
-const char *PLANT_BOY_DOOR = "images/plant_boy_door.jpg";
-const char *TOP_LEDGE = "images/top_ledge.png";
-
-//TEXTURE TODO: IMPLEMENT THESE TEXTURES IF ANIMATING
-const char *DIRT_GIRL_WALK_LEFT_1 = "images/dirt_girl_walk_left_1.png";
-const char *DIRT_GIRL_WALK_LEFT_2 = "images/dirt_girl_walk_left_2.png";
-const char *DIRT_GIRL_WALK_RIGHT_1 = "images/dirt_girl_walk_right_1.png";
-const char *DIRT_GIRL_WALK_RIGHT_2 = "images/dirt_girl_walk_right_2.png";
-
-const char *PLANT_BOY_WALK_LEFT_1 = "images/plant_boy_walk_left_1.png";
-const char *PLANT_BOY_WALK_LEFT_2 = "images/plant_boy_walk_left_2.png";
-const char *PLANT_BOY_WALK_RIGHT_1 = "images/plant_boy_walk_right_1.png";
-const char *PLANT_BOY_WALK_RIGHT_2 = "images/plant_boy_walk_right_2.png";
 
 /**
  * The coordinate at the center of the screen.
@@ -263,9 +307,6 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
   SDL_Rect tree_rect = {500,500,100,100};
 
-  SDL_Texture *BLOCK_TEXTURE = IMG_LoadTexture(renderer, BLOCK_TO_PUSH);
-  SDL_Rect block_rect = {0,0,130,140};
-
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
   SDL_Rect dirt_girl_fertilizer_rect = {0,0,50,50};
 
@@ -274,15 +315,6 @@ void sdl_render_scene(scene_t *scene) {
 
   SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
   SDL_Rect star_of_mastery_rect = {500,500,50,50};
-
-  SDL_Texture *DIRT_GIRL_DOOR_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_DOOR);
-  SDL_Rect dirt_girl_door_rect = {500,500,40,70};
-
-  SDL_Texture *PLANT_BOY_DOOR_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_DOOR);
-  SDL_Rect plant_boy_door_rect = {500,500,40,70};
-  
-  SDL_Texture *PORTAL_TEXTURE = IMG_LoadTexture(renderer, PORTAL);
-  SDL_Rect portal_rect = {500,500,25,100};
 
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
@@ -303,11 +335,6 @@ void sdl_render_scene(scene_t *scene) {
       tree_rect.x = window.x - 140*get_scene_scale(get_window_center());
       tree_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    //OBSTACLES:
-    if (body_get_info(body) == 11) {
-      block_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 35;
-      block_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 45;
-    }
     //POWERUPS:
     if (body_get_info(body) == 13) {
       plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 40;
@@ -321,19 +348,6 @@ void sdl_render_scene(scene_t *scene) {
       star_of_mastery_rect.x = window.x - 140*get_scene_scale(get_window_center());
       star_of_mastery_rect.y = window.y - 140*get_scene_scale(get_window_center());
     }
-    if (body_get_info(body) == 17) {
-      portal_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 60;
-      portal_rect.y = window.y - 140*get_scene_scale(get_window_center());
-    }
-    //DOORS + LEDGES:
-     if (body_get_info(body) == 9) {
-      dirt_girl_door_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 35;
-      dirt_girl_door_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 30;
-    }
-    if (body_get_info(body) == 7) {
-      plant_boy_door_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 35;
-      plant_boy_door_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 30;
-    }
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
@@ -345,13 +359,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
   //OBJECTS
-  SDL_RenderCopy(renderer, BLOCK_TEXTURE, NULL, &block_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
   SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
-  SDL_RenderCopy(renderer, DIRT_GIRL_DOOR_TEXTURE, NULL, &dirt_girl_door_rect);
-  SDL_RenderCopy(renderer, PLANT_BOY_DOOR_TEXTURE, NULL, &plant_boy_door_rect);
-  SDL_RenderCopy(renderer, PORTAL_TEXTURE, NULL, &portal_rect);
 
   sdl_show();
 
@@ -359,17 +369,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
   SDL_DestroyTexture(TREE_TEXTURE);
-  SDL_DestroyTexture(BLOCK_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
-  SDL_DestroyTexture(DIRT_GIRL_DOOR_TEXTURE);
-  SDL_DestroyTexture(PLANT_BOY_DOOR_TEXTURE);
-  SDL_DestroyTexture(PORTAL_TEXTURE);
-  //SDL_RenderPresent(renderer);
-  //SDL_DestroyRenderer(renderer);
-  //SDL_DestroyWindow(window); 
-  
   }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
