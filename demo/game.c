@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 // FORCE CONSTANTS
 const double GRAVITY = -25000;
@@ -138,7 +139,6 @@ list_t *get_x_bodies(scene_t *scene, void *info1, void *info2){
   return bodies;
 }
 
-// TODO: CONSOLIDATE ALL GET_X_INDEX
 size_t get_x_index(scene_t *scene, void *info){
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     if (body_get_info(scene_get_body(scene,i)) == info)
@@ -355,7 +355,7 @@ void add_star(scene_t *scene) {
   scene_add_body(scene, star);
 }
 
-int doesnt_contain_star(scene_t *scene) {
+bool doesnt_contain_star(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
     if (body_get_info(body) == STAR) {
@@ -428,11 +428,6 @@ void add_fertilizer_force(scene_t *scene) {
   size_t index = get_x_index(scene, PLANT_BOY_FERTILIZER);
   body_t *plant_boy_fertilizer = scene_get_body(scene, index);
   body_t *dirt_girl_fertilizer = scene_get_body(scene, get_x_index(scene, DIRT_GIRL_FERTILIZER));
-  //create_physics_collision(scene, ELASTICITY, plant_boy, plant_boy_fertilizer);
-  //create_one_sided_destructive_collision(scene, plant_boy, plant_boy_fertilizer);
-  //this should not be here
-  //create_physics_collision(scene, ELASTICITY, dirt_girl, dirt_girl_fertilizer);
-  //create_one_sided_destructive_collision(scene, dirt_girl, dirt_girl_fertilizer);
   create_dirt_girl_fertilizer_force(scene, dirt_girl, dirt_girl_fertilizer);
   create_plant_boy_fertilizer_force(scene, plant_boy, plant_boy_fertilizer);
 }
@@ -579,14 +574,8 @@ state_t *emscripten_init() {
   return state;
 }
 
-void emscripten_free(state_t *state) {
-  scene_free(state->scene);
-  free(state);
-}
-
 void emscripten_main(state_t *state) {
   assert(state->scene);
-    //when referencing scene ALWAYS call state->scene
   sdl_clear();
   double dt = time_since_last_tick();
 
@@ -621,5 +610,10 @@ void emscripten_main(state_t *state) {
     }
     sdl_render_scene(state->scene);
   }
+}
+
+void emscripten_free(state_t *state) {
+  scene_free(state->scene);
+  free(state);
 }
 
