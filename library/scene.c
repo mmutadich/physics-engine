@@ -13,14 +13,12 @@ const size_t NUM_FORCES = 30;
 
 typedef struct scene {
   list_t *bodies;
-  // add list of players here?
   list_t *forces;
-  bool game_over; //true when the game is over
+  bool game_over;
   bool plant_boy_fertilizer_collected;
   bool dirt_girl_fertilizer_collected;
   bool plant_boy_obstacle_hit;
   bool dirt_girl_obstacle_hit;
-  int doors_reached; //should be two when the game is over
   void *screen;
 } scene_t;
 
@@ -54,28 +52,13 @@ force_t *force_bodies_init(force_creator_t force_creator, void *aux,
 }
 
 void force_free(force_t *force) {
-  //printf("started force free\n");
-    //printf("freed the aux\n");
   if (force->bodies != NULL)
-    //the freer at this point is null!
-    //list_get_freer(force->bodies);
-
-    free(force->bodies); //messing up at this part
-
-    // free(force->bodies); //THIS IS NOT WORKING!! THIS PART IS WRONG!!
-    //printf("freed the bodies\n");
-  if (force->aux_freer != NULL) //
+    free(force->bodies);
+  if (force->aux_freer != NULL)
     force->aux_freer(force->aux);
   free(force);
 }
 
-/**
- * Allocates memory for an empty scene.
- * Makes a reasonable guess of the number of bodies to allocate space for.
- * Asserts that the required memory is successfully allocated.
- *
- * @return the new scene
- */
 scene_t *scene_init(void) {
   scene_t *result = malloc(sizeof(scene_t));
   result->bodies = list_init(NUM_BODIES, body_free);
@@ -85,74 +68,33 @@ scene_t *scene_init(void) {
   result->dirt_girl_fertilizer_collected = false;
   result->plant_boy_obstacle_hit = false;
   result->dirt_girl_obstacle_hit = false;
-  result->doors_reached = false;
   result->screen = NULL;
   assert(result);
   return result;
 }
 
-/**
- * Releases memory allocated for a given scene and all its bodies.
- *
- * @param scene a pointer to a scene returned from scene_init()
- */
 void scene_free(scene_t *scene) {
-  //for some reason this is moving double the number of bodies?
   list_free(scene->bodies);
   list_free(scene->forces);
   free(scene);
 }
 
-/**
- * Gets the number of bodies in a given scene.
- *
- * @param scene a pointer to a scene returned from scene_init()
- * @return the number of bodies added with scene_add_body()
- */
 size_t scene_bodies(scene_t *scene) { return list_size(scene->bodies); }
 
-/**
- * Gets the body at a given index in a scene.
- * Asserts that the index is valid.
- *
- * @param scene a pointer to a scene returned from scene_init()
- * @param index the index of the body in the scene (starting at 0)
- * @return a pointer to the body at the given index
- */
 body_t *scene_get_body(scene_t *scene, size_t index) {
   assert(index >= 0 && index < list_size(scene->bodies));
   return list_get(scene->bodies, index);
 }
 
-/**
- * Adds a body to a scene.
- *
- * @param scene a pointer to a scene returned from scene_init()
- * @param body a pointer to the body to add to the scene
- */
 void scene_add_body(scene_t *scene, body_t *body) {
   list_add(scene->bodies, body);
 }
 
-/**
- * Removes and frees the body at a given index from a scene.
- * Asserts that the index is valid.
- *
- * @param scene a pointer to a scene returned from scene_init()
- * @param index the index of the body in the scene (starting at 0)
- */
 void scene_remove_body(scene_t *scene, size_t index) {
   assert(index >= 0 && index < list_size(scene->bodies));
   body_remove(list_get(scene->bodies, index));
 }
 
-/**
- * Executes a tick of a given scene over a small time interval.
- * This requires ticking each body in the scene.
- *
- * @param scene a pointer to a scene returned from scene_init()
- * @param dt the time elapsed since the last tick, in seconds
- */
 void scene_tick(scene_t *scene, double dt) {
   for (size_t i = 0; i < list_size(scene->forces); i++) {
     force_t *force = list_get(scene->forces, i);

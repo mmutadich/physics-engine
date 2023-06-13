@@ -22,6 +22,8 @@ const double TRAMPOLINE_IMPULSE = 20000;
 const double ICE_VELOCITY_FACTOR = 0.7;
 const double P_WIDTH = 50;
 const vector_t SPAWN = {.x = 1000, .y = 790};
+const vector_t plant_boy_fertilizer_collision_new_centroid = {.x = 70, .y = 910};
+const vector_t dirt_girl_fertilizer_collision_new_centroid = {.x = 160, .y = 920};
 
 typedef enum {
   START_SCREEN = 0,
@@ -47,7 +49,7 @@ typedef struct collision_aux {
   free_func_t aux_freer;
   bool is_colliding;
   void *aux;
-  bool hold_colliding; //true when we want the force to be applied multiple times if is_collision is true
+  bool hold_colliding; // true when the force should be applied multiple times (if is_collision is true)
 } collision_aux_t;
 
 typedef struct bodies_collision_aux {
@@ -56,15 +58,14 @@ typedef struct bodies_collision_aux {
   free_func_t aux_freer;
   bool is_colliding;
   void *aux;
-  bool hold_colliding; //true when we want the force to be applied multiple times if is_collision is true
+  bool hold_colliding; // true when the force should be applied multiple times (if is_collision is true)
 } bodies_collision_aux_t;
 
 void collision_aux_freer(void *collision_aux) {
   collision_aux_t *ca = (collision_aux_t *)collision_aux;
   assert(ca);
-  if (ca->aux_freer != NULL) {
+  if (ca->aux_freer != NULL)
     ca->aux_freer(ca->aux);
-  }
   free(ca);
 }
 
@@ -129,9 +130,9 @@ void apply_newtonian_gravity(void *two_body_aux) {
   vector_t distance = get_distance(centroid1, centroid2);
   double d = sqrt(distance.x * distance.x + distance.y * distance.y);
   double net_force = 0;
-  if (d > DISTANCE_0) {
+  if (d > DISTANCE_0)
     net_force = -G * body_get_mass(body1) * body_get_mass(body2) / (pow(d, 2));
-  } else {
+  else {
     net_force =
         -G * body_get_mass(body1) * body_get_mass(body2) / (pow(DISTANCE_0, 2));
   }
@@ -217,7 +218,6 @@ vector_t calculate_impulse(body_t *body1, body_t *body2, double elasticity,
 
 
 vector_t get_impulse(double impulse) {
-  //for jumping, we want there to always be a velocity up
   vector_t result = {.x = 0, .y = impulse};
   return result;
 }
@@ -257,9 +257,8 @@ void apply_collision(void *c_aux) {
                            collision_axis, collision_aux->aux);
     collision_aux->is_colliding = true;
   }
-  if (!collision_get_collided(find_collision(shape1, shape2))) {
+  if (!collision_get_collided(find_collision(shape1, shape2)))
     collision_aux->is_colliding = false;
-  }
   list_free(shape1);
   list_free(shape2);
 }
@@ -281,21 +280,17 @@ void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
   two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
-  //TODO GET RID OF MAGIC NUMBERS
   vector_t impulse_vector = get_impulse(JUMP_IMPULSE); 
   body_add_impulse(ball, impulse_vector);
   vector_t opposite_impulse_vector = vec_multiply(-1, impulse_vector);
   body_add_impulse(target, opposite_impulse_vector);
 }
 
-//TODO: NEED TO CHANGE THIS BACK TO THE OLD VERSION
 void physics_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
   two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
-  //something is wrong with tba->constant?
-  //need to change tba constant back
   vector_t impulse_vector =
       calculate_impulse(ball, target, .5, axis);
   body_add_impulse(ball, impulse_vector);
@@ -382,7 +377,6 @@ void create_normal_force(scene_t *scene, body_t *body, body_t *ledge, double gra
 }
 
 void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
-  //we know the aux is a scene
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_game_over(scene, true);
@@ -392,14 +386,12 @@ void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
   create_collision(scene, player, body,
                    game_over_collision_handler, scene,
                    two_body_aux_freer);
-  //the aux is the scene because we need to access this in the game_over_handler
 }
 
 void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  vector_t new_centroid = {.x = 70, .y = 910}; // TODO: MAGIC NUMBER
-  body_set_centroid(target, new_centroid);
+  body_set_centroid(target, plant_boy_fertilizer_collision_new_centroid);
   scene_set_plant_boy_fertilizer_collected(scene, true);
 }
 
@@ -412,8 +404,7 @@ void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *b
 void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector_t axis, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  vector_t new_centroid = {.x = 160, .y = 920}; // TODO: MAGIC NUMBER
-  body_set_centroid(target, new_centroid);
+  body_set_centroid(target, dirt_girl_fertilizer_collision_new_centroid);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
 }
 
@@ -421,7 +412,6 @@ void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *b
   create_collision(scene, player, body,
                    dirt_girl_fertilizer_collision_handler, scene,
                    two_body_aux_freer);
-  //in the collision handler, we want to move the fertilizer to the top left corner
 }
 
 void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis, void *aux) {
@@ -459,9 +449,7 @@ void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis,
 }
 
 void create_boundary_force(scene_t *scene, body_t *sprite, body_t *boundary, void *character_dimensions) {
-  create_collision_hold_on(scene, sprite, boundary,
-                  boundary_collision_handler, character_dimensions, 
-                  free);
+  create_collision_hold_on(scene, sprite, boundary, boundary_collision_handler, character_dimensions, free);
 }
 
 void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axis,
@@ -481,11 +469,9 @@ void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axi
   vector_t reverse_x = vec_multiply(-1, current_velocity);
   vector_t new_velocity = {.x = reverse_x.x, .y = current_velocity.y};
   body_set_velocity(sprite, new_velocity);
-  //if colliding, what happens?
 }
 
 void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity) {
-  //two_body_aux_t *aux = two_body_aux_init(entry_portal, exit_portal, elasticity);
   create_collision(scene, sprite, entry_portal,
                    portal_collision_handler, scene,
                    two_body_aux_freer);
@@ -512,14 +498,11 @@ void ice_collision_handler(body_t *sprite, body_t *ice, vector_t axis,
   assert(ice);
   vector_t new_velocity = vec_multiply(ICE_VELOCITY_FACTOR, body_get_velocity(sprite));
   body_set_velocity(sprite, new_velocity);
-  //body_decrease_velocity(sprite, ICE_VELOCITY_FACTOR);
 }
 
 void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity) {
   create_collision_hold_on(scene, sprite, ice, ice_collision_handler, scene, two_body_aux_freer);
 }
-
-//start bodies collision aux
 
 bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
                                     bodies_collision_handler_t handler,
@@ -537,7 +520,6 @@ bodies_collision_aux_t *bodies_collision_aux_init(list_t *bodies,
 }
 
 void apply_collision_multiple(void *c_aux) {
-  //the error is not within apply_collision
   bodies_collision_aux_t *collision_aux = (bodies_collision_aux_t *)c_aux;
   assert(collision_aux);
   bool keep_track = true;
@@ -551,32 +533,27 @@ void apply_collision_multiple(void *c_aux) {
     if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
       vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
     }
-    if (!collision_get_collided(find_collision(shape1, shape2))) {
+    if (!collision_get_collided(find_collision(shape1, shape2)))
       keep_track = false;
-    }
     list_free(shape1);
     list_free(shape2);
   }
   collision_aux->is_colliding = keep_track;
-  if (collision_aux->is_colliding) {
+  if (collision_aux->is_colliding)
     collision_aux->handler(collision_aux->bodies, collision_aux->aux);
-  }
 }
 
 void bodies_collision_aux_freer(void *collision_aux) {
   bodies_collision_aux_t *ca = (bodies_collision_aux_t *)collision_aux;
   assert(ca);
-  if (ca->aux_freer != NULL) {
+  if (ca->aux_freer != NULL)
     ca->aux_freer(ca->aux);
-  }
-  //SHOULD NOT FREE THE BODIES
   free(ca);
 }
 
 void create_collision_multiple(scene_t *scene, list_t *bodies,
                       bodies_collision_handler_t handler, void *aux,
                       free_func_t aux_freer) {
-  //need to make a hard copy of bodies, but have the freer be null
   list_t *bodies_null_freer = list_init(10, NULL);
   for (size_t i = 0; i < list_size(bodies); i++) {
     body_t *body = list_get(bodies, i);
@@ -594,7 +571,6 @@ void win_handler(list_t *bodies, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_screen(scene, WIN_SCREEN);
-  printf("Congrats!\n");
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {

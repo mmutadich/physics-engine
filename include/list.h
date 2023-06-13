@@ -45,7 +45,6 @@ void list_free(list_t *list);
  */
 size_t list_size(list_t *list);
 
-void list_get_freer(list_t *list);
 /**
  * Gets the element at a given index in a list.
  * Asserts that the index is valid, given the list's current size.
