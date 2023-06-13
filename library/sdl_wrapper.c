@@ -10,14 +10,13 @@
 #include <time.h> 
 #include <SDL2/SDL_mixer.h>
 
-#define MUS_PATH "images/bear_growl.wav" //background music
+#define MUS_PATH "images/bear_growl.wav" // MIA TODO: change background noise
 
 Mix_Music *music = NULL;
 const size_t SOUNDS = 0;
-const char *BEAR_GROWL = "image/bear_growl.wav";
 
-const char WAV_PATH[SOUNDS] = {BEAR_GROWL}; //put sound titles in here
-Mix_Chunk *wave[SOUNDS] = {BEAR_GROWL}; //put sound titles in here
+const char WAV_PATH[SOUNDS] = {"images/cannon.wav"}; //put sound titles in here
+Mix_Chunk *wave[SOUNDS] = {"images/cannon.wav"}; //put sound titles in here
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -368,12 +367,6 @@ int background_music() {
   } 
 }
 
-int free_audio() {
-	Mix_FreeChunk(wave);
-	Mix_FreeMusic(music);
-	Mix_CloseAudio();
-}
-
 int load_sound_effects() {
   for (size_t index = 0; index < SOUNDS; index++) {
     wave[index =  Mix_LoadWAV(WAV_PATH)];
@@ -399,4 +392,10 @@ double time_since_last_tick(void) {
                           : 0.0; // return 0 the first time this is called
   last_clock = now;
   return difference;
+}
+
+int free_audio() {
+	Mix_FreeChunk(wave);
+	Mix_FreeMusic(music);
+	Mix_CloseAudio();
 }
