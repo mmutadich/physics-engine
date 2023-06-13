@@ -593,8 +593,8 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
 void win_handler(list_t *bodies, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  scene_set_screen(scene, WIN_SCREEN); //this is the win_screen
-  printf("won the game\n");
+  scene_set_screen(scene, WIN_SCREEN);
+  printf("Congrats!\n");
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
