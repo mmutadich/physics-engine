@@ -26,7 +26,7 @@ const double MS_PER_S = 1e3;
 
 //BACKGROUND
 const char *BG = "images/background_2.jpeg";
-const char *BG_START = "images/IMG_0462.jpg";
+const char *BG_START = "images/start_screen.jpg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
@@ -37,6 +37,12 @@ const char *TREE_SPRITE = "images/tree.png";
 const char *DIRT_GIRL_FERTILIZER = "images/dirt_girl_fertilizer.png"; 
 const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
 const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
+
+//DEATH COUNT TREES:
+const char *DEATH_COUNT_1 = "images/death_count_1";
+const char *DEATH_COUNT_2 = "images/death_count_2";
+const char *DEATH_COUNT_3 = "images/death_count_3";
+const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus";
 
 /**
  * The coordinate at the center of the screen.
@@ -266,6 +272,18 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
   SDL_Rect star_of_mastery_rect = {500,500,50,50};
 
+  SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
+  SDL_Rect death_count_1_rect = {500,500,50,50};
+
+  SDL_Texture *DEATH_COUNT_2_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
+  SDL_Rect death_count_2_rect = {500,500,50,50};
+
+  SDL_Texture *DEATH_COUNT_3_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
+  SDL_Rect death_count_3_rect = {500,500,50,50};
+
+  SDL_Texture *DEATH_COUNT_3_PLUS_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
+  SDL_Rect death_count_3_plus_rect = {500,500,50,50};
+
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
@@ -322,6 +340,10 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  SDL_DestroyTexture(DEATH_COUNT_1_TEXTURE);
+  SDL_DestroyTexture(DEATH_COUNT_2_TEXTURE);
+  SDL_DestroyTexture(DEATH_COUNT_3_TEXTURE);
+  SDL_DestroyTexture(DEATH_COUNT_3_PLUS_TEXTURE);
 }
 
 int background_music() {
