@@ -23,9 +23,7 @@ const double GRAVITY = -25000;
 const vector_t SDL_MIN = {.x = 0, .y = 0};
 const vector_t SDL_MAX = {.x = 2000, .y = 1000};
 const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
-const rgb_color_t COLOR = {1, 0.75, 0.75}; // general color used for everything since we will add drawings on top
-const rgb_color_t BOUNDARY_COLOR = {.5, 0.9, 0.5}; //color to see the boundaries
-const rgb_color_t BACKGROUND_COLOR = {1, 1, 1}; 
+const rgb_color_t COLOR = {1, 0.75, 0.75};
 
 // GENERAL BODY CONSTANTS
 const NUM_RECT_POINTS = 4;
@@ -72,7 +70,6 @@ const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 725, .y = 30};
 const vector_t DIRT_GIRL_OBSTACLE_CENTROID = {.x = 1310, .y = 710};
 const double OBSTACLE_LENGTH = 140;
 const double OBSTACLE_HEIGHT = 20;
-const rgb_color_t OBSTACLE_COLOR = {0.75, 1, 0.75}; // for visibility on top of ledge
 const vector_t ICE_CENTROID = {.x = 1300, .y= 370};
 
 // FERTILIZER CONSTANTS
@@ -82,14 +79,12 @@ const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
 const vector_t STAR_CENTROID = {.x = 350, .y = 850};
-const rgb_color_t STAR_COLOR = {1, 1, 0}; // for visibility
 
 // PORTAL CONSTANTS
 const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
 const vector_t EXIT_PORTAL_CENTROID = {.x = 1000, .y = 790};
 const double PORTAL_HEIGHT = 140;
 const double PORTAL_LENGTH = 20;
-const rgb_color_t PORTAL_COLOR = {0.5, 0, 1};
 
 // TRAMPLOINE CONSTANTS
 const vector_t TRAMPOLINE_CENTROID = {.x = 300, .y= 400};
@@ -100,6 +95,7 @@ const double TRAMPOLINE_LENGTH = 120;
 const vector_t PLANT_BOY_TREE_CENTROID = {.x = 625, .y = 50};
 const vector_t DIRT_GIRL_TREE_CENTROID = {.x = 1300, .y = 730};
 
+// BODIES
 typedef enum {
   PLANT_BOY = 1,
   DIRT_GIRL = 2,
@@ -123,6 +119,7 @@ typedef enum {
   BOUNDARY = 20,
 } info_t;
 
+// SCREENS
 typedef enum {
   START_SCREEN = 0,
   GAME_SCREEN = 1,
@@ -154,9 +151,8 @@ size_t get_x_index(scene_t *scene, void *info){
 bool doesnt_contain_star(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) == STAR) {
+    if (body_get_info(body) == STAR)
       return false;
-    }
   }
   return true;
 }
@@ -164,9 +160,8 @@ bool doesnt_contain_star(scene_t *scene) {
 bool doesnt_contain_tree(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) == TREE) {
+    if (body_get_info(body) == TREE)
       return false;
-    }
   }
   return true;
 }
@@ -226,18 +221,20 @@ void add_walls(scene_t *scene) {
   vector_t *dimensions_wall = malloc(sizeof(vector_t));
 
   for (size_t i = 0; i < 3; i++) {
-    body_t *wall = body_init_with_info(make_wall_shape(i), INFINITY_MASS,
-                                        COLOR, WALL, NULL);
+    body_t *wall = body_init_with_info(make_wall_shape(i), INFINITY_MASS, COLOR, WALL, NULL);
     scene_add_body(scene, wall);
     if (i == 0) { 
       dimensions_wall->x = WALL_LENGTH;
-      dimensions_wall->y = SDL_MAX.y; }
+      dimensions_wall->y = SDL_MAX.y;
+    }
     if (i == 1) {
       dimensions_wall->x = SDL_MAX.x;
-      dimensions_wall->y = WALL_LENGTH; }
+      dimensions_wall->y = WALL_LENGTH;
+    }
     if (i == 2) {
       dimensions_wall->x = WALL_LENGTH;
-      dimensions_wall->y = SDL_MAX.y; }
+      dimensions_wall->y = SDL_MAX.y;
+    }
     list_t *dimensions = list_init(2, free);
     list_add(dimensions, dimensions_character);
     list_add(dimensions, dimensions_wall);
@@ -283,8 +280,8 @@ void add_ledges(scene_t *scene) {
   scene_add_body(scene, ledge_1);
   scene_add_body(scene, ledge_2);
   
-  body_t *boundary_1 = body_init_with_info(make_rect_shape(BOUNDARY_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);
-  body_t *boundary_2 = body_init_with_info(make_rect_shape(BOUNDARY_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, BOUNDARY_COLOR, LEDGE, NULL);   
+  body_t *boundary_1 = body_init_with_info(make_rect_shape(BOUNDARY_1_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);
+  body_t *boundary_2 = body_init_with_info(make_rect_shape(BOUNDARY_2_CENTROID, LEDGE_LENGTH, LEDGE_HEIGHT), INFINITY_MASS, COLOR, LEDGE, NULL);   
   scene_add_body(scene, boundary_1);
   scene_add_body(scene, boundary_2);
   list_t *dimensions = list_init(2, free);
@@ -312,8 +309,8 @@ void add_blocks(scene_t *scene) {
   vector_t *dimensions_block = malloc(sizeof(vector_t));
   dimensions_block->x = WALL_LENGTH * 2;
   dimensions_block->y = BLOCK_LENGTH;
-  body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BOUNDARY, NULL);
-  body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, BOUNDARY_COLOR, BOUNDARY, NULL);          
+  body_t *boundary_block_1 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_1_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, COLOR, BOUNDARY, NULL);
+  body_t *boundary_block_2 = body_init_with_info(make_rect_shape(BOUNDARY_BLOCK_2_CENTROID, WALL_LENGTH * 2, BLOCK_LENGTH), INFINITY_MASS, COLOR, BOUNDARY, NULL);          
   scene_add_body(scene, boundary_block_1);
   scene_add_body(scene, boundary_block_2);
 
@@ -338,11 +335,11 @@ void add_doors(scene_t *scene) {
 }
 
 void add_obstacles(scene_t *scene) {
-  body_t *plant_boy_obstacle = body_init_with_info(make_rect_shape(PLANT_BOY_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, PLANT_BOY_OBSTACLE, NULL);
-  body_t *dirt_girl_obstacle = body_init_with_info(make_rect_shape(DIRT_GIRL_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
+  body_t *plant_boy_obstacle = body_init_with_info(make_rect_shape(PLANT_BOY_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, COLOR, PLANT_BOY_OBSTACLE, NULL);
+  body_t *dirt_girl_obstacle = body_init_with_info(make_rect_shape(DIRT_GIRL_OBSTACLE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, COLOR, DIRT_GIRL_OBSTACLE, NULL);                                     
   scene_add_body(scene, plant_boy_obstacle);
   scene_add_body(scene, dirt_girl_obstacle);
-  body_t *ice = body_init_with_info(make_rect_shape(ICE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, OBSTACLE_COLOR, ICE, NULL);   
+  body_t *ice = body_init_with_info(make_rect_shape(ICE_CENTROID, OBSTACLE_LENGTH, OBSTACLE_HEIGHT), INFINITY_MASS, COLOR, ICE, NULL);   
   scene_add_body(scene, ice);                             
 }
 
@@ -356,36 +353,38 @@ void add_characters(scene_t *scene) {
 }
 
 void add_object_features(scene_t *scene) {
+  // FERTILIZER
   body_t *plant_boy_fertilizer = body_init_with_info(make_rect_shape(PLANT_BOY_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, PLANT_BOY_FERTILIZER, NULL);
   body_t *dirt_girl_fertilizer = body_init_with_info(make_rect_shape(DIRT_GIRL_FERTILIZER_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, DIRT_GIRL_FERTILIZER, NULL);          
   scene_add_body(scene, plant_boy_fertilizer);
   scene_add_body(scene, dirt_girl_fertilizer);
 
-  body_t *entry_portal = body_init_with_info(make_rect_shape(ENTRY_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
-  body_t *exit_portal = body_init_with_info(make_rect_shape(EXIT_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, PORTAL_COLOR, PORTAL, NULL);
+  // PORTALS
+  body_t *entry_portal = body_init_with_info(make_rect_shape(ENTRY_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, COLOR, PORTAL, NULL);
+  body_t *exit_portal = body_init_with_info(make_rect_shape(EXIT_PORTAL_CENTROID, PORTAL_LENGTH, PORTAL_HEIGHT), INFINITY_MASS, COLOR, PORTAL, NULL);
   scene_add_body(scene, entry_portal);
   scene_add_body(scene, exit_portal);
 
+  // TRAMPOLINE
   body_t *trampoline = body_init_with_info(make_rect_shape(TRAMPOLINE_CENTROID, TRAMPOLINE_LENGTH, TRAMPOLINE_HEIGHT), INFINITY_MASS, COLOR, TRAMPOLINE, NULL);
   scene_add_body(scene, trampoline);
 }
 
 void add_star(scene_t *scene) {
-  body_t *star = body_init_with_info(make_rect_shape(STAR_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, STAR_COLOR, STAR, NULL);
+  body_t *star = body_init_with_info(make_rect_shape(STAR_CENTROID, BLOCK_LENGTH, BLOCK_LENGTH), INFINITY_MASS, COLOR, STAR, NULL);
   scene_add_body(scene, star);
 }
 
 void add_tree(scene_t *scene, vector_t centroid) {
-  body_t *tree = body_init_with_info(make_rect_shape(centroid, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, STAR_COLOR, TREE, NULL);
+  body_t *tree = body_init_with_info(make_rect_shape(centroid, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, TREE, NULL);
   scene_add_body(scene, tree);
 }
 
 void add_universal_gravity(scene_t *scene) {
   for (size_t i = 0; i < scene_bodies(scene); i++) {
     body_t *body = scene_get_body(scene, i);
-    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK) {
+    if (body_get_info(body) != LEDGE || body_get_info(body) != BLOCK)
       create_universal_gravity(scene, body, GRAVITY);
-    }
   }
 }
 
@@ -403,7 +402,7 @@ void add_normal_force(scene_t *scene) {
 }
 
 void add_game_over_force(scene_t *scene) {
-  list_t *game_over_bodies = get_x_bodies(scene, PLANT_BOY_OBSTACLE, DIRT_GIRL_OBSTACLE); // game over bodies
+  list_t *game_over_bodies = get_x_bodies(scene, PLANT_BOY_OBSTACLE, DIRT_GIRL_OBSTACLE);
   body_t *dirt_girl = scene_get_body(scene, get_x_index(scene, DIRT_GIRL));
   assert(body_get_info(dirt_girl) == DIRT_GIRL);
   body_t *plant_boy = scene_get_body(scene, get_x_index(scene, PLANT_BOY));
@@ -510,7 +509,6 @@ scene_t *make_initial_scene() {
   add_game_over_force(result);
   add_obstacle_force(result);
   add_fertilizer_force(result);
-  //add_boundary_force(result);
   add_portal_force(result);
   add_trampoline_force(result);
   add_ice_force(result);
@@ -541,7 +539,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
       body_set_velocity(dirt_girl, velocity);
     }
     if (key == W_KEY) {
-      if ( held_time < 0.01){
+      if (held_time < 0.01){
         list_t *ledges = get_x_bodies(state->scene, LEDGE, BLOCK);
         for (size_t i = 0; i < list_size(ledges); i++) {
           body_t *ledge = list_get(ledges, i);
@@ -583,6 +581,7 @@ scene_t *make_start_scene() {
 
 state_t *emscripten_init() {
   background_music();
+  load_sound_effects();
   sdl_init(SDL_MIN, SDL_MAX);
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
@@ -628,11 +627,9 @@ void emscripten_main(state_t *state) {
     }
     if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
       add_tree(state->scene, PLANT_BOY_TREE_CENTROID);
-      printf("plant boy tree\n");
     }
     if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
       add_tree(state->scene, DIRT_GIRL_TREE_CENTROID);
-      printf("dirt girl tree\n");
     }
   }
   sdl_render_scene(state->scene);
