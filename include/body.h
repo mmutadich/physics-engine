@@ -15,12 +15,6 @@
 typedef struct body body_t;
 
 /**
- * INFO:
- * removed (bool) - whether the body has been removed
- * enum (type) - player, player_pellet, enemy, enemy_pellet
- */
-
-/**
  * Initializes a body without any info.
  * Acts like body_init_with_info() where info and info_freer are NULL.
  */
@@ -39,11 +33,9 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color);
  * @param info_freer if non-NULL, a function call on the info to free it
  * @return a pointer to the newly allocated body
  */
-body_t *body_init_with_info( // DIFFERENT
+body_t *body_init_with_info(
     list_t *shape, double mass, rgb_color_t color,
-    void *info, // store whether body is marked for removal / removed already,
-                // enemy, player, enemy bullet, player bullet
-    free_func_t info_freer);
+    void *info, free_func_t info_freer);
 
 /**
  * Releases the memory allocated for a body.
@@ -102,7 +94,7 @@ rgb_color_t body_get_color(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the info passed to body_init()
  */
-void *body_get_info(body_t *body); // DIFFERENT
+void *body_get_info(body_t *body);
 
 /**
  * Translates a body to a new position.
