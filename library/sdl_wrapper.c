@@ -10,12 +10,14 @@
 #include <time.h> 
 #include <SDL2/SDL_mixer.h>
 
-#define MUS_PATH "image/bear_growl_y(1).wav"
+#define MUS_PATH "images/bear_growl.wav" //background music
+
 Mix_Music *music = NULL;
-const char *bear_growl = "image/bear_growl_y(1).wav";
 const size_t SOUNDS = 0;
-const char WAV_PATH[SOUNDS] = {bear_growl}; //put sound titles in here
-Mix_Chunk *wave[SOUNDS] = {bear_growl}; //put sound titles in here
+const char *BEAR_GROWL = "image/bear_growl.wav";
+
+const char WAV_PATH[SOUNDS] = {BEAR_GROWL}; //put sound titles in here
+Mix_Chunk *wave[SOUNDS] = {BEAR_GROWL}; //put sound titles in here
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -322,59 +324,6 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
 }
 
-/*int load_sound_effects() {
-  for (size_t i = 0; i < NUM_SOUNDS; i++) {
-    wave[i] = Mix_LoadWAV(WAV_PATH[i]);
-    if (wave[i] == NULL) {
-      printf("\n%s", Mix_GetError()); // for debugging
-      return -1;
-    }
-  }
-  return 0;
-}
-
-// plays from load up of game
-int load_and_play_music() {
-
-  // Initialize SDL.
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		return -1;
-  }
-
-  //Initialize SDL_mixer 
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-		return -1; 
-  }
-
-  // Load our music
-	music = Mix_LoadMUS(MUS_PATH);
-	if (music == NULL) {
-		return -1;
-  }
-  // this thing runs it on repeat
-	if (Mix_PlayMusic( music, -1) == -1) {
-		return -1;
-  }
-  return 0;
-}
-
-int play_sound_effect(size_t index) {
-  if (Mix_PlayChannel(-1, wave[index], 0) == -1) { //making sound
-		return -1;
-  }
-  return 0;
-}
-
-int free_all_audio() {
-  // clean up our resources
-	Mix_FreeChunk(wave);
-	Mix_FreeMusic(music);
-	
-  // quit SDL_mixer
-	Mix_CloseAudio();
-}
-*/
-
 int background_music() {
     // Initialize SDL.
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
@@ -394,7 +343,7 @@ int background_music() {
   // this thing runs it on repeat
 	if (Mix_PlayMusic( music, -1) == -1) {
 		return -1;
-  }
+  } 
 }
 
 int free_audio() {
@@ -404,7 +353,7 @@ int free_audio() {
 }
 
 int load_sound_effects() {
-  for (size_t index; index < SOUNDS; index++) {
+  for (size_t index = 0; index < SOUNDS; index++) {
     wave[index =  Mix_LoadWAV(WAV_PATH)];
     if (wave[index] == NULL) {
       return -1;

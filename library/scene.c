@@ -2,6 +2,7 @@
 #include "body.h"
 #include "forces.h"
 #include "list.h"
+#include <sdl_wrapper.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
