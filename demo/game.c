@@ -26,7 +26,7 @@ const vector_t ZERO_VECTOR = {.x = 0, .y = 0};
 const rgb_color_t COLOR = {1, 0.75, 0.75};
 
 // GENERAL BODY CONSTANTS
-const NUM_RECT_POINTS = 4;
+const size_t NUM_RECT_POINTS = 4;
 const double INFINITY_MASS = INFINITY;
 const double ELASTICITY = 0.5;
 

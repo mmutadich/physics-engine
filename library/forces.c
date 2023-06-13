@@ -277,7 +277,6 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
 
 void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
-  two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
   vector_t impulse_vector = get_impulse(JUMP_IMPULSE); 
@@ -288,7 +287,6 @@ void jump_collision_handler(body_t *ball, body_t *target, vector_t axis,
 
 void physics_collision_handler(body_t *ball, body_t *target, vector_t axis,
                                void *aux) {
-  two_body_aux_t *tba = (two_body_aux_t *)aux;
   assert(ball);
   assert(target);
   vector_t impulse_vector =
@@ -530,9 +528,6 @@ void apply_collision_multiple(void *c_aux) {
     list_t *shape2 = body_get_shape(body2);
     assert(shape1);
     assert(shape2);
-    if (collision_get_collided(find_collision(shape1, shape2)) && (!collision_aux->is_colliding || collision_aux->hold_colliding)) {
-      vector_t collision_axis = collision_get_axis(find_collision(shape1, shape2));
-    }
     if (!collision_get_collided(find_collision(shape1, shape2)))
       keep_track = false;
     list_free(shape1);
