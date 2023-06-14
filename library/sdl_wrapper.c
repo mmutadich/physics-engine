@@ -13,8 +13,18 @@
 #define MUS_PATH "" // MIA TODO: change background noise
 #define WAV_PATH_1 "images/bear_growl.wav" // MIA TODO: sound effect
 
+//SOUND STUFF
 Mix_Music *music = NULL;
 Mix_Chunk *wave = NULL;
+
+typedef enum {
+  PLANT_BOY = 1,
+  DIRT_GIRL = 2,
+  BOY_FERTILIZER = 13,
+  GIRL_FERTILIZER = 14,
+  STAR = 15,
+  TREE = 16,
+} info_t;
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -40,6 +50,16 @@ const char *DEATH_COUNT_1 = "images/death_count_1";
 const char *DEATH_COUNT_2 = "images/death_count_2";
 const char *DEATH_COUNT_3 = "images/death_count_3";
 const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus";
+
+//POSITIONS:
+const SDL_Rect SPRITE_RECT = {500,500,80,80};
+const SDL_Rect FERTILIZER_RECT = {0,0,50,50};
+const SDL_Rect OBJECT_RECT = {0,0,50,50};
+
+//OTHER CONSTANTS:
+const int ADJUSTMENT = 35; //in pixels
+const int SCENE_SCALE = 140;
+const int COLOR_CONSTANT = 255;
 
 /**
  * The coordinate at the center of the screen.
@@ -184,7 +204,7 @@ bool sdl_is_done(state_t *state) {
 }
 
 void sdl_clear(void) {
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_SetRenderDrawColor(renderer, COLOR_CONSTANT, COLOR_CONSTANT, COLOR_CONSTANT, COLOR_CONSTANT);
   SDL_RenderClear(renderer);
 }
 
@@ -211,8 +231,8 @@ void sdl_draw_polygon(list_t *points, rgb_color_t color) {
   }
 
   // Draw polygon with the given color
-  filledPolygonRGBA(renderer, x_points, y_points, n, color.r * 255,
-                    color.g * 255, color.b * 255, 255);
+  filledPolygonRGBA(renderer, x_points, y_points, n, color.r * COLOR_CONSTANT,
+                    color.g * COLOR_CONSTANT, color.b * COLOR_CONSTANT, COLOR_CONSTANT);
   free(x_points);
   free(y_points);
 }
@@ -229,18 +249,44 @@ void sdl_show(void) {
   boundary->y = max_pixel.y;
   boundary->w = max_pixel.x - min_pixel.x;
   boundary->h = min_pixel.y - max_pixel.y;
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, COLOR_CONSTANT);
   SDL_RenderDrawRect(renderer, boundary);
   free(boundary);
 
   SDL_RenderPresent(renderer);
 }
 
-/*void load_textures() {
-  TODO: move the texture loading into this method
-}*/
-
 void sdl_render_scene(scene_t *scene) {
+  SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
+  SDL_Rect plant_boy_rect = SPRITE_RECT;
+
+  SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
+  SDL_Rect dirt_girl_rect = SPRITE_RECT;
+
+  SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
+  SDL_Rect tree_rect = SPRITE_RECT;
+
+  SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
+  SDL_Rect dirt_girl_fertilizer_rect = FERTILIZER_RECT;
+
+  SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
+  SDL_Rect plant_boy_fertilizer_rect = FERTILIZER_RECT;
+
+  SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
+  SDL_Rect star_of_mastery_rect = OBJECT_RECT;
+
+  SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
+  SDL_Rect death_count_1_rect = OBJECT_RECT;
+
+  SDL_Texture *DEATH_COUNT_2_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
+  SDL_Rect death_count_2_rect = OBJECT_RECT;
+
+  SDL_Texture *DEATH_COUNT_3_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
+  SDL_Rect death_count_3_rect = OBJECT_RECT;
+
+  SDL_Texture *DEATH_COUNT_3_PLUS_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
+  SDL_Rect death_count_3_plus_rect = OBJECT_RECT;
+
   sdl_clear();
 
   SDL_Texture *BG_TEXTURE;
@@ -251,67 +297,38 @@ void sdl_render_scene(scene_t *scene) {
     BG_TEXTURE = IMG_LoadTexture(renderer, BG);
   } 
 
-  SDL_Texture *PLANT_BOY_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_SPRITE);
-  SDL_Rect plant_boy_rect = {500,500,80,80};
-
-  SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
-  SDL_Rect dirt_girl_rect = {500,500,80,80};
-
-  SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
-  SDL_Rect tree_rect = {500,500,100,100};
-
-  SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
-  SDL_Rect dirt_girl_fertilizer_rect = {0,0,50,50};
-
-  SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
-  SDL_Rect plant_boy_fertilizer_rect = {0,0,50,50};
-
-  SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
-  SDL_Rect star_of_mastery_rect = {500,500,50,50};
-
-  SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
-  SDL_Rect death_count_1_rect = {500,500,50,50};
-
-  SDL_Texture *DEATH_COUNT_2_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
-  SDL_Rect death_count_2_rect = {500,500,50,50};
-
-  SDL_Texture *DEATH_COUNT_3_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
-  SDL_Rect death_count_3_rect = {500,500,50,50};
-
-  SDL_Texture *DEATH_COUNT_3_PLUS_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
-  SDL_Rect death_count_3_plus_rect = {500,500,50,50};
-
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
     vector_t centroid = body_get_centroid(body);
     vector_t window = get_window_position(centroid, get_window_center());
+
     //SPRITES:
-    if (body_get_info(body) == 1) {
-      plant_boy_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 30;
-      plant_boy_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 10;
+    if (body_get_info(body) == PLANT_BOY) {
+      plant_boy_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
+      plant_boy_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + 10;
     }
-    if (body_get_info(body) == 2) {
-      dirt_girl_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 30;
-      dirt_girl_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 10;
+    if (body_get_info(body) == DIRT_GIRL) {
+      dirt_girl_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
+      dirt_girl_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + 10;
     }
-    if (body_get_info(body) == 16) {
-      tree_rect.x = window.x - 140*get_scene_scale(get_window_center());
-      tree_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    if (body_get_info(body) == TREE) {
+      tree_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center());
+      tree_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center());
     }
     //POWERUPS:
-    if (body_get_info(body) == 13) {
-      plant_boy_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 40;
-      plant_boy_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 40;
+    if (body_get_info(body) == BOY_FERTILIZER) {
+      plant_boy_fertilizer_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
+      plant_boy_fertilizer_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
     }
-    if (body_get_info(body) == 14) {
-      dirt_girl_fertilizer_rect.x = window.x - 140*get_scene_scale(get_window_center()) + 40;
-      dirt_girl_fertilizer_rect.y = window.y - 140*get_scene_scale(get_window_center()) + 40;
+    if (body_get_info(body) == GIRL_FERTILIZER) {
+      dirt_girl_fertilizer_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
+      dirt_girl_fertilizer_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
     }
-    if (body_get_info(body) == 15) {
-      star_of_mastery_rect.x = window.x - 140*get_scene_scale(get_window_center());
-      star_of_mastery_rect.y = window.y - 140*get_scene_scale(get_window_center());
+    if (body_get_info(body) == STAR) {
+      star_of_mastery_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center());
+      star_of_mastery_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center());
     }
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
@@ -319,10 +336,12 @@ void sdl_render_scene(scene_t *scene) {
 
   //BACKGROUND IMAGE
   SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
+
   //SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
   SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
+
   //OBJECTS
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
@@ -330,6 +349,7 @@ void sdl_render_scene(scene_t *scene) {
 
   sdl_show();
 
+  //destroy every texture created
   SDL_DestroyTexture(BG_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
@@ -342,6 +362,8 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(DEATH_COUNT_3_TEXTURE);
   SDL_DestroyTexture(DEATH_COUNT_3_PLUS_TEXTURE);
 }
+
+//SOUND CODE:
 
 int background_music() {
     // Initialize SDL.
@@ -370,7 +392,7 @@ int load_sound_effect_template() {
 	if (wave == NULL)
 		return -1;
 
-  if ( Mix_PlayChannel(-1, wave, 0) == -1 )
+  if (Mix_PlayChannel(-1, wave, 0) == -1 )
 		return -1;  
 }
 
