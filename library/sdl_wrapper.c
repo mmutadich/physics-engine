@@ -278,7 +278,10 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *PLANT_BOY_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, PLANT_BOY_FERTILIZER);
   SDL_Rect plant_boy_fertilizer_rect = FERTILIZER_RECT;
 
-  SDL_Texture *STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
+  SDL_Texture *STAR_OF_MASTERY_TEXTURE;
+  if (star_in_scene(scene)) {
+    STAR_OF_MASTERY_TEXTURE = IMG_LoadTexture(renderer, STAR_OF_MASTERY);
+  }
   SDL_Rect star_of_mastery_rect = OBJECT_RECT;
 
   SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
@@ -351,7 +354,9 @@ void sdl_render_scene(scene_t *scene) {
   //OBJECTS
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
-  SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
+  if (star_in_scene(scene)) {
+    SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
+  }
 
   sdl_show();
 
@@ -362,7 +367,9 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(TREE_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
-  SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  if (star_in_scene(scene)) {
+    SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
+  }
   SDL_DestroyTexture(DEATH_COUNT_1_TEXTURE);
   SDL_DestroyTexture(DEATH_COUNT_2_TEXTURE);
   SDL_DestroyTexture(DEATH_COUNT_3_TEXTURE);

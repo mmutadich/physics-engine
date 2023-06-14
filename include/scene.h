@@ -136,4 +136,6 @@ void scene_set_screen(scene_t *scene, void *screen);
 
 void *scene_get_screen(scene_t *scene);
 
+bool star_in_scene(scene_t *scene);
+
 #endif // #ifndef __SCENE_H__

@@ -576,6 +576,7 @@ state_t *emscripten_init() {
   return state;
 }
 
+
 void emscripten_main(state_t *state) {
   assert(state->scene);
   sdl_clear();

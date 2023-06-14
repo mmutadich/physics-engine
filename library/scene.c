@@ -10,6 +10,7 @@
 
 const size_t NUM_BODIES = 10;
 const size_t NUM_FORCES = 30;
+const int STAR = 15; //enum associated with the star
 
 typedef struct scene {
   list_t *bodies;
@@ -186,6 +187,15 @@ void scene_set_dirt_girl_obstacle_hit(scene_t *scene, bool value) {
 bool scene_get_dirt_girl_obstacle_hit(scene_t *scene) {
   assert(scene);
   return scene->dirt_girl_obstacle_hit;
+}
+
+bool star_in_scene(scene_t *scene) {
+  for (size_t i = 0; i < scene_bodies(scene); i++) {
+    if ((int)body_get_info(scene_get_body(scene, i)) == STAR) {
+      return true;
+    }
+  }
+  return false;
 }
 
 
