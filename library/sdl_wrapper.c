@@ -276,24 +276,24 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Rect star_of_mastery_rect = OBJECT_RECT;
 
   SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
-  SDL_Rect death_count_1_rect = OBJECT_RECT;
+  //SDL_Rect death_count_1_rect = OBJECT_RECT;
 
   SDL_Texture *DEATH_COUNT_2_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
-  SDL_Rect death_count_2_rect = OBJECT_RECT;
+  //SDL_Rect death_count_2_rect = OBJECT_RECT;
 
   SDL_Texture *DEATH_COUNT_3_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
-  SDL_Rect death_count_3_rect = OBJECT_RECT;
+  //SDL_Rect death_count_3_rect = OBJECT_RECT;
 
   SDL_Texture *DEATH_COUNT_3_PLUS_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
-  SDL_Rect death_count_3_plus_rect = OBJECT_RECT;
+  //SDL_Rect death_count_3_plus_rect = OBJECT_RECT;
 
   sdl_clear();
 
   SDL_Texture *BG_TEXTURE;
-  if (scene_get_screen(scene) == 0) {
+  if ((int)scene_get_screen(scene) == 0) {
     BG_TEXTURE = IMG_LoadTexture(renderer, BG_START);
   } 
-  if (scene_get_screen(scene) == 1) {
+  if ((int)scene_get_screen(scene) == 1) {
     BG_TEXTURE = IMG_LoadTexture(renderer, BG);
   } 
 
@@ -305,28 +305,28 @@ void sdl_render_scene(scene_t *scene) {
     vector_t window = get_window_position(centroid, get_window_center());
 
     //SPRITES:
-    if (body_get_info(body) == PLANT_BOY) {
+    if ((int)body_get_info(body) == PLANT_BOY) {
       plant_boy_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
       plant_boy_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + 10;
     }
-    if (body_get_info(body) == DIRT_GIRL) {
+    if ((int)body_get_info(body) == DIRT_GIRL) {
       dirt_girl_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
       dirt_girl_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + 10;
     }
-    if (body_get_info(body) == TREE) {
+    if ((int)body_get_info(body) == TREE) {
       tree_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center());
       tree_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center());
     }
     //POWERUPS:
-    if (body_get_info(body) == BOY_FERTILIZER) {
+    if ((int)body_get_info(body) == BOY_FERTILIZER) {
       plant_boy_fertilizer_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
       plant_boy_fertilizer_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
     }
-    if (body_get_info(body) == GIRL_FERTILIZER) {
+    if ((int)body_get_info(body) == GIRL_FERTILIZER) {
       dirt_girl_fertilizer_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
       dirt_girl_fertilizer_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
     }
-    if (body_get_info(body) == STAR) {
+    if ((int)body_get_info(body) == STAR) {
       star_of_mastery_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center());
       star_of_mastery_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center());
     }
@@ -384,6 +384,8 @@ int background_music() {
 	if (Mix_PlayMusic(music, -1) == -1) {
 		return -1;
   } 
+
+  return 1;
 }
 
 int load_sound_effect_template() {
@@ -394,6 +396,8 @@ int load_sound_effect_template() {
 
   if (Mix_PlayChannel(-1, wave, 0) == -1 )
 		return -1;  
+
+  return 1;
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
@@ -411,4 +415,5 @@ int free_audio() {
 	Mix_FreeChunk(wave);
 	Mix_FreeMusic(music);
 	Mix_CloseAudio();
+  return 1;
 }

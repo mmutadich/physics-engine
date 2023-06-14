@@ -320,7 +320,7 @@ void create_one_sided_destructive_collision(scene_t *scene, body_t *body1,
 void jump_up(scene_t *scene, body_t *body1, body_t *body2, double elasticity) {
   two_body_aux_t *aux = two_body_aux_init(body1, body2, elasticity);
   collision_aux_t *collision_aux = collision_aux_init(body1, body2, 
-                          jump_collision_handler, aux, two_body_aux_freer);
+                          jump_collision_handler, two_body_aux_freer, aux);
   apply_collision(collision_aux);
 }
 
@@ -565,7 +565,7 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
 void win_handler(list_t *bodies, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  scene_set_screen(scene, WIN_SCREEN);
+  scene_set_screen(scene, (void *)WIN_SCREEN);
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {

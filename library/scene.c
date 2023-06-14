@@ -51,7 +51,8 @@ force_t *force_bodies_init(force_creator_t force_creator, void *aux,
   return result;
 }
 
-void force_free(force_t *force) {
+void force_free(void *to_free) {
+  force_t *force = (force_t *)to_free;
   if (force->bodies != NULL)
     free(force->bodies);
   if (force->aux_freer != NULL)
