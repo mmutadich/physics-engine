@@ -11,13 +11,10 @@
 #include <SDL2/SDL_mixer.h>
 
 #define MUS_PATH "" // MIA TODO: change background noise
-#define WAV_PATH "images/bear_growl.wav"
+#define WAV_PATH_1 "images/bear_growl.wav" // MIA TODO: sound effect
 
 Mix_Music *music = NULL;
-const size_t SOUNDS = 1;
-
-//const char WAV_PATH[SOUNDS] = {"images/bear_growl.wav"}; //put sound titles in here
-Mix_Chunk *wave = NULL; //put sound titles in here
+Mix_Chunk *wave = NULL;
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -362,32 +359,19 @@ int background_music() {
 	if (music == NULL) {
 		return -1;
   }
-  // this thing runs it on repeat
-	/*if (Mix_PlayMusic(music, -1) == -1) {
+	if (Mix_PlayMusic(music, -1) == -1) {
 		return -1;
-  } */
+  } 
 }
 
-int load_sound_effects() {
-  /*for (size_t index = 0; index < SOUNDS; index++) {
-    wave[index] =  Mix_LoadWAV(WAV_PATH);
-    if (wave[index] == NULL) {
-      return -1;
-    }
-  }
-  return 0;  */
+int load_sound_effect_template() {
 
-  wave = Mix_LoadWAV(WAV_PATH);
+  wave = Mix_LoadWAV(WAV_PATH_1);
 	if (wave == NULL)
 		return -1;
 
   if ( Mix_PlayChannel(-1, wave, 0) == -1 )
 		return -1;  
-}
-
-int play_sound_effect() {
-  if ( Mix_PlayChannel(-1, wave, 0) == -1 )
-		return -1;
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
