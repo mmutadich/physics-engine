@@ -28,6 +28,7 @@ const vector_t dirt_girl_fertilizer_collision_new_centroid = {.x = 160, .y = 920
 typedef enum {
   START_SCREEN = 0,
   GAME_SCREEN = 1,
+  RESET_SCREEN = -1,
   WIN_SCREEN = 2,
 } screen_t;
 
@@ -565,7 +566,7 @@ void create_collision_multiple(scene_t *scene, list_t *bodies,
 void win_handler(list_t *bodies, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
-  scene_set_screen(scene, (void *)WIN_SCREEN);
+  scene_set_screen(scene, (void *)RESET_SCREEN);
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {

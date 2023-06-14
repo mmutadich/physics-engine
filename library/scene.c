@@ -21,6 +21,7 @@ typedef struct scene {
   bool plant_boy_obstacle_hit;
   bool dirt_girl_obstacle_hit;
   void *screen;
+  int num_deaths;
 } scene_t;
 
 typedef struct force {
@@ -71,6 +72,7 @@ scene_t *scene_init(void) {
   result->plant_boy_obstacle_hit = false;
   result->dirt_girl_obstacle_hit = false;
   result->screen = NULL;
+  result->num_deaths = 0;
   assert(result);
   return result;
 }
@@ -208,3 +210,10 @@ void *scene_get_screen(scene_t *scene) {
   return scene->screen;
 }
 
+void scene_set_num_deaths(scene_t *scene, int deaths) {
+  scene->num_deaths = deaths;
+}
+
+int scene_get_num_deaths(scene_t *scene) {
+  return scene->num_deaths;
+}

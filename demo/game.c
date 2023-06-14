@@ -123,6 +123,7 @@ typedef enum {
 typedef enum {
   START_SCREEN = 0,
   GAME_SCREEN = 1,
+  RESET_SCREEN = -1,
   WIN_SCREEN = 2,
 } screen_t;
 
@@ -510,7 +511,7 @@ void keyer(char key, key_event_type_t type, double held_time, state_t *state) {
     assert((int)body_get_info(plant_boy) == PLANT_BOY);
   }
   if (type == KEY_PRESSED) {
-    if (key == ' ' && (int)scene_get_screen(state->scene) == START_SCREEN) {
+    if (key == ' ' && ((int)scene_get_screen(state->scene) == START_SCREEN || (int)scene_get_screen(state->scene) == WIN_SCREEN)) {
       state->scene = make_initial_scene();
       scene_set_screen(state->scene, (void *)GAME_SCREEN);
     }
@@ -582,12 +583,12 @@ void emscripten_main(state_t *state) {
   sdl_clear();
   double dt = time_since_last_tick();
 
-  if ((int)scene_get_screen(state->scene) == WIN_SCREEN) {
+  if ((int)scene_get_screen(state->scene) == RESET_SCREEN) {
     scene_free(state->scene);
     state->scene = make_start_scene();
-    scene_set_screen(state->scene, (void *)START_SCREEN);
+    scene_set_screen(state->scene, WIN_SCREEN);
   }
-  if ((int)scene_get_screen(state->scene) == START_SCREEN) {
+  if ((int)scene_get_screen(state->scene) == START_SCREEN || (int)scene_get_screen(state->scene) == WIN_SCREEN) {
     scene_tick(state->scene, dt);
     sdl_show();
   }
@@ -603,8 +604,10 @@ void emscripten_main(state_t *state) {
     scene_tick(state->scene, dt);
     sdl_show();
     if (scene_get_game_over(state->scene)) {
+      int prev_num_deaths = scene_get_num_deaths(state->scene);
       scene_free(state->scene);
       state->scene = make_initial_scene();
+      scene_set_num_deaths(state->scene, prev_num_deaths + 1);
       scene_set_screen(state->scene, (void *)GAME_SCREEN);
     }
     if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {

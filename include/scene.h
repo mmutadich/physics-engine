@@ -138,4 +138,8 @@ void *scene_get_screen(scene_t *scene);
 
 bool star_in_scene(scene_t *scene);
 
+void scene_set_num_deaths(scene_t *scene, int deaths);
+
+int scene_get_num_deaths(scene_t *scene);
+
 #endif // #ifndef __SCENE_H__

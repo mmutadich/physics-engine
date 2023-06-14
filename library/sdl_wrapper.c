@@ -40,6 +40,7 @@ const double MS_PER_S = 1e3;
 //BACKGROUND
 const char *BG = "images/background_2.jpeg";
 const char *BG_START = "images/start_screen.jpg";
+const char *BG_WIN = "images/end_screen.jpeg";
 
 //SPRITES:
 const char *DIRT_GIRL_SPRITE = "images/dirt_girl_front_facing.png";
@@ -304,6 +305,9 @@ void sdl_render_scene(scene_t *scene) {
   } 
   if ((int)scene_get_screen(scene) == 1) {
     BG_TEXTURE = IMG_LoadTexture(renderer, BG);
+  } 
+  if ((int)scene_get_screen(scene) == 2) {
+    BG_TEXTURE = IMG_LoadTexture(renderer, BG_WIN);
   } 
 
   size_t body_count = scene_bodies(scene);
