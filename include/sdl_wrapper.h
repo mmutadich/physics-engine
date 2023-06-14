@@ -127,7 +127,7 @@ void sdl_on_key(key_handler_t handler);
  */
 double time_since_last_tick(void);
 int load_sound_effects();
-int play_sound_effect(int index);
+int play_sound_effect();
 int background_music();
 int free_audio();
 #endif // #ifndef __SDL_WRAPPER_H__
