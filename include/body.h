@@ -42,7 +42,7 @@ body_t *body_init_with_info(
  *
  * @param body a pointer to a body returned from body_init()
  */
-void body_free(body_t *body);
+void body_free(void *body);
 
 /**
  * Gets the current shape of a body.

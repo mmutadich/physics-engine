@@ -60,7 +60,8 @@ body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
   return result;
 }
 
-void body_free(body_t *body) {
+void body_free(void *to_free) {
+  body_t *body = (body_t *)to_free;
   if (body->info != NULL && body->info_freer != NULL)
     body->info_freer(body->info);
   assert(body->points);
