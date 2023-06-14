@@ -10,8 +10,14 @@
 #include <time.h> 
 #include <SDL2/SDL_mixer.h>
 
-#define MUS_PATH "" // MIA TODO: change background noise
-#define WAV_PATH_1 "images/bear_growl.wav" // MIA TODO: sound effect
+#define MUS_PATH "images/Powerful-Trap-.wav" // MIA TODO: change background noise
+#define WAV_PATH_1 "images/Powerful-Trap-.wav"
+#define PORTAL_SOUND "images/Portal.wav"
+#define WIN_SOUND "images/Win.wav"
+#define DIED_SOUND "images/Died.wav"
+#define STAR_OFM_SOUND "images/Star_of_Mastery.wav"
+#define FERTILISER_SOUND "images/Fertiliser.wav"
+#define TRAMPLOINE_SOUND "images/Trampoline.wav"
 
 //SOUND STUFF
 Mix_Music *music = NULL;
