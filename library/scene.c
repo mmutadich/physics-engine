@@ -73,7 +73,8 @@ scene_t *scene_init(void) {
   return result;
 }
 
-void scene_free(scene_t *scene) {
+void scene_free(void *to_free) {
+  scene_t *scene = (scene_t *)to_free;
   list_free(scene->bodies);
   list_free(scene->forces);
   free(scene);

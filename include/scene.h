@@ -33,7 +33,7 @@ scene_t *scene_init(void);
  *
  * @param scene a pointer to a scene returned from scene_init()
  */
-void scene_free(scene_t *scene);
+void scene_free(void *to_free);
 
 /**
  * Gets the number of bodies in a given scene.

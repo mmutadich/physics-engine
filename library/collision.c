@@ -19,7 +19,10 @@ typedef struct line {
   vector_t point2;
 } line_t;
 
-void line_freer(line_t *line) { free(line); }
+void line_freer(void *to_free) {
+  line_t *line = (line_t *)to_free;
+  free(line);
+}
 
 line_t *line_init(vector_t point1, vector_t point2) {
   line_t *result = malloc(sizeof(line_t));
