@@ -34,7 +34,7 @@ list_t *list_init(size_t initial_size, free_func_t freer);
  *
  * @param list a pointer to a list returned from list_init()
  */
-void list_free(list_t *list);
+void list_free(void *to_free);
 
 /**
  * Gets the size of a list (the number of occupied elements).

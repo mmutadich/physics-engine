@@ -74,7 +74,8 @@ void *list_remove(list_t *list, size_t index) {
   return answer;
 }
 
-void list_free(list_t *list) {
+void list_free(void *to_free) {
+  list_t *list = (list_t *)to_free;
   if (list->freer != NULL) {
     for (size_t i = 0; i < list->size; i++) {
       if (list->data[i] != NULL)
