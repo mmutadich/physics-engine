@@ -78,7 +78,7 @@ const vector_t DIRT_GIRL_FERTILIZER_CENTROID = {.x = 1480, .y = 130};
 const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
-const vector_t STAR_CENTROID = {.x = 350, .y = 850};
+const vector_t STAR_CENTROID = {.x = 1800, .y = 850};
 
 // PORTAL CONSTANTS
 const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
@@ -92,8 +92,7 @@ const double TRAMPOLINE_HEIGHT = 40;
 const double TRAMPOLINE_LENGTH = 120;
 
 // TREE CONSTANTS
-const vector_t PLANT_BOY_TREE_CENTROID = {.x = 625, .y = 50};
-const vector_t DIRT_GIRL_TREE_CENTROID = {.x = 1300, .y = 730};
+const vector_t TREE_CENTROID = {.x = 150, .y = 850};
 
 // BODIES
 typedef enum {
@@ -370,8 +369,8 @@ void add_star(scene_t *scene) {
   scene_add_body(scene, star);
 }
 
-void add_tree(scene_t *scene, vector_t centroid) {
-  body_t *tree = body_init_with_info(make_rect_shape(centroid, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, (void *)TREE, NULL);
+void add_tree(scene_t *scene) {
+  body_t *tree = body_init_with_info(make_rect_shape(TREE_CENTROID, FERTILIZER_LENGTH, FERTILIZER_LENGTH), INFINITY_MASS, COLOR, (void *)TREE, NULL);
   scene_add_body(scene, tree);
 }
 
@@ -488,6 +487,7 @@ scene_t *make_initial_scene() {
   add_doors(result);
   add_obstacles(result);
   add_object_features(result);
+  add_tree(result);
   // forces
   add_universal_gravity(result);
   add_normal_force(result);
@@ -582,11 +582,10 @@ void emscripten_main(state_t *state) {
   assert(state->scene);
   sdl_clear();
   double dt = time_since_last_tick();
-
   if ((int)scene_get_screen(state->scene) == RESET_SCREEN) {
     scene_free(state->scene);
     state->scene = make_start_scene();
-    scene_set_screen(state->scene, WIN_SCREEN);
+    scene_set_screen(state->scene, (void *)WIN_SCREEN);
   }
   if ((int)scene_get_screen(state->scene) == START_SCREEN || (int)scene_get_screen(state->scene) == WIN_SCREEN) {
     scene_tick(state->scene, dt);
@@ -612,12 +611,6 @@ void emscripten_main(state_t *state) {
     }
     if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
       add_star(state->scene);
-    }
-    if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
-      add_tree(state->scene, PLANT_BOY_TREE_CENTROID);
-    }
-    if (scene_get_plant_boy_obstacle_hit(state->scene) && doesnt_contain_tree(state->scene)) {
-      add_tree(state->scene, DIRT_GIRL_TREE_CENTROID);
     }
   }
   sdl_render_scene(state->scene);

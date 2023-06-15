@@ -53,10 +53,10 @@ const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
 const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
 
 //DEATH COUNT TREES:
-const char *DEATH_COUNT_1 = "images/death_count_1";
-const char *DEATH_COUNT_2 = "images/death_count_2";
-const char *DEATH_COUNT_3 = "images/death_count_3";
-const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus";
+const char *DEATH_COUNT_1 = "images/death_count_1.jpg";
+const char *DEATH_COUNT_2 = "images/death_count_2.jpg";
+const char *DEATH_COUNT_3 = "images/death_count_3.jpg";
+const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus.jpg";
 
 //POSITIONS:
 const SDL_Rect SPRITE_RECT = {500,500,80,80};
@@ -270,8 +270,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
   SDL_Rect dirt_girl_rect = SPRITE_RECT;
 
-  SDL_Texture *TREE_TEXTURE = IMG_LoadTexture(renderer, TREE_SPRITE);
-  SDL_Rect tree_rect = SPRITE_RECT;
+  SDL_Rect tree_rect = FERTILIZER_RECT;
 
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
   SDL_Rect dirt_girl_fertilizer_rect = FERTILIZER_RECT;
@@ -285,19 +284,21 @@ void sdl_render_scene(scene_t *scene) {
   }
   SDL_Rect star_of_mastery_rect = OBJECT_RECT;
 
-  SDL_Texture *DEATH_COUNT_1_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
-  //SDL_Rect death_count_1_rect = OBJECT_RECT;
-
-  SDL_Texture *DEATH_COUNT_2_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
-  //SDL_Rect death_count_2_rect = OBJECT_RECT;
-
-  SDL_Texture *DEATH_COUNT_3_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
-  //SDL_Rect death_count_3_rect = OBJECT_RECT;
-
-  SDL_Texture *DEATH_COUNT_3_PLUS_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
-  //SDL_Rect death_count_3_plus_rect = OBJECT_RECT;
-
   sdl_clear();
+
+  SDL_Texture *DEATH_TREE_TEXTURE;
+  if ((int)scene_get_num_deaths(scene) == 1) {
+    DEATH_TREE_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_1);
+  } 
+  if ((int)scene_get_num_deaths(scene) == 2) {
+    DEATH_TREE_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_2);
+  } 
+  if ((int)scene_get_num_deaths(scene) == 3) {
+    DEATH_TREE_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3);
+  }
+  if ((int)scene_get_num_deaths(scene) > 3) {
+    DEATH_TREE_TEXTURE = IMG_LoadTexture(renderer, DEATH_COUNT_3_PLUS);
+  }
 
   SDL_Texture *BG_TEXTURE;
   if ((int)scene_get_screen(scene) == 0) {
@@ -327,8 +328,8 @@ void sdl_render_scene(scene_t *scene) {
       dirt_girl_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + 10;
     }
     if ((int)body_get_info(body) == TREE) {
-      tree_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center());
-      tree_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center());
+      tree_rect.x = window.x - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
+      tree_rect.y = window.y - SCENE_SCALE * get_scene_scale(get_window_center()) + ADJUSTMENT;
     }
     //POWERUPS:
     if ((int)body_get_info(body) == BOY_FERTILIZER) {
@@ -353,7 +354,6 @@ void sdl_render_scene(scene_t *scene) {
   //SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
-  SDL_RenderCopy(renderer, TREE_TEXTURE, NULL, &tree_rect);
 
   //OBJECTS
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
@@ -361,6 +361,7 @@ void sdl_render_scene(scene_t *scene) {
   if (star_in_scene(scene)) {
     SDL_RenderCopy(renderer, STAR_OF_MASTERY_TEXTURE, NULL, &star_of_mastery_rect);
   }
+  SDL_RenderCopy(renderer, DEATH_TREE_TEXTURE, NULL, &tree_rect);
 
   sdl_show();
 
@@ -368,16 +369,12 @@ void sdl_render_scene(scene_t *scene) {
   SDL_DestroyTexture(BG_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
-  SDL_DestroyTexture(TREE_TEXTURE);
+  SDL_DestroyTexture(DEATH_TREE_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_FERTILIZER_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_FERTILIZER_TEXTURE);
   if (star_in_scene(scene)) {
     SDL_DestroyTexture(STAR_OF_MASTERY_TEXTURE);
   }
-  SDL_DestroyTexture(DEATH_COUNT_1_TEXTURE);
-  SDL_DestroyTexture(DEATH_COUNT_2_TEXTURE);
-  SDL_DestroyTexture(DEATH_COUNT_3_TEXTURE);
-  SDL_DestroyTexture(DEATH_COUNT_3_PLUS_TEXTURE);
 }
 
 //SOUND CODE:

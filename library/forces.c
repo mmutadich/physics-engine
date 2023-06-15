@@ -22,8 +22,8 @@ const double TRAMPOLINE_IMPULSE = 20000;
 const double ICE_VELOCITY_FACTOR = 0.7;
 const double P_WIDTH = 50;
 const vector_t SPAWN = {.x = 1000, .y = 790};
-const vector_t plant_boy_fertilizer_collision_new_centroid = {.x = 70, .y = 910};
-const vector_t dirt_girl_fertilizer_collision_new_centroid = {.x = 160, .y = 920};
+const vector_t plant_boy_fertilizer_collision_new_centroid = {.x = 1930, .y = 910}; //keep 90 in between
+const vector_t dirt_girl_fertilizer_collision_new_centroid = {.x = 1840, .y = 920}; 
 
 typedef enum {
   START_SCREEN = 0,
@@ -421,27 +421,25 @@ void boundary_collision_handler(body_t *sprite, body_t *boundary, vector_t axis,
   vector_t *boundary_dimensions = (vector_t*)list_get(dimensions, 1);
   vector_t boundary_centroid = body_get_centroid(boundary);
 
-  //this is literally disgusting and has code duplication
+  bool within_x_bounds = (centroid_sprite.x - character_dimensions->x/2 > boundary_centroid.x - boundary_dimensions->x/2) &&
+      (centroid_sprite.x + character_dimensions->x/2 < boundary_centroid.x + boundary_dimensions->x/2);
+  bool within_y_bounds = (centroid_sprite.y - character_dimensions->y/2 > boundary_centroid.y - boundary_dimensions->y/2) &&
+      (centroid_sprite.y + character_dimensions->y/2 < boundary_centroid.y + boundary_dimensions->y/2);
+
   if ((centroid_sprite.y > boundary_centroid.y && centroid_sprite.y <= boundary_centroid.y + character_dimensions->y/2 + boundary_dimensions->y/2) &&
-      (centroid_sprite.x - character_dimensions->x/2 > boundary_centroid.x - boundary_dimensions->x/2) &&
-      (centroid_sprite.x + character_dimensions->x/2 < boundary_centroid.x + boundary_dimensions->x/2)) {
+      within_x_bounds) {
     new_centroid_sprite.y = boundary_centroid.y + character_dimensions->y + boundary_dimensions->y/2;
   }
   if ((centroid_sprite.y < boundary_centroid.y && centroid_sprite.y >= boundary_centroid.y - character_dimensions->y/2 - boundary_dimensions->y/2) &&
-      (centroid_sprite.x - character_dimensions->x/2 > boundary_centroid.x - boundary_dimensions->x/2) &&
-      (centroid_sprite.x + character_dimensions->x/2 < boundary_centroid.x + boundary_dimensions->x/2)) {
+      within_x_bounds) {
     new_centroid_sprite.y = boundary_centroid.y - character_dimensions->y - boundary_dimensions->y/2;
   }
-
-  //need to make sure within y bounds of boundary
   if ((centroid_sprite.x > boundary_centroid.x && centroid_sprite.x <= boundary_centroid.x + character_dimensions->x/2 + boundary_dimensions->x/2) &&
-      (centroid_sprite.y - character_dimensions->y/2 > boundary_centroid.y - boundary_dimensions->y/2) &&
-      (centroid_sprite.y + character_dimensions->y/2 < boundary_centroid.y + boundary_dimensions->y/2)) {
+      within_y_bounds) {
     new_centroid_sprite.x = boundary_centroid.x + character_dimensions->x + boundary_dimensions->x/2;
   }
   if ((centroid_sprite.x < boundary_centroid.x && centroid_sprite.x >= boundary_centroid.x - character_dimensions->x/2 - boundary_dimensions->x/2) &&
-      (centroid_sprite.y - character_dimensions->y/2 > boundary_centroid.y - boundary_dimensions->y/2) &&
-      (centroid_sprite.y + character_dimensions->y/2 < boundary_centroid.y + boundary_dimensions->y/2)) {
+      within_y_bounds) {
     new_centroid_sprite.x = boundary_centroid.x - character_dimensions->x - boundary_dimensions->x/2;
   }
   body_set_centroid(sprite, new_centroid_sprite);
