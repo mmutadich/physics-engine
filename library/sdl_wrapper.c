@@ -63,14 +63,15 @@ const char *PLANT_BOY_FERTILIZER = "images/plant_boy_fertilizer.png";
 const char *STAR_OF_MASTERY = "images/star_of_mastery.png";
 
 //DEATH COUNT TREES:
-const char *DEATH_COUNT_1 = "images/death_count_1.jpg";
-const char *DEATH_COUNT_2 = "images/death_count_2.jpg";
-const char *DEATH_COUNT_3 = "images/death_count_3.jpg";
-const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus.jpg";
+const char *DEATH_COUNT_1 = "images/death_count_1.png";
+const char *DEATH_COUNT_2 = "images/death_count_2.png";
+const char *DEATH_COUNT_3 = "images/death_count_3.png";
+const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus.png";
 
 //POSITIONS:
 const SDL_Rect SPRITE_RECT = {500,500,80,80};
 const SDL_Rect FERTILIZER_RECT = {0,0,50,50};
+const SDL_Rect TREE_RECT = {200,200,200,200};
 const SDL_Rect OBJECT_RECT = {0,0,50,50};
 
 //OTHER CONSTANTS:
@@ -280,7 +281,7 @@ void sdl_render_scene(scene_t *scene) {
   SDL_Texture *DIRT_GIRL_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_SPRITE);
   SDL_Rect dirt_girl_rect = SPRITE_RECT;
 
-  SDL_Rect tree_rect = FERTILIZER_RECT;
+  SDL_Rect tree_rect = TREE_RECT;
 
   SDL_Texture *DIRT_GIRL_FERTILIZER_TEXTURE = IMG_LoadTexture(renderer, DIRT_GIRL_FERTILIZER);
   SDL_Rect dirt_girl_fertilizer_rect = FERTILIZER_RECT;
