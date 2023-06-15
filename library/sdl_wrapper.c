@@ -18,7 +18,7 @@
 #define STAR_OFM_SOUND "images/Star_ofM.wav"
 #define FERTILISER_SOUND "images/Fertiliser.wav"
 #define TRAMPLOINE_SOUND "images/Trampoline_new.wav"
-#define ICE_SOUND "image/Ice.wav"
+#define ICE_SOUND "images/ice_sound.wav"
 
 typedef enum {
   PORTAL = 1,
@@ -27,6 +27,7 @@ typedef enum {
   STAR_OFM = 4,
   FERTILIZER = 5,
   TRAMPOLINE = 6,
+  ICE = 7,
 } sound_t;
 
 //SOUND STUFF
@@ -71,7 +72,7 @@ const char *DEATH_COUNT_3_PLUS = "images/death_count_3_plus.png";
 //POSITIONS:
 const SDL_Rect SPRITE_RECT = {500,500,80,80};
 const SDL_Rect FERTILIZER_RECT = {0,0,50,50};
-const SDL_Rect TREE_RECT = {200,200,200,200};
+const SDL_Rect TREE_RECT = {0,0,140,140};
 const SDL_Rect OBJECT_RECT = {0,0,50,50};
 
 //OTHER CONSTANTS:
@@ -400,17 +401,7 @@ int initialize_sound() {
 	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 		return -1; 
   }
-
-  /*// Load our music
-	music = Mix_LoadMUS(MUS_PATH);
-	if (music == NULL) {
-		return -1;
-  }
-	if (Mix_PlayMusic(music, -1) == -1) {
-		return -1;
-  } 
-
-  return 1;*/
+  return 1;
 }
 
 int load_sound_effect(char *filename) {
@@ -438,6 +429,9 @@ char *get_sound_effect(void *sound) {
     return FERTILISER_SOUND;
   if (sound_enum == TRAMPOLINE)
     return TRAMPLOINE_SOUND;
+  if (sound_enum == ICE)
+    return ICE_SOUND;
+  return 0;
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }

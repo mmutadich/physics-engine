@@ -40,6 +40,7 @@ typedef enum {
   STAR_OFM = 4,
   FERTILIZER = 5,
   TRAMPOLINE = 6,
+  ICE = 7,
 } sound_t;
 
 typedef struct two_body_aux {
@@ -515,6 +516,8 @@ void ice_collision_handler(body_t *sprite, body_t *ice, vector_t axis,
   assert(ice);
   vector_t new_velocity = vec_multiply(ICE_VELOCITY_FACTOR, body_get_velocity(sprite));
   body_set_velocity(sprite, new_velocity);
+  char *filename = get_sound_effect((void*)ICE);
+  load_sound_effect(filename);
 }
 
 void create_ice_force(scene_t *scene, body_t *sprite, body_t *ice, double elasticity) {

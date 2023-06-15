@@ -93,7 +93,7 @@ const double TRAMPOLINE_HEIGHT = 40;
 const double TRAMPOLINE_LENGTH = 120;
 
 // TREE CONSTANTS
-const vector_t TREE_CENTROID = {.x = 150, .y = 850};
+const vector_t TREE_CENTROID = {.x = 80, .y = 920};
 
 // BODIES
 typedef enum {
