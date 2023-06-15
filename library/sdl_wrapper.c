@@ -388,7 +388,7 @@ void sdl_render_scene(scene_t *scene) {
 
 //SOUND CODE:
 
-int background_music() {
+int initialize_sound() {
     // Initialize SDL.
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		return -1;
@@ -399,7 +399,7 @@ int background_music() {
 		return -1; 
   }
 
-  // Load our music
+  /*// Load our music
 	music = Mix_LoadMUS(MUS_PATH);
 	if (music == NULL) {
 		return -1;
@@ -408,18 +408,15 @@ int background_music() {
 		return -1;
   } 
 
-  return 1;
+  return 1;*/
 }
 
 int load_sound_effect(char *filename) {
-  printf("loading sound effect\n");
-  wave = Mix_LoadWAV(PORTAL_SOUND);
+  wave = Mix_LoadWAV(filename);
 	if (wave == NULL) {
-    printf("couldn't find that file");
     return -1;
   }
   if (Mix_PlayChannel(-1, wave, 0) == -1 ) {
-    printf("playing sound\n");
     return -1;  
   }
   return 1;

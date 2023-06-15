@@ -79,6 +79,7 @@ const double FERTILIZER_LENGTH = 40;
 
 // STAR CONSTANTS
 const vector_t STAR_CENTROID = {.x = 1800, .y = 850};
+const int STAR_OFM = 4;
 
 // PORTAL CONSTANTS
 const vector_t ENTRY_PORTAL_CENTROID = {.x = 1980, .y = 260};
@@ -565,7 +566,7 @@ scene_t *make_start_scene() {
 }
 
 state_t *emscripten_init() {
-  //background_music();
+  initialize_sound();
   sdl_init(SDL_MIN, SDL_MAX);
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));
@@ -610,6 +611,8 @@ void emscripten_main(state_t *state) {
     }
     if (scene_get_plant_boy_fertilizer_collected(state->scene) && scene_get_dirt_girl_fertilizer_collected(state->scene) && doesnt_contain_star(state->scene)) {
       add_star(state->scene);
+      char *filename = get_sound_effect((void*)STAR_OFM);
+      load_sound_effect(filename);
     }
   }
   sdl_render_scene(state->scene);

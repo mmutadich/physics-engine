@@ -128,6 +128,6 @@ void sdl_on_key(key_handler_t handler);
 double time_since_last_tick(void);
 int load_sound_effect(char *filename);
 char *get_sound_effect(void *sound);
-int background_music();
+int initialize_sound();
 int free_audio();
 #endif // #ifndef __SDL_WRAPPER_H__

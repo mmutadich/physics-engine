@@ -389,6 +389,8 @@ void game_over_collision_handler(body_t *ball, body_t *target, vector_t axis, vo
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_game_over(scene, true);
+  char *filename = get_sound_effect((void*)DIED);
+  load_sound_effect(filename);
 }
 
 void create_game_over_force(scene_t *scene, body_t *player, body_t *body) {
@@ -402,6 +404,8 @@ void plant_boy_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   assert(scene);
   body_set_centroid(target, plant_boy_fertilizer_collision_new_centroid);
   scene_set_plant_boy_fertilizer_collected(scene, true);
+  char *filename = get_sound_effect((void*)FERTILIZER);
+  load_sound_effect(filename);
 }
 
 void create_plant_boy_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
@@ -415,6 +419,8 @@ void dirt_girl_fertilizer_collision_handler(body_t *ball, body_t *target, vector
   assert(scene);
   body_set_centroid(target, dirt_girl_fertilizer_collision_new_centroid);
   scene_set_dirt_girl_fertilizer_collected(scene, true);
+  char *filename = get_sound_effect((void*)FERTILIZER);
+  load_sound_effect(filename);
 }
 
 void create_dirt_girl_fertilizer_force(scene_t *scene, body_t *player, body_t *body) {
@@ -477,7 +483,6 @@ void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axi
   vector_t new_velocity = {.x = reverse_x.x, .y = current_velocity.y};
   body_set_velocity(sprite, new_velocity);
   char *filename = get_sound_effect((void*)PORTAL);
-  printf("calling sound with %s\n", filename);
   load_sound_effect(filename);
 }
 
@@ -494,6 +499,8 @@ void trampoline_collision_handler(body_t *sprite, body_t *trampoline, vector_t a
   assert(trampoline);
   vector_t impulse_vector = get_impulse(TRAMPOLINE_IMPULSE); 
   body_add_impulse(sprite, impulse_vector);
+  char *filename = get_sound_effect((void*)TRAMPOLINE);
+  load_sound_effect(filename);
 }
 
 void create_trampoline_force(scene_t *scene, body_t *sprite, body_t *trampoline, double elasticity) {
@@ -578,6 +585,8 @@ void win_handler(list_t *bodies, void *aux) {
   scene_t *scene = (scene_t*)aux;
   assert(scene);
   scene_set_screen(scene, (void *)RESET_SCREEN);
+  char *filename = get_sound_effect((void*)WIN);
+  load_sound_effect(filename);
 }
 
 void guarantee_all_collisions(scene_t *scene, list_t *bodies) {
