@@ -19,6 +19,15 @@
 #define FERTILISER_SOUND "images/Fertiliser.wav"
 #define TRAMPLOINE_SOUND "images/Trampoline.wav"
 
+typedef enum {
+  PORTAL = 1,
+  WIN = 2,
+  DIED = 3,
+  STAR_OFM = 4,
+  FERTILIZER = 5,
+  TRAMPOLINE = 6,
+} sound_t;
+
 //SOUND STUFF
 Mix_Music *music = NULL;
 Mix_Chunk *wave = NULL;
@@ -402,16 +411,34 @@ int background_music() {
   return 1;
 }
 
-int load_sound_effect_template() {
-
-  wave = Mix_LoadWAV(WAV_PATH_1);
-	if (wave == NULL)
-		return -1;
-
-  if (Mix_PlayChannel(-1, wave, 0) == -1 )
-		return -1;  
-
+int load_sound_effect(char *filename) {
+  printf("loading sound effect\n");
+  wave = Mix_LoadWAV(PORTAL_SOUND);
+	if (wave == NULL) {
+    printf("couldn't find that file");
+    return -1;
+  }
+  if (Mix_PlayChannel(-1, wave, 0) == -1 ) {
+    printf("playing sound\n");
+    return -1;  
+  }
   return 1;
+}
+
+char *get_sound_effect(void *sound) {
+  int sound_enum = (int)sound;
+  if (sound_enum == PORTAL)
+    return PORTAL_SOUND;
+  if (sound_enum == WIN)
+    return WIN_SOUND;
+  if (sound_enum == DIED)
+    return DIED_SOUND;
+  if (sound_enum == STAR_OFM)
+    return STAR_OFM_SOUND;
+  if (sound_enum == FERTILIZER)
+    return FERTILISER_SOUND;
+  if (sound_enum == TRAMPOLINE)
+    return FERTILISER_SOUND;
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }

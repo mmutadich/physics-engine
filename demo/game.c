@@ -565,8 +565,7 @@ scene_t *make_start_scene() {
 }
 
 state_t *emscripten_init() {
-  background_music();
-  load_sound_effect_template();
+  //background_music();
   sdl_init(SDL_MIN, SDL_MAX);
   sdl_on_key((key_handler_t)keyer);
   state_t *state = malloc(sizeof(state_t));

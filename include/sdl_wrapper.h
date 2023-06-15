@@ -126,7 +126,8 @@ void sdl_on_key(key_handler_t handler);
  * @return the number of seconds that have elapsed
  */
 double time_since_last_tick(void);
-int load_sound_effect_template();
+int load_sound_effect(char *filename);
+char *get_sound_effect(void *sound);
 int background_music();
 int free_audio();
 #endif // #ifndef __SDL_WRAPPER_H__

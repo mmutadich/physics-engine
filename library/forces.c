@@ -1,5 +1,6 @@
 #include "forces.h"
 #include "collision.h"
+#include "sdl_wrapper.h"
 #include "math.h"
 #include "scene.h"
 #include "vector.h"
@@ -31,6 +32,15 @@ typedef enum {
   RESET_SCREEN = -1,
   WIN_SCREEN = 2,
 } screen_t;
+
+typedef enum {
+  PORTAL = 1,
+  WIN = 2,
+  DIED = 3,
+  STAR_OFM = 4,
+  FERTILIZER = 5,
+  TRAMPOLINE = 6,
+} sound_t;
 
 typedef struct two_body_aux {
   body_t *body1;
@@ -466,6 +476,9 @@ void portal_collision_handler(body_t *sprite, body_t *entry_portal, vector_t axi
   vector_t reverse_x = vec_multiply(-1, current_velocity);
   vector_t new_velocity = {.x = reverse_x.x, .y = current_velocity.y};
   body_set_velocity(sprite, new_velocity);
+  char *filename = get_sound_effect((void*)PORTAL);
+  printf("calling sound with %s\n", filename);
+  load_sound_effect(filename);
 }
 
 void create_portal_force(scene_t *scene, body_t *sprite, body_t *entry_portal, body_t *exit_portal, double elasticity) {
