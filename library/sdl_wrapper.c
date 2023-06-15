@@ -435,7 +435,7 @@ char *get_sound_effect(void *sound) {
   if (sound_enum == FERTILIZER)
     return FERTILISER_SOUND;
   if (sound_enum == TRAMPOLINE)
-    return FERTILISER_SOUND;
+    return TRAMPLOINE_SOUND;
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
