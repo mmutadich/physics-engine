@@ -18,6 +18,7 @@
 #define STAR_OFM_SOUND "images/Star_ofM.wav"
 #define FERTILISER_SOUND "images/Fertiliser.wav"
 #define TRAMPLOINE_SOUND "images/Trampoline_new.wav"
+#define ICE_SOUND "image/Ice.wav"
 
 typedef enum {
   PORTAL = 1,
