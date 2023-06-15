@@ -63,7 +63,7 @@ const vector_t PLANT_BOY_DOOR_LEFT_CENTROID = {.x = 1627, .y = 780};
 const vector_t DIRT_GIRL_DOOR_RIGHT_CENTROID = {.x = 1777, .y = 780};
 const vector_t DIRT_GIRL_DOOR_LEFT_CENTROID = {.x = 1827, .y = 780};
 const double DOOR_HEIGHT = 120;
-const double DOOR_LENGTH = 10;
+const double DOOR_LENGTH = 20;
 
 // OBSTACLE/ICE CONSTANTS
 const vector_t PLANT_BOY_OBSTACLE_CENTROID = {.x = 725, .y = 30};
