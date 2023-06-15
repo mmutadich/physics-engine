@@ -10,7 +10,7 @@
 #include <time.h> 
 #include <SDL2/SDL_mixer.h>
 
-#define MUS_PATH "images/Powerful-Trap-.wav" // MIA TODO: change background noise
+#define MUS_PATH "images/Powerful-Trap-.wav"
 #define WAV_PATH_1 "images/Powerful-Trap-.wav"
 #define PORTAL_SOUND "images/Portal_new.wav"
 #define WIN_SOUND "images/Win.wav"
@@ -129,7 +129,6 @@ vector_t get_window_center(void) {
  * chosen to maximize the size of the scene while keeping it in the window.
  */
 double get_scene_scale(vector_t window_center) {
-  // Scale scene so it fits entirely in the window
   double x_scale = window_center.x / max_diff.x,
          y_scale = window_center.y / max_diff.y;
   return x_scale < y_scale ? x_scale : y_scale;
@@ -137,13 +136,10 @@ double get_scene_scale(vector_t window_center) {
 
 /** Maps a scene coordinate to a window coordinate */
 vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
-  // Scale scene coordinates by the scaling factor
-  // and map the center of the scene to the center of the window
   vector_t scene_center_offset = vec_subtract(scene_pos, center);
   double scale = get_scene_scale(window_center);
   vector_t pixel_center_offset = vec_multiply(scale, scene_center_offset);
   vector_t pixel = {.x = round(window_center.x + pixel_center_offset.x),
-                    // Flip y axis since positive y is down on the screen
                     .y = round(window_center.y - pixel_center_offset.y)};
   return pixel;
 }
@@ -176,7 +172,6 @@ char get_keycode(SDL_Keycode key) {
 }
 
 void sdl_init(vector_t min, vector_t max) {
-  // Check parameters
   assert(min.x < max.x);
   assert(min.y < max.y);
 
@@ -199,8 +194,6 @@ bool sdl_is_done(state_t *state) {
       return true;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
-      // Skip the keypress if no handler is configured
-      // or an unrecognized key was pressed
       if (key_handler == NULL)
         break;
       char key = get_keycode(event->key.keysym.sym);
@@ -228,7 +221,6 @@ void sdl_clear(void) {
 }
 
 void sdl_draw_polygon(list_t *points, rgb_color_t color) {
-  // Check parameters
   size_t n = list_size(points);
   assert(n >= 3);
   assert(0 <= color.r && color.r <= 1);
@@ -360,14 +352,14 @@ void sdl_render_scene(scene_t *scene) {
     list_free(shape);
   }
 
-  //BACKGROUND IMAGE
+  // BACKGROUND IMAGE
   SDL_RenderCopy(renderer, BG_TEXTURE, NULL, NULL); 
 
-  //SPRITES
+  // SPRITES
   SDL_RenderCopy(renderer, PLANT_BOY_TEXTURE, NULL, &plant_boy_rect);
   SDL_RenderCopy(renderer, DIRT_GIRL_TEXTURE, NULL, &dirt_girl_rect);
 
-  //OBJECTS
+  // OBJECTS
   SDL_RenderCopy(renderer, DIRT_GIRL_FERTILIZER_TEXTURE, NULL, &dirt_girl_fertilizer_rect);
   SDL_RenderCopy(renderer, PLANT_BOY_FERTILIZER_TEXTURE, NULL, &plant_boy_fertilizer_rect);
   if (star_in_scene(scene)) {
@@ -377,7 +369,7 @@ void sdl_render_scene(scene_t *scene) {
 
   sdl_show();
 
-  //destroy every texture created
+  // destroy every texture created
   SDL_DestroyTexture(BG_TEXTURE);
   SDL_DestroyTexture(PLANT_BOY_TEXTURE);
   SDL_DestroyTexture(DIRT_GIRL_TEXTURE);
@@ -392,7 +384,7 @@ void sdl_render_scene(scene_t *scene) {
 //SOUND CODE:
 
 int initialize_sound() {
-    // Initialize SDL.
+  // Initialize SDL.
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		return -1;
   }
